@@ -1,5 +1,5 @@
 graphene>=2.0.dev
 graphene-django
 graphql-core
-django==1.9
-django-filter==0.11.0
+django=>1.9
+django-filter=>0.11.0
