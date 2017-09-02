@@ -25,5 +25,8 @@ class Student(Person):
         self.type = STUDENT_KEY_WORD
         super(Student, self).save(args, kwargs)
 
+    def get_certificates(self):
+        return self.certificate_link_set.all()
+
     def __unicode__(self):
         return "student: " + unicode(self.last_name)
