@@ -14,7 +14,13 @@ class Badge_type(models.Model):
 class Badge(models.Model):
     type = models.ForeignKey(Badge_type, on_delete=models.CASCADE)
     kelaas = models.ForeignKey('Kelaas', on_delete=models.CASCADE)
-    students = models.ManyToManyField('Student', blank=True)
 
     def __unicode__(self):
         return "badge : " + self.type.title + " for Kelaas : " + self.kelaas.title
+
+
+class Badge_link(models.Model):
+    badge = models.ForeignKey(Badge, on_delete=models.CASCADE)
+    count = models.IntegerField('number of achiving this badge', default=0)
+
+    student = models.ForeignKey('Student', on_delete=models.CASCADE)

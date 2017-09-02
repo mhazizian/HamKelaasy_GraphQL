@@ -12,8 +12,9 @@ class Kelaas(models.Model):
     title = models.CharField('class name', max_length=200)
     create_date = models.DateTimeField('class creation date', default=datetime.now)
     description = models.CharField('class description', max_length=500)
-    students = models.ManyToManyField('Student', blank=True)  # each Kelaas has  many students
-    tags = models.ManyToManyField('Tag', blank=True)  # each Kelaas has many tags
+
+    tags = models.ManyToManyField('Tag', blank=True)
+    students = models.ManyToManyField('Student', blank=True)
 
     invite_code = models.CharField('invite link for kelaas', max_length=10)
 
@@ -25,12 +26,11 @@ class Kelaas(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            invite_code = str(uuid.uuid4())[:5].upper()
+            invite_code = str(uuid.uuid4())[:7].upper()
 
             while Kelaas.objects.filter(invite_code=invite_code).exists():
-                invite_code = str(uuid.uuid4())[:5].upper()
+                invite_code = str(uuid.uuid4())[:7].upper()
             self.invite_code = invite_code
-
         super(Kelaas, self).save(args, kwargs)
 
     def __unicode__(self):

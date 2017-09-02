@@ -11,18 +11,16 @@ STUDENT_KEY_WORD = "student"
 class Student(Person):
     age = models.IntegerField('student age', default=None, null=True)
     nickname = models.CharField('nick name', max_length=50, null=True)
-
     parent_code = models.CharField('invite link for parent', max_length=10)
 
-    certificates = models.ManyToManyField('Certificate', blank=True)  # each student has many certificates
-    parents = models.ForeignKey('Parent', on_delete=models.CASCADE, null=True, default=None, blank=True)
+    parents = models.ForeignKey('Parent', on_delete=models.CASCADE, null=True, default=None)
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            parent_code = str(uuid.uuid4())[:5].upper()
+            parent_code = str(uuid.uuid4())[:7].upper()
 
             while Student.objects.filter(parent_code=parent_code).exists():
-                parent_code = str(uuid.uuid4())[:5].upper()
+                parent_code = str(uuid.uuid4())[:7].upper()
             self.parent_code = parent_code
         self.type = STUDENT_KEY_WORD
         super(Student, self).save(args, kwargs)
