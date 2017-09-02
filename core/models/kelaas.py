@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import uuid
+
 from django.db import models
 from datetime import datetime
 from khayyam import *
@@ -18,7 +20,18 @@ class Kelaas(models.Model):
     @property
     def shamsi_date(self):
         local_tz = pytz.timezone('Asia/Tehran')
-        return JalaliDatetime(self.create_date.replace(tzinfo=pytz.utc).astimezone(local_tz)).strftime('%A %D %B %N  %h:%v')
+        return JalaliDatetime(self.create_date.replace(tzinfo=pytz.utc).astimezone(local_tz)).strftime(
+            '%A %D %B %N  %h:%v')
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            invite_code = str(uuid.uuid4())[:5].upper()
+
+            while Kelaas.objects.filter(invite_code=invite_code).exists():
+                invite_code = str(uuid.uuid4())[:5].upper()
+            self.invite_code = invite_code
+
+        super(Kelaas, self).save(args, kwargs)
 
     def __unicode__(self):
         return self.title

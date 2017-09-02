@@ -5,13 +5,15 @@ from django.contrib.auth.models import User
 from .person import Person
 from django.db import models
 
+TEACHER_KEY_WORD = "teacher"
+
 
 class Teacher(Person):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
     kelasses = models.ManyToManyField('Kelaas', blank=True)
 
-    type = models.CharField('user type', max_length=7, default='teacher')
+    def save(self, *args, **kwargs):
+        self.type = TEACHER_KEY_WORD
+        super(Teacher, self).save(args, kwargs)
 
     def __unicode__(self):
         return "teacher: " + unicode(self.last_name)
