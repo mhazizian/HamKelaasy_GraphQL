@@ -4,8 +4,13 @@ from core import views
 from graphene_django.views import GraphQLView
 
 urlpatterns = [
-    url(r'^', GraphQLView.as_view(graphiql=True)),
+    url(r'^test$', views.test, name='index'),
+    url(r'^index$', views.index, name='index'),
 
-    url(r'^test$', views.index, name='index'),
+
+
+    url(r'^register$', views.signup, name='signup'),
+    url(r'^$', GraphQLView.as_view(graphiql=True)),
+
 ]
 
