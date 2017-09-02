@@ -15,7 +15,7 @@ class StudentType(graphene.ObjectType):
     parent_code = graphene.String()
     nickname = graphene.String()
 
-    user = graphene.Field('core.graphql_utilz.UserType')
+    username = graphene.String()
 
-    def resolve_user(student, args, context, info):
-        return student.user
+    def resolve_username(student, info):
+        return student.user.username

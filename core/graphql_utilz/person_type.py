@@ -11,3 +11,8 @@ class PersonType(graphene.ObjectType):
     email = graphene.String()
     pic = graphene.String()
     signup_completed = graphene.Boolean()
+    type = graphene.String()
+
+    username = graphene.String()
+    def resolve_username(student, info):
+        return student.user.username
