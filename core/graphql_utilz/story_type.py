@@ -10,6 +10,6 @@ class StoryType(graphene.ObjectType):
     pic = graphene.String()
     kelaas = graphene.Field('core.graphql_utilz.KelaasType')
 
-    def resolve_kelaas(story, args, context, info):
+    def resolve_kelaas(story,info):
         return story.kelaas
 
