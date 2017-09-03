@@ -18,7 +18,7 @@ def resolve_student(root, info, id, **kwargs):
             for kelaas in user.teacher.kelasses.all():
                 if kelaas.students.filter(id=id).exists():
                     return Student.objects.get(pk=id)
-    # for test:
+
     raise GraphQLError('Permission denied')
     # return Student.objects.get(pk=id)
 
@@ -35,7 +35,6 @@ def resolve_students(root, info, **kwargs):
                 if user.teacher.kelasses.filter(id=kwargs['kelaas_id']).exists():
                     return Kelaas.objects.get(pk=kwargs['kelaas_id']).students.all()
 
-    # for test:
     raise GraphQLError('Permission denied')
     # return Student.objects.all()
 
