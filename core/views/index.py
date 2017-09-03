@@ -68,7 +68,6 @@ def signup(request):
             res['message'] = "username is not available"
             return HttpResponse(json.dumps(res))
         user = User(username=username)
-        user.save()
 
         type = data['type']
 
@@ -76,6 +75,7 @@ def signup(request):
             age = int(data['age'])
             nickname = data['nickName']
 
+            user.save()
             student = Student(
                 user=user,
                 first_name=first_name,
@@ -87,6 +87,7 @@ def signup(request):
             )
             student.save()
         if type == TEACHER_KEY_WORD:
+            user.save()
             teacher = Teacher(
                 user=user,
                 first_name=first_name,
@@ -97,6 +98,7 @@ def signup(request):
             )
             teacher.save()
         if type == PARENT_KEY_WORD:
+            user.save()
             parent = Parent(
                 user=user,
                 first_name=first_name,
