@@ -2,41 +2,65 @@ from graphql import GraphQLError
 
 import graphene
 from core.models import *
-from graphql_utilz import PersonType, TagType, StudentType
+from graphql_utilz import *
 
 
-def resolve_student(root, info, **kwargs):
+def resolve_student(root, info, id, **kwargs):
     if info.context.user.is_authenticated:
         user = info.context.user.person
 
-        if user.type is 'parent':
-            if user.parent.student_set.filter(pk=kwargs['id']).exists():
-                return user.parent.student_set.get(pk=kwargs['id'])
+        if user.type == 'parent':
+            if user.parent.student_set.filter(pk=id).exists():
+                return user.parent.student_set.get(pk=id)
             raise GraphQLError('Student not found')
 
-        if user.type is 'teacher':
-            # permission check
-            return Student.objects.get(pk=kwargs['id'])
+        if user.type == 'teacher':
+            for kelaas in user.teacher.kelasses.all():
+                if kelaas.students.filter(id=id).exists():
+                    return Student.objects.get(pk=id)
     # for test:
-    # raise GraphQLError('Permission denied')
-    return Student.objects.get(pk=kwargs['id'])
+    raise GraphQLError('Permission denied')
+    # return Student.objects.get(pk=id)
 
 
 def resolve_students(root, info, **kwargs):
     if info.context.user.is_authenticated:
         user = info.context.user.person
 
-        if user.type is 'parent':
+        if user.type == 'parent':
             return user.parent.student_set.all()
 
-        if user.type is 'teacher':
+        if user.type == 'teacher':
             if 'kelaas_id' in kwargs:
                 if user.teacher.kelasses.filter(id=kwargs['kelaas_id']).exists():
                     return Kelaas.objects.get(pk=kwargs['kelaas_id']).students.all()
 
-    # raise GraphQLError('Permission denied')
     # for test:
-    return Student.objects.all()
+    raise GraphQLError('Permission denied')
+    # return Student.objects.all()
+
+
+def resolve_kelaas(root, info, id):
+    if info.context.user.is_authenticated:
+        user = info.context.user.person
+
+        if user.type == TEACHER_KEY_WORD:
+            if user.teacher.kelasses.filter(id=id).exists():
+                return user.teacher.kelasses.get(pk=id)
+        if user.type == PARENT_KEY_WORD:
+            for student in user.parent.student_set.all:
+                if student.kelaas_set.filter(pk=id).exists():
+                    return student.kelaas_set.get(pk=id)
+        if user.type == STUDENT_KEY_WORD:
+            if user.student.kelaas_set.filter(pk=id).exists():
+                return user.student.kelaas_set.get(pk=id)
+    raise GraphQLError('Permission denied')
+
+
+def resolve_me(root, info):
+    if info.context.user.is_authenticated:
+        return info.context.user.person
+    raise GraphQLError('Permission denied')
 
 
 def resolve_persons(root, info):
@@ -49,6 +73,12 @@ def resolve_tags(root, info):
 
 # Query class:
 class Query(graphene.ObjectType):
+    me = graphene.Field(
+        PersonType,
+        resolver=resolve_me,
+    )
+
+    # for test:
     persons = graphene.List(
         PersonType,
         resolver=resolve_persons,
@@ -65,6 +95,13 @@ class Query(graphene.ObjectType):
         kelaas_id=graphene.Int(),
         resolver=resolve_students,
     )
+
+    kelaas = graphene.Field(
+        KelaasType,
+        id=graphene.Int(required=True),
+        resolver=resolve_kelaas,
+    )
+
     tags = graphene.List(
         TagType,
         resolver=resolve_tags,
