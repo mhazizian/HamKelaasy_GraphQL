@@ -3,14 +3,14 @@ from __future__ import unicode_literals
 import uuid
 
 from django.db import models
-from datetime import datetime
+from django.utils import timezone
 from khayyam import *
 import pytz
 
 
 class Kelaas(models.Model):
     title = models.CharField('class name', max_length=200)
-    create_date = models.DateTimeField('class creation date', default=datetime.now)
+    create_date = models.DateTimeField('class creation date', default=timezone.now)
     description = models.CharField('class description', max_length=500)
 
     tags = models.ManyToManyField('Tag', blank=True)

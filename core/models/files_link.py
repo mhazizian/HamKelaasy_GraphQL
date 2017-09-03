@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from datetime import datetime
+from django.utils import timezone
 # from khayyam import *
 import pytz
 
@@ -9,7 +9,7 @@ import pytz
 class File(models.Model):
     title = models.CharField('file title', max_length=200)
     description = models.CharField('file body', max_length=1000, blank=True)
-    create_date = models.DateTimeField('file creation date', default=datetime.now)
+    create_date = models.DateTimeField('file creation date', default=timezone.now)
     owner = models.ForeignKey('Person', on_delete=models.CASCADE)
 
     data = models.FileField('file', upload_to='%Y/%m/%d/')

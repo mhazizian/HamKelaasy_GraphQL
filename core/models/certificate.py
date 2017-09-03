@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from datetime import datetime
+from django.utils import timezone
 from django.db import models
 from core.models import Sys_file
 
@@ -40,4 +40,4 @@ class Certificate_link(models.Model):
     assigner = models.ForeignKey('Person', related_name='certificate_assigner', on_delete=models.CASCADE)
     student = models.ForeignKey('Student', related_name='related_to_student', on_delete=models.CASCADE)
 
-    create_date = models.DateTimeField('class creation date', default=datetime.now)
+    create_date = models.DateTimeField('class creation date', default=timezone.now)
