@@ -25,7 +25,11 @@ SECRET_KEY = 'qqce@wq!=3x=%-hv8((gh&^s81lv=bf^#as327j194igg)03qf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["0.0.0.0","127.0.0.1","94.182.227.193"]
+ALLOWED_HOSTS = [
+    "0.0.0.0",
+    "127.0.0.1",
+    "94.182.227.193",
+]
 
 
 # Application definition
@@ -50,7 +54,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -124,7 +128,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 GRAPHENE = {
-    'SCHEMA': 'core.schema.schema'
+    'SCHEMA': 'Hamkelaasy_graphQL.schema.schema',
+    'MIDDLEWARE': [
+            'graphene_django.debug.DjangoDebugMiddleware',
+        ]
 }
 
 REST_FRAMEWORK = {

@@ -5,22 +5,25 @@ import json
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from core.models import Person, Teacher, Student, Parent
 from core.models import STUDENT_KEY_WORD, TEACHER_KEY_WORD, PARENT_KEY_WORD
 
-from core.schema import schema
+from Hamkelaasy_graphQL.schema import schema
 
 
 # Create your views here.
 
 @api_view()
+@csrf_exempt
 def index(request):
     # access token checking....
     if not request.user.is_authenticated:
         return HttpResponse('bad')
-    # res = schema.execute(request.POST['query'])
+
+    # res = schema.execute(request.POST['query'], context_value=request)
     res = schema.execute(
         """
         {
@@ -28,7 +31,8 @@ def index(request):
              firstName
             }
         }
-        """
+        """,
+        context_value=request,
     )
     if res.errors:
         return HttpResponse(json.dumps(res.errors))
@@ -46,6 +50,7 @@ def test(request):
     return HttpResponse("salam ")
 
 
+@csrf_exempt
 def signup(request):
     res = {}
     try:
