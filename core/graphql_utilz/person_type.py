@@ -3,7 +3,6 @@ import graphene
 
 class PersonType(graphene.ObjectType):
     name = "person"
-    description = "..."
 
     id = graphene.Int()
     first_name = graphene.String()
@@ -14,5 +13,6 @@ class PersonType(graphene.ObjectType):
     type = graphene.String()
 
     username = graphene.String()
+
     def resolve_username(student, info):
         return student.user.username

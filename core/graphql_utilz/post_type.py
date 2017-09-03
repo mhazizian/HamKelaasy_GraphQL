@@ -8,9 +8,9 @@ class PostType(graphene.ObjectType):
     title = graphene.String()
     description = graphene.String()
     shamsi_date = graphene.String()
+    type = graphene.String()
+
     kelaas = graphene.Field('core.graphql_utilz.KelaasType')
-
-
     def resolve_kelaas(post, args, context, info):
         return post.kelaas
 

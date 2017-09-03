@@ -13,10 +13,15 @@ class KelaasType(graphene.ObjectType):
     students = graphene.List('core.graphql_utilz.StudentType')
     tags = graphene.List('core.graphql_utilz.TagType')
 
-    def resolve_tags(kelaas, args, context, info):
+    def resolve_tags(kelaas,info):
             return kelaas.tags.all()
 
-    def resolve_students(kelaas, args, context, info):
-        return kelaas.students.all()
+    def resolve_students(kelaas, info):
+        user = info.context.user.person
+
+        if user.type == "teacher":
+            return kelaas.students.all()
+        if user.type == "parent":
+            return [student for student in kelaas.students.all() if student.parents.id == user.parent.id]
 
 

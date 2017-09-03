@@ -3,17 +3,13 @@ import graphene
 
 class ParentType(graphene.ObjectType):
     name = "parent"
-    description = "..."
 
-    id = graphene.Int()
-    first_name = graphene.String()
-    last_name = graphene.String()
-    email = graphene.String()
-    pic = graphene.String()
-    signup_completed = graphene.Boolean()
+    person = graphene.Field('core.graphql_utilz.PersonType')
+    students = graphene.List('core.graphql_utilz.StudentType')
 
-    user = graphene.Field('core.graphql_utilz.UserType')
+    def resolve_person(student, info):
+        return student.person
 
-    def resolve_user(parent, args, context, info):
-        return parent.user
-
+    def resolve_students(parent, info):
+        return parent.students.all()
+        #permission check
