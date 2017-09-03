@@ -8,5 +8,5 @@ class FileType(graphene.ObjectType):
     description = graphene.String()
     url = graphene.String()
 
-    def resolve_url(file, info):
-        return file.data.url
+    def resolve_url(self, info):
+        return self.data.url

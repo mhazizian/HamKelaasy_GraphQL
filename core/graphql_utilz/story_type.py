@@ -7,6 +7,6 @@ class StoryType(graphene.ObjectType):
     post = graphene.Field('core.graphql_utilz.PostType')
     pic = graphene.String()
 
-    def resolve_post(story, info):
-        return story.post
+    def resolve_post(self, info):
+        return self.post
 

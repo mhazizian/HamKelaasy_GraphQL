@@ -16,16 +16,16 @@ class KelaasType(graphene.ObjectType):
     story = graphene.List('core.graphql_utilz.StoryType')
     tags = graphene.List('core.graphql_utilz.TagType')
 
-    def resolve_tags(kelaas, info):
-        return kelaas.tags.all()
+    def resolve_tags(self, info):
+        return self.tags.all()
 
-    def resolve_students(kelaas, info):
+    def resolve_students(self, info):
         user = info.context.user.person
 
         if user.type == "teacher":
-            return kelaas.students.all()
+            return self.students.all()
         if user.type == "parent":
-            return [student for student in kelaas.students.all() if student.parents.id == user.parent.id]
+            return [student for student in self.students.all() if student.parents.id == user.parent.id]
 
     def resolve_kelaas_post(kelaas, info):
         user = info.context.user.person

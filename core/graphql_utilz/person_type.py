@@ -14,5 +14,5 @@ class PersonType(graphene.ObjectType):
 
     username = graphene.String()
 
-    def resolve_username(student, info):
-        return student.user.username
+    def resolve_username(self, info):
+        return self.user.username

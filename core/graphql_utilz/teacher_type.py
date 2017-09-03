@@ -1,15 +1,12 @@
 import graphene
 
-class TeacherType(graphene.ObjectType):
-    name = "teacher"
-    description = "..."
+from core.graphql_utilz import PersonType
 
-    person = graphene.Field('core.graphql_utilz.PersonType')
+
+class TeacherType(PersonType):
+    name = "teacher"
 
     kelasses = graphene.List('....')
 
-    def resolve_kelasses(teacher, args, context, info):
-        return teacher.kelasses.all()
-
-    def resolve_person(teacher, info):
-        return teacher.person
+    def resolve_kelasses(self, info):
+        return self.kelasses.all()
