@@ -14,29 +14,18 @@ from core.models import STUDENT_KEY_WORD, TEACHER_KEY_WORD, PARENT_KEY_WORD
 from Hamkelaasy_graphQL.schema import schema
 
 
-# Create your views here.
-
-@api_view()
+@api_view(['POST'])
 @csrf_exempt
 def index(request):
-    # access token checking....
     if not request.user.is_authenticated:
-        return HttpResponse('bad')
+        return HttpResponse('user not authenticated')
 
-    # res = schema.execute(request.POST['query'], context_value=request)
-    res = schema.execute(
-        """
-        {
-            person{
-             firstName
-            }
-        }
-        """,
-        context_value=request,
-    )
-    if res.errors:
-        return HttpResponse(json.dumps(res.errors))
-    return HttpResponse(json.dumps(res.data))
+    if request.method == "POST":
+        res = schema.execute(request.POST['query'], context_value=request)
+        if res.errors:
+            return HttpResponse(json.dumps(res.errors), content_type='application/json')
+        return HttpResponse(json.dumps(res.data), content_type='application/json')
+    return HttpResponse("not post method!")
 
 
 # @api_view()
