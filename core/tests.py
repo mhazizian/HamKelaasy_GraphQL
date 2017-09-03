@@ -101,24 +101,70 @@ class Test(APITestCase):
             kelaas.save()
             print kelaas.id
 
-    def test_query_data(self):
-        user = User.objects.get(username="teacher_mha3")
+    # def test_query_teacher(self):
+    #     user = User.objects.get(username="teacher_mha3")
+    #     print ">> user_type: " + user.person.type
+    #
+    #     self.client.force_authenticate(user=user)
+    #
+    #     query = """
+    #     {
+    #         students(kelaasId:4){
+    #             id
+    #             kelaases{
+    #                 title
+    #             }
+    #             username
+    #         }
+    #     }
+    #
+    #     """
+    #     query1 = """
+    #         {
+    #           student(id:69){
+    #             id
+    #             username
+    #             kelaases{
+    #                 id
+    #                 students{
+    #                     id
+    #                     firstName
+    #                     kelaases{
+    #                         id
+    #                         title
+    #                     }
+    #                 }
+    #             }
+    #           }
+    #           me{
+    #             id
+    #             firstName
+    #             lastName
+    #           }
+    #         }
+    #     """
+    #     index_url = reverse('index')
+    #
+    #     response = self.client.post(index_url, {'query': query})
+    #     res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
+    #     print res
+
+    def test_query_student(self):
+        user = User.objects.get(username="student_mha3")
         print ">> user_type: " + user.person.type
 
         self.client.force_authenticate(user=user)
 
-        query1 = """
+        query = """
         {
-            students(kelaasId:4){
+            me{
+                type
                 username
-                id
             }
         }
-        
+
         """
-
-
-        query = """
+        query1 = """
             {
               student(id:69){
                 id
@@ -142,7 +188,6 @@ class Test(APITestCase):
               }
             }
         """
-
         index_url = reverse('index')
 
         response = self.client.post(index_url, {'query': query})
