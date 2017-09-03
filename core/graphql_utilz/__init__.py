@@ -8,3 +8,4 @@ from .story_type import StoryType
 from .kelaas_post_type import KelaasPostType
 from .tag_type import TagType
 from .message_type import MessageType
+from .file_type import FileType
