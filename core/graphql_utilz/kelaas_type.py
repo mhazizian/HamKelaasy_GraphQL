@@ -1,4 +1,5 @@
 import graphene
+from core.models import STUDENT_KEY_WORD, TEACHER_KEY_WORD, PARENT_KEY_WORD
 
 
 class KelaasType(graphene.ObjectType):
@@ -11,10 +12,12 @@ class KelaasType(graphene.ObjectType):
     invite_code = graphene.String()
 
     students = graphene.List('core.graphql_utilz.StudentType')
+    kelaas_post = graphene.List('core.graphql_utilz.KelaasPostType')
+    story = graphene.List('core.graphql_utilz.StoryType')
     tags = graphene.List('core.graphql_utilz.TagType')
 
-    def resolve_tags(kelaas,info):
-            return kelaas.tags.all()
+    def resolve_tags(kelaas, info):
+        return kelaas.tags.all()
 
     def resolve_students(kelaas, info):
         user = info.context.user.person
@@ -24,4 +27,14 @@ class KelaasType(graphene.ObjectType):
         if user.type == "parent":
             return [student for student in kelaas.students.all() if student.parents.id == user.parent.id]
 
+    def resolve_kelaas_post(kelaas, info):
+        user = info.context.user.person
 
+        if user.type == STUDENT_KEY_WORD or user.type == TEACHER_KEY_WORD:
+            return kelaas.kelaas_post_set.all()
+
+    def resolve_story(kelaas, info):
+        user = info.context.user.person
+
+        if user.type == TEACHER_KEY_WORD or user.type == PARENT_KEY_WORD:
+            return kelaas.story_set.all()
