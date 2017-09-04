@@ -43,7 +43,7 @@ def test(request):
 def signup(request):
     res = {}
     try:
-        data = json.loads(request.POST['data'])
+        data = json.loads(request.body)
 
         username = data['userName']
         first_name = data['firstName']
