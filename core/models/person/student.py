@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import uuid
 
-from .person import Person
+from core.models.person import Person
 from django.db import models
 
 STUDENT_KEY_WORD = "student"
