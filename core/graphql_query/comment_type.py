@@ -6,7 +6,7 @@ class CommentType(graphene.ObjectType):
 
     body = graphene.String()
     time_passed = graphene.String()
-    owner = graphene.Field('core.graphql_utilz.PersonType')
+    owner = graphene.Field('core.graphql_query.PersonType')
 
     def resolve_owner(self, info):
         return self.owner

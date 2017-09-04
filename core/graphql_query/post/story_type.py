@@ -1,5 +1,5 @@
 import graphene
-from core.graphql_utilz.post import PostType
+from core.graphql_query.post import PostType
 
 
 class StoryType(PostType):

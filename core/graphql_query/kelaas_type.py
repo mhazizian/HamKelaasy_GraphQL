@@ -1,7 +1,7 @@
 import graphene
 from graphql import GraphQLError
 
-from core.graphql_utilz.utilz import it_is_him, parent_has_access_to_kelaas
+from core.graphql_query.utilz import it_is_him, parent_has_access_to_kelaas
 from core.models import STUDENT_KEY_WORD, TEACHER_KEY_WORD, PARENT_KEY_WORD, STORY_KEY_WORD, KELAAS_POST_KEY_WORD
 
 
@@ -14,10 +14,10 @@ class KelaasType(graphene.ObjectType):
     description = graphene.String()
     invite_code = graphene.String()
 
-    students = graphene.List('core.graphql_utilz.StudentType')
-    kelaas_posts = graphene.List('core.graphql_utilz.KelaasPostType')
-    stories = graphene.List('core.graphql_utilz.StoryType')
-    tags = graphene.List('core.graphql_utilz.TagType')
+    students = graphene.List('core.graphql_query.StudentType')
+    kelaas_posts = graphene.List('core.graphql_query.KelaasPostType')
+    stories = graphene.List('core.graphql_query.StoryType')
+    tags = graphene.List('core.graphql_query.TagType')
 
     def resolve_invite_code(self, info):
         user = info.context.user.person

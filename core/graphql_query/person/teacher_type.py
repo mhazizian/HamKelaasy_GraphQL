@@ -1,17 +1,17 @@
 import graphene
 from graphql import GraphQLError
 
-from core.graphql_utilz.utilz import it_is_him
-from core.graphql_utilz.person import PersonType
+from core.graphql_query.utilz import it_is_him
+from core.graphql_query.person import PersonType
 from core.models import TEACHER_KEY_WORD
 
 
 class TeacherType(PersonType):
     name = "teacher"
 
-    kelaases = graphene.List('core.graphql_utilz.KelaasType')
+    kelaases = graphene.List('core.graphql_query.KelaasType')
     kelaas= graphene.Field(
-        'core.graphql_utilz.KelaasType',
+        'core.graphql_query.KelaasType',
         id=graphene.Int(required=True)
     )
 

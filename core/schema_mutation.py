@@ -3,7 +3,7 @@ from graphql import GraphQLError
 import graphene
 from core.models import *
 
-from graphql_utilz import MessageType
+from graphql_query import MessageType
 
 
 class Kelaas_input(graphene.InputObjectType):

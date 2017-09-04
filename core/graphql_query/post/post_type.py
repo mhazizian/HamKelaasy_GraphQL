@@ -10,12 +10,12 @@ class PostType(graphene.ObjectType):
     shamsi_date = graphene.String()
     type = graphene.String()
 
-    comments = graphene.List('core.graphql_utilz.CommentType')
+    comments = graphene.List('core.graphql_query.CommentType')
 
     def resolve_comments(self, info):
         return self.comment_set.all()[::-1]
 
-    # kelaas = graphene.Field('core.graphql_utilz.KelaasType')
+    # kelaas = graphene.Field('core.graphql_query.KelaasType')
     #
     # def resolve_kelaas(self, info):
     #     return self.kelaas

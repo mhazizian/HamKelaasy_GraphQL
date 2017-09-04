@@ -2,7 +2,7 @@ from graphql import GraphQLError
 
 import graphene
 from core.models import *
-from graphql_utilz import *
+from graphql_query import *
 
 
 def resolve_student(root, info, id, **kwargs):
