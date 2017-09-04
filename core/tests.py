@@ -174,11 +174,12 @@ class Test(APITestCase):
         query = """
         {
             kelaases{
-                id,
                 title,
+                stories{
+                    title
+                }
                 students{
                     username,
-                    id,
                 }
             }
         }
@@ -187,6 +188,7 @@ class Test(APITestCase):
         response = self.client.post(index_url, {'query': query})
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
+
 
         query = """
             {
