@@ -9,4 +9,4 @@ class CommentType(graphene.ObjectType):
     owner = graphene.Field('core.graphql_utilz.PersonType')
 
     def resolve_owner(self, info):
-        self.owner
+        return self.owner
