@@ -15,6 +15,7 @@ class StudentType(PersonType):
 
     kelaases = graphene.List('core.graphql_utilz.KelaasType')
     parent = graphene.Field('core.graphql_utilz.ParentType')
+    certificates = graphene.List('core.graphql_utilz.CertificateType')
 
     def resolve_kelaases(self, info):
         user = info.context.user.person
@@ -36,3 +37,7 @@ class StudentType(PersonType):
                     return self.parents
 
         raise GraphQLError('Permission denied')
+
+    def resolve_certificates(self, info):
+        # what to do, what not to do?!!!
+        pass
