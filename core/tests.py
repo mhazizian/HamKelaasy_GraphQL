@@ -241,76 +241,46 @@ class Test(APITestCase):
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
 
-        #
-        # query = """
-        #     {
-        #       kelaas(id:1){
-        #         id
-        #         students{
-        #             id
-        #             kelaases{
-        #                 id
-        #                 title
-        #                 students{
-        #                     username,
-        #                     id
-        #                 }
-        #             }
-        #         }
-        #       }
-        #     }
-        #
-        # """
-        #
-        # response = self.client.post(index_url, {'query': query})
-        # res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
-        # print res
+    def test_create_kelaas(self):
+        user = User.objects.get(username="teacher_mha_4")
+        print ">>> Test: Mutate for create kelaas"
 
+        self.client.force_authenticate(user=user)
+        index_url = reverse('index')
 
+        query = """
+          {
+              kelaases{
+                  title
+              }
+          }
+          """
+        print ">>>  Query on 'kelasses'"
+        response = self.client.post(index_url, {'query': query})
+        res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
+        print res
 
+        mutate = """
+        mutation{
+            createKelaas(data:{title:"new kelaas with mutation", description:"salam be hame:DD", tags:"1,2"}){
+                type
+                message
+            }
+        }
+        """
+        print ">>>  Mutate on 'createKelaas'"
+        response = self.client.post(index_url, {'query': mutate})
+        res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
+        print res
 
-
-        # def test_query_student(self):
-        #     user = User.objects.get(username="student_mha3")
-        #     print ">> user_type: " + user.person.type
-        #
-        #     self.client.force_authenticate(user=user)
-        #
-        #     query = """
-        #     {
-        #         me{
-        #             type
-        #             username
-        #         }
-        #     }
-        #
-        #     """
-        #     query1 = """
-        #         {
-        #           student(id:69){
-        #             id
-        #             username
-        #             kelaases{
-        #                 id
-        #                 students{
-        #                     id
-        #                     firstName
-        #                     kelaases{
-        #                         id
-        #                         title
-        #                     }
-        #                 }
-        #             }
-        #           }
-        #           me{
-        #             id
-        #             firstName
-        #             lastName
-        #           }
-        #         }
-        #     """
-        #     index_url = reverse('index')
-        #
-        #     response = self.client.post(index_url, {'query': query})
-        #     res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
-        #     print res
+        query = """
+          {
+              kelaases{
+                  title
+              }
+          }
+          """
+        print ">>>  Query on 'kelasses'"
+        response = self.client.post(index_url, {'query': query})
+        res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
+        print res
