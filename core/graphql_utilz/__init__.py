@@ -1,13 +1,14 @@
 from .person import PersonType
-
 from .person import StudentType
 from .person import ParentType
 from .person import TeacherType
 
-from .post import PostType
+from .comment_type import CommentType
 
+from .post import PostType
 from .post import StoryType
 from .post import KelaasPostType
+
 
 from .kelaas_type import KelaasType
 from .tag_type import TagType
