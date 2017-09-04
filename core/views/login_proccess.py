@@ -109,7 +109,7 @@ def resolve_fard(request):
     email = data.get('email', None)
 
     if User_temp.objects.filter(fard_access_token=access_token).exists():
-        user_temp = User_temp.objects.get(fard_access_token=access_token).pk
+        user_temp = User_temp.objects.get(fard_access_token=access_token)
     else:
         user_temp = User_temp(
             fard_access_token=access_token,
