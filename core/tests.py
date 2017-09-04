@@ -68,6 +68,45 @@ class Test(APITestCase):
             student.parents = parent
             student.save()
 
+        kelaas = Kelaas(
+            title="general_kelaas",
+            description="General kelaas dige :D"
+        )
+        kelaas.save()
+        for student in Student.objects.all():
+            kelaas.students.add(student)
+        teacher = Teacher.objects.all()[0]
+        teacher.kelasses.add(kelaas)
+        teacher.save()
+        kelaas.save()
+
+        story = Story(
+            title="first story of all",
+            description="my very first story!!",
+            kelaas=kelaas
+        )
+        story.save()
+
+        post = Kelaas_post(
+            title="first post of all",
+            description="my very first post!!",
+            kelaas=kelaas
+        )
+        post.save()
+
+        comment = Comment(
+            body="the very first comment in the universe!!!!!",
+            post=post,
+            owner=Person.objects.all()[0]
+        )
+        comment.save()
+        comment = Comment(
+            body="the very second!!! :( comment in the universe!!!!!",
+            post=story,
+            owner=teacher
+        )
+        comment.save()
+
         for x in xrange(4):
             kelaas = Kelaas(
                 title="test_kelaas__" + str(x),
@@ -177,9 +216,22 @@ class Test(APITestCase):
                 title,
                 stories{
                     title
+                    comments{
+                        body
+                        timePassed
+                        owner{
+                            username
+                        }
+                    }
                 }
-                students{
-                    username,
+                kelaasPosts{
+                    title
+                    comments{
+                        body
+                        owner{
+                            username
+                        }
+                    }
                 }
             }
         }
@@ -189,30 +241,30 @@ class Test(APITestCase):
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
 
-
-        query = """
-            {
-              kelaas(id:1){
-                id
-                students{
-                    id
-                    kelaases{
-                        id
-                        title
-                        students{
-                            username,
-                            id
-                        }
-                    }
-                }
-              }
-            }
-
-        """
-
-        response = self.client.post(index_url, {'query': query})
-        res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
-        print res
+        #
+        # query = """
+        #     {
+        #       kelaas(id:1){
+        #         id
+        #         students{
+        #             id
+        #             kelaases{
+        #                 id
+        #                 title
+        #                 students{
+        #                     username,
+        #                     id
+        #                 }
+        #             }
+        #         }
+        #       }
+        #     }
+        #
+        # """
+        #
+        # response = self.client.post(index_url, {'query': query})
+        # res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
+        # print res
 
 
 
