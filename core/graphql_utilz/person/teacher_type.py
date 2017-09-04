@@ -1,7 +1,8 @@
 import graphene
 from graphql import GraphQLError
 
-from core.graphql_utilz import PersonType, it_is_him
+from core.graphql_utilz.utilz import it_is_him
+from core.graphql_utilz.person import PersonType
 from core.models import TEACHER_KEY_WORD
 
 

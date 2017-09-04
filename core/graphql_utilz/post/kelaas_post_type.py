@@ -1,5 +1,5 @@
 import graphene
-from core.graphql_utilz import PostType
+from core.graphql_utilz.post import PostType
 
 
 class KelaasPostType(PostType):
