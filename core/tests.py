@@ -13,183 +13,250 @@ from rest_framework.test import APITestCase
 
 class Test(APITestCase):
     def setUp(self):
-        signup_url = reverse('signup')
+        print "__________________________________________________________"
+        print
+        print ">>> Running Setup:"
+        print
 
-        for x in xrange(30):
-            data = {
-                "type": "teacher",
-                "userName": "teacher_mha" + str(x),
-                "firstName": "mahdi" + str(x),
-                "lastName": "rezaii" + str(x),
-                "email": "test@test.ir",
-                "gender": "1",
-                "accessToken": "123451234asdf5678901234567890",
-            }
-            print ">> Teacher:"
-            response = self.client.post(signup_url, {'data': json.dumps(data)})
-            print response
+        num = 20
 
-        for x in xrange(20):
-            data = {
-                "type": "parent",
-                "userName": "parent_mha" + str(x),
-                "firstName": "morteza" + str(x),
-                "lastName": "abrari" + str(x),
-                "email": "test@test.ir",
-                "gender": "1",
-                "accessToken": "123451234asdf5678901234567890",
-            }
-            print ">> Parent:"
-            response = self.client.post(signup_url, {'data': json.dumps(data)})
-            print response
+        for x in xrange(num):
+            user = User(username="parent_mha_" + str(x))
+            user.save()
+            parent = Parent(
+                user=user,
+                first_name="Parent mohammad hosein__" + str(x),
+                last_name="Parent azizian__" + str(x),
+                email="test@test.ir___" + str(x),
+                gender=1,
+                fard_access_token="1234567890qwertyuiopasdfghjkl",
+            )
+            parent.save()
 
-        for x in xrange(20):
-            data = {
-                "type": "student",
-                "userName": "student_mha" + str(x),
-                "firstName": "mohammad hosein" + str(x),
-                "lastName": "azizian" + str(x),
-                "email": "test@test.ir",
-                "gender": "1",
-                "accessToken": "1234asdf5678901234567890",
+        for x in xrange(num):
+            user = User(username="teacher_mha_" + str(x))
+            user.save()
+            teacher = Teacher(
+                user=user,
+                first_name="Teacher mohammad hosein__" + str(x),
+                last_name="Teacher azizian__" + str(x),
+                email="test@test.ir___" + str(x),
+                gender=1,
+                fard_access_token="1234567890qwertyuiopasdfghjkl",
+            )
+            teacher.save()
 
-                "age": "14",
-                "nickName": "mha76",
-            }
-            print ">> Student:"
-            response = self.client.post(signup_url, {'data': json.dumps(data)})
-            print response
+        for x in xrange(num):
+            user = User(username="student_mha_" + str(x))
+            user.save()
+            student = Student(
+                user=user,
+                first_name="Student mohammad hosein__" + str(x),
+                last_name="Student azizian__" + str(x),
+                email="test@test.ir___" + str(x),
+                gender=1,
+                fard_access_token="1234567890qwertyuiopasdfghjkl",
+                age=17,
+                nickname="Ye DaneshAmooz Sade!"
+            )
+            student.save()
 
-        for x in xrange(20):
-            student = User.objects.get(username="student_mha" + str(x)).person.student
-            parent = User.objects.get(username="parent_mha" + str(x)).person.parent
+        for x in xrange(num):
+            student = User.objects.get(username="student_mha_" + str(x)).person.student
+            parent = User.objects.get(username="parent_mha_" + str(x)).person.parent
 
             student.parents = parent
             student.save()
 
         for x in xrange(4):
             kelaas = Kelaas(
-                title="test_kelaas" + str(x),
-                description="kelaas desc" + str(x),
+                title="test_kelaas__" + str(x),
+                description="kelaas desc__" + str(x),
             )
             kelaas.save()
-            kelaas.students.add(User.objects.get(username="student_mha" + str(x*5)).person.student)
-            kelaas.students.add(User.objects.get(username="student_mha" + str(x*5 + 1)).person.student)
-            kelaas.students.add(User.objects.get(username="student_mha" + str(x*5 + 2)).person.student)
-            kelaas.students.add(User.objects.get(username="student_mha" + str(x*5 + 3)).person.student)
-            kelaas.students.add(User.objects.get(username="student_mha" + str(x*5 + 4)).person.student)
-            teacher = User.objects.get(username="teacher_mha" + str(x)).person.teacher
+            kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5)).person.student)
+            kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5 + 1)).person.student)
+            kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5 + 2)).person.student)
+            kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5 + 3)).person.student)
+            kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5 + 4)).person.student)
+
+            teacher = User.objects.get(username="teacher_mha_" + str(x)).person.teacher
             teacher.kelasses.add(kelaas)
             teacher.save()
             kelaas.save()
-            print kelaas.id
 
         for x in xrange(3):
             kelaas = Kelaas(
-                title="test_kelaas V2" + str(x),
-                description="kelaas desc V2" + str(x),
+                title="test_kelaas VVV2" + str(x),
+                description="kelaas desc VVV2" + str(x),
             )
             kelaas.save()
-            kelaas.students.add(User.objects.get(username="student_mha" + str(x*5)).person.student)
-            kelaas.students.add(User.objects.get(username="student_mha" + str(x*5 + 1)).person.student)
-            kelaas.students.add(User.objects.get(username="student_mha" + str(x*5 + 2)).person.student)
-            kelaas.students.add(User.objects.get(username="student_mha" + str(x*5 + 3)).person.student)
-            kelaas.students.add(User.objects.get(username="student_mha" + str(x*5 + 4)).person.student)
-            teacher = User.objects.get(username="teacher_mha" + str(x)).person.teacher
+            kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5)).person.student)
+            kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5 + 1)).person.student)
+            kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5 + 2)).person.student)
+            kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5 + 3)).person.student)
+            kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5 + 4)).person.student)
+            teacher = User.objects.get(username="teacher_mha_" + str(x)).person.teacher
             teacher.kelasses.add(kelaas)
             teacher.save()
             kelaas.save()
-            print kelaas.id
 
-    # def test_query_teacher(self):
-    #     user = User.objects.get(username="teacher_mha3")
-    #     print ">> user_type: " + user.person.type
-    #
-    #     self.client.force_authenticate(user=user)
-    #
-    #     query = """
-    #     {
-    #         students(kelaasId:4){
-    #             id
-    #             kelaases{
-    #                 title
-    #             }
-    #             username
-    #         }
-    #     }
-    #
-    #     """
-    #     query1 = """
-    #         {
-    #           student(id:69){
-    #             id
-    #             username
-    #             kelaases{
-    #                 id
-    #                 students{
-    #                     id
-    #                     firstName
-    #                     kelaases{
-    #                         id
-    #                         title
-    #                     }
-    #                 }
-    #             }
-    #           }
-    #           me{
-    #             id
-    #             firstName
-    #             lastName
-    #           }
-    #         }
-    #     """
-    #     index_url = reverse('index')
-    #
-    #     response = self.client.post(index_url, {'query': query})
-    #     res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
-    #     print res
+    def test_create_student(self):
+        signup_url = reverse('signup')
+        data = {
+            "type": "student",
+            "userName": "Student_for_test",
+            "firstName": "Test first name",
+            "lastName": "Test Last Name",
+            "email": "test@test.ir",
+            "gender": "1",
+            "accessToken": "Test_1234asdf5678901234567890",
 
-    def test_query_student(self):
-        user = User.objects.get(username="student_mha3")
-        print ">> user_type: " + user.person.type
+            "age": "14",
+            "nickName": "mha76",
+        }
+        print ">>> Test: Creating Student, response:"
+        response = self.client.post(signup_url, {'data': json.dumps(data)})
+        print response
+
+    def test_create_parent(self):
+        signup_url = reverse('signup')
+        data = {
+            "type": "parent",
+            "userName": "Parent_for_test",
+            "firstName": "Test first name P",
+            "lastName": "Test Last Name P",
+            "email": "test@test.ir",
+            "gender": "1",
+            "accessToken": "Test_1234asdf5678901234567890",
+        }
+        print ">>> Test: Creating Parent, response:"
+        response = self.client.post(signup_url, {'data': json.dumps(data)})
+        print response
+
+    def test_create_teacher(self):
+        signup_url = reverse('signup')
+        data = {
+            "type": "teacher",
+            "userName": "Teacher_for_test",
+            "firstName": "Test first name T",
+            "lastName": "Test Last Name T",
+            "email": "test@test.ir",
+            "gender": "1",
+            "accessToken": "Test_1234asdf5678901234567890",
+        }
+        print ">>> Test: Creating Teacher, response:"
+        response = self.client.post(signup_url, {'data': json.dumps(data)})
+        print response
+
+    def test_query_teacher(self):
+        user = User.objects.get(username="teacher_mha_0")
+        print ">>> Test: Query for teacher: id=" + str(user.person.id)
 
         self.client.force_authenticate(user=user)
+        index_url = reverse('index')
 
         query = """
         {
             me{
-                type
-                username
+                id,
+                firstName,
+                lastName,
+                username,
             }
         }
-
         """
-        query1 = """
+        print ">>>  Qeury on 'me'"
+        response = self.client.post(index_url, {'query': query})
+        res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
+        print res
+
+        query = """
+        {
+            kelaases{
+                id,
+                title,
+                students{
+                    username,
+                    id,
+                }
+            }
+        }
+        """
+        print ">>>  Query on 'kelasses'"
+        response = self.client.post(index_url, {'query': query})
+        res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
+        print res
+
+        query = """
             {
-              student(id:69){
+              kelaas(id:1){
                 id
-                username
-                kelaases{
+                students{
                     id
-                    students{
+                    kelaases{
                         id
-                        firstName
-                        kelaases{
+                        title
+                        students{
+                            username,
                             id
-                            title
                         }
                     }
                 }
               }
-              me{
-                id
-                firstName
-                lastName
-              }
             }
+
         """
-        index_url = reverse('index')
 
         response = self.client.post(index_url, {'query': query})
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
+
+
+
+
+
+        # def test_query_student(self):
+        #     user = User.objects.get(username="student_mha3")
+        #     print ">> user_type: " + user.person.type
+        #
+        #     self.client.force_authenticate(user=user)
+        #
+        #     query = """
+        #     {
+        #         me{
+        #             type
+        #             username
+        #         }
+        #     }
+        #
+        #     """
+        #     query1 = """
+        #         {
+        #           student(id:69){
+        #             id
+        #             username
+        #             kelaases{
+        #                 id
+        #                 students{
+        #                     id
+        #                     firstName
+        #                     kelaases{
+        #                         id
+        #                         title
+        #                     }
+        #                 }
+        #             }
+        #           }
+        #           me{
+        #             id
+        #             firstName
+        #             lastName
+        #           }
+        #         }
+        #     """
+        #     index_url = reverse('index')
+        #
+        #     response = self.client.post(index_url, {'query': query})
+        #     res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
+        #     print res

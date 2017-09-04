@@ -1,6 +1,7 @@
 import graphene
+from graphql import GraphQLError
 
-from core.models import TEACHER_KEY_WORD
+from core.models import TEACHER_KEY_WORD, STUDENT_KEY_WORD, PARENT_KEY_WORD
 from core.graphql_utilz import PersonType
 
 
@@ -17,10 +18,12 @@ class StudentType(PersonType):
     def resolve_kelaases(self, info):
         user = info.context.user.person
 
-        if user.type == "teacher":
+        if user.type == TEACHER_KEY_WORD:
             return [kelaas for kelaas in self.kelaas_set.all() if user.teacher.kelasses.filter(id=kelaas.id).exists()]
-        if user.type == "parent":
+        if user.type == PARENT_KEY_WORD:
             return self.kelaas_set.all()
+
+        raise GraphQLError('Permission denied')
 
     def resolve_parent(self, info):
         user = info.context.user.person
@@ -29,3 +32,5 @@ class StudentType(PersonType):
             for kelaas in user.teacher.kelasses.all():
                 if kelaas.students.filter(pk=self.id).exists():
                     return kelaas.students.get(pk=self.id).parents
+
+        raise GraphQLError('Permission denied')

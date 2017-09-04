@@ -10,7 +10,7 @@ class PostType(graphene.ObjectType):
     shamsi_date = graphene.String()
     type = graphene.String()
 
-    kelaas = graphene.Field('core.graphql_utilz.KelaasType')
-
-    def resolve_kelaas(self, info):
-        return self.kelaas
+    # kelaas = graphene.Field('core.graphql_utilz.KelaasType')
+    #
+    # def resolve_kelaas(self, info):
+    #     return self.kelaas

@@ -9,18 +9,17 @@ def resolve_student(root, info, id, **kwargs):
     if info.context.user.is_authenticated:
         user = info.context.user.person
 
-        if user.type == 'parent':
+        if user.type == PARENT_KEY_WORD:
             if user.parent.student_set.filter(pk=id).exists():
                 return user.parent.student_set.get(pk=id)
             raise GraphQLError('Student not found')
 
-        if user.type == 'teacher':
+        if user.type == TEACHER_KEY_WORD:
             for kelaas in user.teacher.kelasses.all():
                 if kelaas.students.filter(id=id).exists():
                     return Student.objects.get(pk=id)
 
     raise GraphQLError('Permission denied')
-    # return Student.objects.get(pk=id)
 
 
 def resolve_students(root, info, **kwargs):
@@ -36,7 +35,6 @@ def resolve_students(root, info, **kwargs):
                     return Kelaas.objects.get(pk=kwargs['kelaas_id']).students.all()
 
     raise GraphQLError('Permission denied')
-    # return Student.objects.all()
 
 
 def resolve_kelaas(root, info, id):
@@ -53,6 +51,22 @@ def resolve_kelaas(root, info, id):
         if user.type == STUDENT_KEY_WORD:
             if user.student.kelaas_set.filter(pk=id).exists():
                 return user.student.kelaas_set.get(pk=id)
+    raise GraphQLError('Permission denied')
+
+
+def resolve_kelaases(root, info, **kwargs):
+    if info.context.user.is_authenticated:
+        user = info.context.user.person
+
+        if user.type == TEACHER_KEY_WORD:
+            return user.teacher.kelasses.all()
+        if user.type == PARENT_KEY_WORD:
+            if 'student_id' in kwargs:
+                if user.parent.student_set.filter(pl=kwargs['student_id']).exists():
+                    return user.parent.student_set.get(pk=kwargs['student_id']).kelaas_set.all()
+
+        if user.type == STUDENT_KEY_WORD:
+            return user.student.kelaas_set.all()
     raise GraphQLError('Permission denied')
 
 
@@ -99,6 +113,11 @@ class Query(graphene.ObjectType):
         KelaasType,
         id=graphene.Int(required=True),
         resolver=resolve_kelaas,
+    )
+    kelaases = graphene.List(
+        KelaasType,
+        student_id=graphene.Int(),
+        resolver=resolve_kelaases,
     )
 
     tags = graphene.List(
