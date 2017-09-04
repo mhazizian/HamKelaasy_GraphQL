@@ -4,14 +4,16 @@ from __future__ import unicode_literals
 import json
 
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
-from core.models import Person, Teacher, Student, Parent
+from core.models import Person, Teacher, Student, Parent, User_temp
 from core.models import STUDENT_KEY_WORD, TEACHER_KEY_WORD, PARENT_KEY_WORD
 
 from Hamkelaasy_graphQL.schema import schema
+from core.views.fard_api import Fard_API
 
 
 @api_view(['POST'])
@@ -28,29 +30,21 @@ def index(request):
     return HttpResponse("not post method!")
 
 
-# @api_view()
-def test(request):
-    print Token.objects.get(user=User.objects.get(username="mha")).key
-    # s = Student(user=User.objects.get(username="admin"), first_name="ali", fard_access_token="1345678")
-    # s.save()
-    # p = Person(username="salam", first_name="ali", fard_access_token="12312341234")
-    # p.save()
-    # print (request.user)
-    return HttpResponse("salam ")
-
-
 @csrf_exempt
 def signup(request):
     res = {}
     try:
         data = json.loads(request.body)
 
-        username = data['userName']
+        temp = get_object_or_404(User_temp, pk=int(data['fd_id']))
+        username = temp.username
+        fard_access_token = temp.fard_access_token
+        temp.delete()
+
         first_name = data['firstName']
         last_name = data['lastName']
         email = data['email']
         gender = int(data['gender'])
-        fard_access_token = data['accessToken']
 
         if User.objects.filter(username=username).exists():
             res['type'] = "error"
@@ -104,3 +98,52 @@ def signup(request):
         res['type'] = "error"
         res['message'] = "bad data input"
         return HttpResponse(json.dumps(res))
+
+
+def login(request):
+    return HttpResponseRedirect(Fard_API().signup_url)
+
+
+def resolve_fard(request):
+    fard_api = Fard_API()
+    fard_api.connect(request)
+    data = fard_api.get_data()
+
+    username = data.get('username', None)
+    access_token = fard_api.access_token
+
+    # if user has already signup and has a Token
+    if User.objects.filter(username=username):
+        user = User.objects.get(username=username)
+        return HttpResponseRedirect(
+            "http://127.0.0.1:3000/fard/redirect" \
+            + "?state=" + "1" \
+            + "&token=" + Token.objects.get(user=user).key
+        )
+
+    if User_temp.objects.filter(fard_access_token=access_token).exists():
+        user_temp = User_temp.objects.get(fard_access_token=access_token).pk
+    else:
+        user_temp = User_temp(
+            fard_access_token=access_token,
+            username=username
+        )
+        user_temp.save()
+    user_temp_id = user_temp.id
+
+    fname = data.get('firstname', None)
+    lname = data.get('lastname', None)
+    gender = data.get('gender', None)
+
+    data = fard_api.get_data(1)
+    email = data.get('email', None)
+
+    return HttpResponseRedirect(
+        "http://127.0.0.1:3000/fard/redirect" \
+        + "?state=" + "0" \
+        + "&fd_id=" + str(user_temp_id) \
+        + "&first_name" + fname \
+        + "&last_name" + lname \
+        + "&gender=" + str(gender) \
+        + "&email=" + email
+    )
