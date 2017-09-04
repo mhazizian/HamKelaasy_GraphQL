@@ -122,7 +122,7 @@ def resolve_fard(request):
         user_temp.save()
 
     return HttpResponseRedirect(
-        "http://127.0.0.1:3000/fard/redirect" \
+        "http://127.0.0.1:3000/#!/fard/redirect" \
         + "?state=" + "0" \
         + "&fd_id=" + str(user_temp.id)
     )
