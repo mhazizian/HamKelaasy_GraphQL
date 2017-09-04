@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from core.models.post import Post
 from django.db import models
 
+STORY_KEY_WORD = 'Story'
 
 class Story(Post):
     story_pic = models.FileField('story pic', upload_to='story/%Y/%m/%d/', blank=True)

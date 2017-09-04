@@ -24,3 +24,7 @@ class Badge_link(models.Model):
     count = models.IntegerField('number of achiving this badge', default=0)
 
     student = models.ForeignKey('Student', on_delete=models.CASCADE)
+
+    @property
+    def pic(self):
+        return self.badge.type.pic.url
