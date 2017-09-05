@@ -36,6 +36,8 @@ class StudentType(PersonType):
                 if kelaas.students.filter(pk=self.id).exists():
                     return self.parents
 
+        if it_is_him(user, self):
+            return self.parents
         raise GraphQLError('Permission denied')
 
     def resolve_certificates(self, info):

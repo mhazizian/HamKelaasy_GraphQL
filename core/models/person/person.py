@@ -24,7 +24,7 @@ class Person(models.Model):
 
     @property
     def pic(self):
-        return settings.SERVER_ADDR + self.profile_pic.url
+        return settings.SERVER_ADDR[:-1] + self.profile_pic.url
 
     def __unicode__(self):
         return unicode(self.first_name) + " " + unicode(self.last_name) + " username: "
