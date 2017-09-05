@@ -11,7 +11,8 @@ class Teacher(Person):
 
     def save(self, *args, **kwargs):
         self.type = TEACHER_KEY_WORD
-        self.pic.name = 'teacher.svg'
+        if not self.profile_pic:
+            self.profile_pic.name = 'teacher.svg'
         super(Teacher, self).save(args, kwargs)
 
     def __unicode__(self):

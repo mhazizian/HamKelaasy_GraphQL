@@ -26,7 +26,8 @@ class Student(Person):
                 parent_code = str(uuid.uuid4())[:7].upper()
             self.parent_code = parent_code
         self.type = STUDENT_KEY_WORD
-        self.pic.name = 'student.svg'
+        if not self.profile_pic:
+            self.profile_pic.name = 'student.svg'
         super(Student, self).save(args, kwargs)
 
     def get_certificates(self):
