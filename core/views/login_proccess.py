@@ -27,9 +27,10 @@ def signup(request):
         first_name = data.get('firstName', temp.first_name)
         last_name = data.get('lastName', temp.last_name)
         email = data.get('email', temp.email)
+        type = data['type']
 
         # check later:
-        gender = int(data.get('email', temp.gender))
+        gender = int(data.get('gender', temp.gender))
 
         temp.delete()
 
@@ -38,8 +39,6 @@ def signup(request):
             res['message'] = "username is not available"
             return HttpResponse(json.dumps(res))
         user = User(username=username)
-
-        type = data['type']
 
         if type == STUDENT_KEY_WORD:
             age = int(data['age'])
