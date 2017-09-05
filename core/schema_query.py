@@ -92,6 +92,11 @@ def resolve_badge_type(root, info):
     return Badge_type.objects.all()
 
 
+def resolve_certificate(root, info, id):
+    if Certificate_type.objects.filter(pk=id).exists():
+        return Certificate_type.objects.get(pk=id)
+
+
 def resolve_persons(root, info):
     return Person.objects.all()
 
@@ -144,6 +149,12 @@ class Query(graphene.ObjectType):
         BadgeModelType,
         id=graphene.Int(),
         resolver=resolve_badge_type,
+    )
+
+    certificate = graphene.Field(
+        CertificateType,
+        id=graphene.Int(required=True),
+        resolver=resolve_certificate,
     )
 
     tags = graphene.List(
