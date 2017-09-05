@@ -76,6 +76,15 @@ def resolve_me(root, info):
     raise GraphQLError('Permission denied')
 
 
+def resolve_person(root, info):
+    if info.context.user.is_authenticated:
+        user = info.context.user.person
+        if user.type == STUDENT_KEY_WORD:
+            return user.student.parents
+
+    raise GraphQLError('Permission denied')
+
+
 def resolve_badge_type(root, info):
     return Badge_type.objects.all()
 
@@ -123,6 +132,11 @@ class Query(graphene.ObjectType):
         student_id=graphene.Int(),
         resolver=resolve_kelaases,
     )
+    parent = graphene.Field(
+        PersonType,
+        resolver=resolve_parent,
+    )
+
     badge_type = graphene.List(
         BadgeModelType,
         id=graphene.Int(),
