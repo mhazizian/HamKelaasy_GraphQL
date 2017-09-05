@@ -10,6 +10,7 @@ PARENT_KEY_WORD = "parent"
 class Parent(Person):
     def save(self, *args, **kwargs):
         self.type = PARENT_KEY_WORD
+        self.pic.name = 'parent.svg'
         super(Parent, self).save(args, kwargs)
 
     def __unicode__(self):

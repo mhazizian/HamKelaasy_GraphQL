@@ -1,11 +1,14 @@
 from __future__ import unicode_literals
 
 import uuid
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 
 from core.models.person import Person
 from django.db import models
 
 STUDENT_KEY_WORD = "student"
+fs = FileSystemStorage(location=settings.STATIC_ROOT)
 
 
 class Student(Person):
@@ -23,6 +26,7 @@ class Student(Person):
                 parent_code = str(uuid.uuid4())[:7].upper()
             self.parent_code = parent_code
         self.type = STUDENT_KEY_WORD
+        self.pic.name = 'student.svg'
         super(Student, self).save(args, kwargs)
 
     def get_certificates(self):
