@@ -1,12 +1,13 @@
 import requests
 import json
+from django.conf import settings
 
 
 class Fard_API(object):
     def __init__(self):
         self.client_id = "16573"
         self.client_secret = "17171717"
-        self.domain = "http://127.0.0.1:8000/"
+        self.domain = settings.SERVER_ADDR
         self.fard_domain = "http://fard.ir/"
 
         self.listening_local_url = "signup_on_fard_listening_url/"

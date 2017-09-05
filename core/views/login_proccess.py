@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 
-from core.models import User_temp, STUDENT_KEY_WORD, Student, TEACHER_KEY_WORD, Teacher, PARENT_KEY_WORD
+from core.models import User_temp, STUDENT_KEY_WORD, Student, TEACHER_KEY_WORD, Teacher, PARENT_KEY_WORD, Parent
 from core.views import Fard_API
 
 
@@ -23,12 +23,15 @@ def signup(request):
         temp = get_object_or_404(User_temp, pk=int(data['fd_id']))
         username = temp.username
         fard_access_token = temp.fard_access_token
-        temp.delete()
 
-        first_name = data['firstName']
-        last_name = data['lastName']
-        email = data['email']
-        gender = int(data['gender'])
+        first_name = data.get('firstName', temp.first_name)
+        last_name = data.get('lastName', temp.last_name)
+        email = data.get('email', temp.email)
+
+        # check later:
+        gender = int(data.get('email', temp.gender))
+
+        temp.delete()
 
         if User.objects.filter(username=username).exists():
             res['type'] = "error"
@@ -126,3 +129,19 @@ def resolve_fard(request):
         + "?state=" + "0" \
         + "&fd_id=" + str(user_temp.id)
     )
+
+
+def temp_user_handler(request):
+    if request.method == 'POST':
+        id = request.POST.get('fd_id', 0)
+        if User_temp.objects.filter(pk=id).exists():
+            temp = User_temp.objects.get(pk=id)
+
+            data = {
+                'first_name': temp.first_name,
+                'last_name': temp.last_name,
+                'email': temp.email,
+                'gender': temp.gender,
+            }
+            return HttpResponse(json.dumps(data))
+    return HttpResponse('')
