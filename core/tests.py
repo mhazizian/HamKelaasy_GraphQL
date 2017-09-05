@@ -83,13 +83,15 @@ class Test(APITestCase):
         story = Story(
             title="first story of all",
             description="my very first story!!",
-            kelaas=kelaas
+            kelaas=kelaas,
+            owner=teacher,
         )
         story.save()
 
         post = Kelaas_post(
             title="first post of all",
             description="my very first post!!",
+            owner=teacher,
             kelaas=kelaas
         )
         post.save()
@@ -140,54 +142,6 @@ class Test(APITestCase):
             teacher.save()
             kelaas.save()
 
-    def test_create_student(self):
-        signup_url = reverse('signup')
-        data = {
-            "type": "student",
-            "userName": "Student_for_test",
-            "firstName": "Test first name",
-            "lastName": "Test Last Name",
-            "email": "test@test.ir",
-            "gender": "1",
-            "accessToken": "Test_1234asdf5678901234567890",
-
-            "age": "14",
-            "nickName": "mha76",
-        }
-        print ">>> Test: Creating Student, response:"
-        response = self.client.post(signup_url, {'data': json.dumps(data)})
-        print response
-
-    def test_create_parent(self):
-        signup_url = reverse('signup')
-        data = {
-            "type": "parent",
-            "userName": "Parent_for_test",
-            "firstName": "Test first name P",
-            "lastName": "Test Last Name P",
-            "email": "test@test.ir",
-            "gender": "1",
-            "accessToken": "Test_1234asdf5678901234567890",
-        }
-        print ">>> Test: Creating Parent, response:"
-        response = self.client.post(signup_url, {'data': json.dumps(data)})
-        print response
-
-    def test_create_teacher(self):
-        signup_url = reverse('signup')
-        data = {
-            "type": "teacher",
-            "userName": "Teacher_for_test",
-            "firstName": "Test first name T",
-            "lastName": "Test Last Name T",
-            "email": "test@test.ir",
-            "gender": "1",
-            "accessToken": "Test_1234asdf5678901234567890",
-        }
-        print ">>> Test: Creating Teacher, response:"
-        response = self.client.post(signup_url, {'data': json.dumps(data)})
-        print response
-
     def test_query_teacher(self):
         user = User.objects.get(username="teacher_mha_0")
         print ">>> Test: Query for teacher: id=" + str(user.person.id)
@@ -202,11 +156,12 @@ class Test(APITestCase):
                 firstName,
                 lastName,
                 username,
+                pic,
             }
         }
         """
         print ">>>  Qeury on 'me'"
-        response = self.client.post(index_url, {'query': query})
+        response = self.client.post(index_url, json.dumps({'query': query}), content_type='application/json')
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
 
@@ -237,7 +192,7 @@ class Test(APITestCase):
         }
         """
         print ">>>  Query on 'kelasses'"
-        response = self.client.post(index_url, {'query': query})
+        response = self.client.post(index_url, json.dumps({'query': query}), content_type='application/json')
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
 
@@ -256,7 +211,7 @@ class Test(APITestCase):
           }
           """
         print ">>>  Query on 'kelasses'"
-        response = self.client.post(index_url, {'query': query})
+        response = self.client.post(index_url, json.dumps({'query': query}), content_type='application/json')
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
 
@@ -269,7 +224,7 @@ class Test(APITestCase):
         }
         """
         print ">>>  Mutate on 'createKelaas'"
-        response = self.client.post(index_url, {'query': mutate})
+        response = self.client.post(index_url, json.dumps({'query': mutate}), content_type='application/json')
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
 
@@ -281,6 +236,56 @@ class Test(APITestCase):
           }
           """
         print ">>>  Query on 'kelasses'"
-        response = self.client.post(index_url, {'query': query})
+        response = self.client.post(index_url, json.dumps({'query': query}), content_type='application/json')
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
+
+
+    # def test_create_student(self):
+    #     signup_url = reverse('signup')
+    #     data = {
+    #         "type": "student",
+    #         "userName": "Student_for_test",
+    #         "firstName": "Test first name",
+    #         "lastName": "Test Last Name",
+    #         "email": "test@test.ir",
+    #         "gender": "1",
+    #         "accessToken": "Test_1234asdf5678901234567890",
+    #
+    #         "age": "14",
+    #         "nickName": "mha76",
+    #     }
+    #     print ">>> Test: Creating Student, response:"
+    #     response = self.client.post(signup_url, {'data': json.dumps(data)})
+    #     print response
+    #     print User.objects.get(username="Student_for_test").person.student.pic
+
+    # def test_create_parent(self):
+    #     signup_url = reverse('signup')
+    #     data = {
+    #         "type": "parent",
+    #         "userName": "Parent_for_test",
+    #         "firstName": "Test first name P",
+    #         "lastName": "Test Last Name P",
+    #         "email": "test@test.ir",
+    #         "gender": "1",
+    #         "accessToken": "Test_1234asdf5678901234567890",
+    #     }
+    #     print ">>> Test: Creating Parent, response:"
+    #     response = self.client.post(signup_url, {'data': json.dumps(data)})
+    #     print response
+
+    # def test_create_teacher(self):
+    #     signup_url = reverse('signup')
+    #     data = {
+    #         "type": "teacher",
+    #         "userName": "Teacher_for_test",
+    #         "firstName": "Test first name T",
+    #         "lastName": "Test Last Name T",
+    #         "email": "test@test.ir",
+    #         "gender": "1",
+    #         "accessToken": "Test_1234asdf5678901234567890",
+    #     }
+    #     print ">>> Test: Creating Teacher, response:"
+    #     response = self.client.post(signup_url, {'data': json.dumps(data)})
+    #     print response
