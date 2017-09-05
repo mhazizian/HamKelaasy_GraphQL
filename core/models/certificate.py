@@ -12,7 +12,7 @@ class Certificate_type(models.Model):
     creator = models.ForeignKey('Person', on_delete=models.CASCADE)
 
     @property
-    def url(self):
+    def pic(self):
         f = Sys_file.objects.get(title="certificate")
         return f.data.url
 
@@ -27,7 +27,7 @@ class Certificate(models.Model):
     level_description = models.CharField('description for level', max_length=500)
 
     @property
-    def url(self):
+    def pic(self):
         f = Sys_file.objects.get(title="certificate " + str(self.level))
         return f.data.url
 
