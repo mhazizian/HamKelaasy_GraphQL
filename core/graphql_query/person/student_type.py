@@ -25,6 +25,8 @@ class StudentType(PersonType):
         if user.type == PARENT_KEY_WORD:
             if it_is_him(user, self.parents):
                 return self.kelaas_set.all()
+        if it_is_him(user, self):
+            return self.kelaas_set.all()
 
         raise GraphQLError('Permission denied')
 
