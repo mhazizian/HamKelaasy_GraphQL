@@ -17,9 +17,10 @@ def index(request):
         return HttpResponse('user not authenticated')
 
     if request.method == "POST":
-        res = schema.execute(request.POST['query'], context_value=request)
+        res = schema.execute(request.POST.get('query', ""), context_value=request)
         if res.errors:
             return HttpResponse(json.dumps(res.errors), content_type='application/json')
+
         return HttpResponse(json.dumps(res.data), content_type='application/json')
     return HttpResponse("not post method!")
 
