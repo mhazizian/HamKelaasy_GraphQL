@@ -5,10 +5,13 @@ from core.models import *
 from graphql_query import *
 
 
-def resolve_student(root, info, id, **kwargs):
+def resolve_student(root, info, **kwargs):
     if info.context.user.is_authenticated:
         user = info.context.user.person
+        if user.type == STUDENT_KEY_WORD:
+            return user.student
 
+        id = kwargs['id']
         if user.type == PARENT_KEY_WORD:
             if user.parent.student_set.filter(pk=id).exists():
                 return user.parent.student_set.get(pk=id)
@@ -76,15 +79,6 @@ def resolve_me(root, info):
     raise GraphQLError('Permission denied')
 
 
-def resolve_person(root, info):
-    if info.context.user.is_authenticated:
-        user = info.context.user.person
-        if user.type == STUDENT_KEY_WORD:
-            return user.student.parents
-
-    raise GraphQLError('Permission denied')
-
-
 def resolve_badge_type(root, info):
     return Badge_type.objects.all()
 
@@ -112,7 +106,7 @@ class Query(graphene.ObjectType):
 
     student = graphene.Field(
         StudentType,
-        id=graphene.Int(required=True),
+        id=graphene.Int(),
         kelaas_id=graphene.Int(),
         resolver=resolve_student,
     )
@@ -131,10 +125,6 @@ class Query(graphene.ObjectType):
         KelaasType,
         student_id=graphene.Int(),
         resolver=resolve_kelaases,
-    )
-    parent = graphene.Field(
-        PersonType,
-        resolver=resolve_parent,
     )
 
     badge_type = graphene.List(
