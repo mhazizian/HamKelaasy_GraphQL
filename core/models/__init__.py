@@ -12,5 +12,5 @@ from .tag import Tag
 from .files_link import File, Sys_file
 from .kelaas import Kelaas
 from .badge import Badge, Badge_type
-from .certificate import Certificate, Certificate_type
+from .certificate import Certificate, Certificate_type, Certificate_link
 from .comment import Comment
