@@ -73,6 +73,15 @@ def resolve_kelaases(root, info, **kwargs):
     raise GraphQLError('Permission denied')
 
 
+def resolve_teacher(root, info):
+    if info.context.user.is_authenticated:
+        user = info.context.user.person
+
+        if user.type == TEACHER_KEY_WORD:
+            return user.teacher
+    raise GraphQLError('Permission denied')
+
+
 def resolve_me(root, info):
     if info.context.user.is_authenticated:
         return info.context.user.person
@@ -114,6 +123,10 @@ class Query(graphene.ObjectType):
         StudentType,
         kelaas_id=graphene.Int(),
         resolver=resolve_students,
+    )
+    teacher = graphene.Field(
+        TeacherType,
+        resolver=resolve_teacher
     )
 
     kelaas = graphene.Field(
