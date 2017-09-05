@@ -11,6 +11,8 @@ urlpatterns = [
     url(r'^' + views.Fard_API().listening_local_url + '$', views.resolve_fard, name='fard_listening'),
 
 
+    url(r'^file/upload$', views.upload_file, name='signup'),
+
     url(r'^fard/temp/data$', views.temp_user_handler, name='signup'),
     url(r'^fard/register$', views.signup, name='signup'),
     url(r'^fard/login$', views.login, name='login'),
