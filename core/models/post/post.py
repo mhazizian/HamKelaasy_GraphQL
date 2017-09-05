@@ -16,6 +16,7 @@ class Post(models.Model):
     type = models.CharField('post type', max_length=7, default='')
 
     kelaas = models.ForeignKey('Kelaas', on_delete=models.CASCADE)
+    owner = models.ForeignKey('Teacher', on_delete=models.CASCADE)
 
     @property
     def shamsi_date(self):

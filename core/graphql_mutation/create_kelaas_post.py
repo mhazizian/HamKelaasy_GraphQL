@@ -1,14 +1,13 @@
 import graphene
 from core.graphql_query import MessageType
-from core.models import Kelaas_post, TEACHER_KEY_WORD
-from core.graphql_mutation import make_file
+from core.models import Kelaas_post, TEACHER_KEY_WORD, File
 
 
 class Kelaas_post_input(graphene.InputObjectType):
     kelaas_id = graphene.Int()
     title = graphene.String()
     description = graphene.String()
-    files = graphene.List('core.graphql_mutation.FileInput')
+    files = graphene.List(graphene.Int)
 
 
 class Create_kelaas_post(graphene.Mutation):
@@ -24,19 +23,21 @@ class Create_kelaas_post(graphene.Mutation):
                 if user.teacher.kelasses.filter(pk=data.kelaas_id).exists():
                     kelaas = user.teacher.kelasses.get(pk=data.kelaas_id)
                     Create_kelaas_post.make_post(kelaas, data, user.teacher)
-                return MessageType(type="success", message="Kelaas added.")
+                    return MessageType(type="success", message="Kelaas added.")
 
         return MessageType(type="error", message="Permission denied.")
 
     @staticmethod
-    def make_kelaas(kelaas, data, teacher):
+    def make_post(kelaas, data, teacher):
         post = Kelaas_post(
             title=data.title,
             description=data.description,
-            kelaas=kelaas
+            kelaas=kelaas,
+            owner=teacher,
         )
         post.save()
-        for f in data.files:
-            file = make_file(f, teacher)
-            post.files.add(file)
+        for file_id in data.files:
+            if File.objects.filter(pk=file_id).exists():
+                input_file = File.objects.get(pk=file_id)
+                post.files.add(input_file)
         post.save()
