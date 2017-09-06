@@ -31,7 +31,7 @@ class Create_kelaas(graphene.Mutation):
             description=data.description,
         )
         kelaas.save()
-        teacher.kelasses.add(kelaas)
+        teacher.kelaases.add(kelaas)
         teacher.save()
         for tag_id in data.tags.split(','):
             if Tag.objects.filter(pk=tag_id).exists():

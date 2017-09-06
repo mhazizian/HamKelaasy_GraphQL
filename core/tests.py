@@ -76,7 +76,7 @@ class Test(APITestCase):
         for student in Student.objects.all():
             kelaas.students.add(student)
         teacher = Teacher.objects.all()[0]
-        teacher.kelasses.add(kelaas)
+        teacher.kelaases.add(kelaas)
         teacher.save()
         kelaas.save()
 
@@ -122,7 +122,7 @@ class Test(APITestCase):
             kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5 + 4)).person.student)
 
             teacher = User.objects.get(username="teacher_mha_" + str(x)).person.teacher
-            teacher.kelasses.add(kelaas)
+            teacher.kelaases.add(kelaas)
             teacher.save()
             kelaas.save()
 
@@ -138,7 +138,7 @@ class Test(APITestCase):
             kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5 + 3)).person.student)
             kelaas.students.add(User.objects.get(username="student_mha_" + str(x * 5 + 4)).person.student)
             teacher = User.objects.get(username="teacher_mha_" + str(x)).person.teacher
-            teacher.kelasses.add(kelaas)
+            teacher.kelaases.add(kelaas)
             teacher.save()
             kelaas.save()
 

@@ -20,8 +20,8 @@ class Create_kelaas_post(graphene.Mutation):
         if info.context.user.is_authenticated:
             user = info.context.user.person
             if user.type == TEACHER_KEY_WORD:
-                if user.teacher.kelasses.filter(pk=data.kelaas_id).exists():
-                    kelaas = user.teacher.kelasses.get(pk=data.kelaas_id)
+                if user.teacher.kelaases.filter(pk=data.kelaas_id).exists():
+                    kelaas = user.teacher.kelaases.get(pk=data.kelaas_id)
                     Create_kelaas_post.make_post(kelaas, data, user.teacher)
                     return MessageType(type="success", message="Kelaas added.")
 

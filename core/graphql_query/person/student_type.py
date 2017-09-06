@@ -21,7 +21,7 @@ class StudentType(PersonType):
         user = info.context.user.person
 
         if user.type == TEACHER_KEY_WORD:
-            return [kelaas for kelaas in self.kelaas_set.all() if user.teacher.kelasses.filter(id=kelaas.id).exists()]
+            return [kelaas for kelaas in self.kelaas_set.all() if user.teacher.kelaases.filter(id=kelaas.id).exists()]
         if user.type == PARENT_KEY_WORD:
             if it_is_him(user, self.parents):
                 return self.kelaas_set.all()
@@ -34,7 +34,7 @@ class StudentType(PersonType):
         user = info.context.user.person
 
         if user.type == TEACHER_KEY_WORD:
-            for kelaas in user.teacher.kelasses.all():
+            for kelaas in user.teacher.kelaases.all():
                 if kelaas.students.filter(pk=self.id).exists():
                     return self.parents
 

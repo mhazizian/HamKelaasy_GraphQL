@@ -19,13 +19,13 @@ class TeacherType(PersonType):
         user = info.context.user.person
 
         if it_is_him(self, user):
-            if user.teacher.kelasses.filter(pk=id).exists():
-                return self.kelasses.get(pk=id)
+            if user.teacher.kelaases.filter(pk=id).exists():
+                return self.kelaases.get(pk=id)
         raise GraphQLError('Permission denied')
 
     def resolve_kelaases(self, info):
         user = info.context.user.person
 
         if it_is_him(self, user):
-            return self.kelasses.all()
+            return self.kelaases.all()
         raise GraphQLError('Permission denied')
