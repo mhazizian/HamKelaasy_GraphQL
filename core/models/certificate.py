@@ -38,6 +38,6 @@ class Certificate_level(models.Model):
 class Certificate_link(models.Model):
     certificate_level = models.ForeignKey('Certificate_level', on_delete=models.CASCADE)
     assigner = models.ForeignKey('Person', related_name='certificate_assigner', on_delete=models.CASCADE)
-    student = models.ForeignKey('Student', related_name='related_to_student', on_delete=models.CASCADE)
+    owner = models.ForeignKey('Person', related_name='related_to_person', on_delete=models.CASCADE)
 
     create_date = models.DateTimeField('class creation date', default=timezone.now)
