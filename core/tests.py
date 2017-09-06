@@ -191,7 +191,7 @@ class Test(APITestCase):
             }
         }
         """
-        print ">>>  Query on 'kelasses'"
+        print ">>>  Query on 'kelaases'"
         response = self.client.post(index_url, json.dumps({'query': query}), content_type='application/json')
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
@@ -210,7 +210,7 @@ class Test(APITestCase):
               }
           }
           """
-        print ">>>  Query on 'kelasses'"
+        print ">>>  Query on 'kelaases'"
         response = self.client.post(index_url, json.dumps({'query': query}), content_type='application/json')
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
@@ -235,7 +235,7 @@ class Test(APITestCase):
               }
           }
           """
-        print ">>>  Query on 'kelasses'"
+        print ">>>  Query on 'kelaases'"
         response = self.client.post(index_url, json.dumps({'query': query}), content_type='application/json')
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
