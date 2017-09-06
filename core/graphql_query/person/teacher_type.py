@@ -10,7 +10,7 @@ class TeacherType(PersonType):
     name = "teacher"
 
     kelaases = graphene.List('core.graphql_query.KelaasType')
-    kelaas= graphene.Field(
+    kelaas = graphene.Field(
         'core.graphql_query.KelaasType',
         id=graphene.Int(required=True)
     )
@@ -23,7 +23,7 @@ class TeacherType(PersonType):
                 return self.kelasses.get(pk=id)
         raise GraphQLError('Permission denied')
 
-    def resolve_kelasses(self, info):
+    def resolve_kelaases(self, info):
         user = info.context.user.person
 
         if it_is_him(self, user):
