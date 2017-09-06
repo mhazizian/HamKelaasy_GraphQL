@@ -11,7 +11,7 @@ from core.views import Fard_API
 
 
 def login(request):
-    return HttpResponseRedirect(Fard_API().signup_url)
+    return HttpResponseRedirect(Fard_API().signup_url) # + "&next=" + next + "&t=test")
 
 
 @csrf_exempt
@@ -98,7 +98,7 @@ def resolve_fard(request):
     if User.objects.filter(username=username):
         user = User.objects.get(username=username)
         return HttpResponseRedirect(
-            "http://127.0.0.1:3000/fard/redirect" \
+            "http://127.0.0.1:3000/#!/fard/redirect" \
             + "?state=" + "1" \
             + "&token=" + Token.objects.get(user=user).key
         )
@@ -123,22 +123,26 @@ def resolve_fard(request):
         )
         user_temp.save()
 
+
     return HttpResponseRedirect(
-        "http://127.0.0.1:3000/#!/fard/redirect" \
+        "http://127.0.0.1:3000/#!/fard/redirect"\
         + "?state=" + "0" \
         + "&fd_id=" + str(user_temp.id)
     )
 
 
+@csrf_exempt
 def temp_user_handler(request):
     if request.method == 'POST':
-        id = request.POST.get('fd_id', 0)
+        data = json.loads(request.body)
+        id = int(data.get('fd_id', 0))
+
         if User_temp.objects.filter(pk=id).exists():
             temp = User_temp.objects.get(pk=id)
 
             data = {
-                'first_name': temp.first_name,
-                'last_name': temp.last_name,
+                'firstName': temp.first_name,
+                'lastName': temp.last_name,
                 'email': temp.email,
                 'gender': temp.gender,
             }
