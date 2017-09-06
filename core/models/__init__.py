@@ -11,6 +11,6 @@ from .post import Story, STORY_KEY_WORD
 from .tag import Tag
 from .files_link import File, Sys_file
 from .kelaas import Kelaas
-from .badge import Badge, Badge_type
-from .certificate import Certificate, Certificate_type, Certificate_link
+from .badge import Badge, Badge_link
+from .certificate_level import Certificate_level, Certificate, Certificate_link
 from .comment import Comment

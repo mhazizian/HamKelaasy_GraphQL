@@ -29,6 +29,10 @@ class Post(models.Model):
         delta = timezone.now() - self.create_date
         return pretty_date(delta)
 
+    @property
+    def comment_count(self):
+        return self.comment_set.count()
+
     def __unicode__(self):
         return unicode(self.title)
 

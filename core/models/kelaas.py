@@ -26,12 +26,16 @@ class Kelaas(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            invite_code = str(uuid.uuid4())[:7].upper()
-
-            while Kelaas.objects.filter(invite_code=invite_code).exists():
-                invite_code = str(uuid.uuid4())[:7].upper()
-            self.invite_code = invite_code
+            self.invite_code = Kelaas.generate_invite_code()
         super(Kelaas, self).save(args, kwargs)
 
     def __unicode__(self):
         return self.title
+
+    @staticmethod
+    def generate_invite_code():
+        invite_code = str(uuid.uuid4())[:7].upper()
+
+        while Kelaas.objects.filter(invite_code=invite_code).exists():
+            invite_code = str(uuid.uuid4())[:7].upper()
+        return invite_code

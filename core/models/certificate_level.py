@@ -5,7 +5,7 @@ from django.db import models
 from core.models import Sys_file
 
 
-class Certificate_type(models.Model):
+class Certificate(models.Model):
     title = models.CharField('certificate title', max_length=200)
     description = models.CharField('certificate desc', max_length=400)
 
@@ -20,8 +20,8 @@ class Certificate_type(models.Model):
         return self.title
 
 
-class Certificate(models.Model):
-    type = models.ForeignKey(Certificate_type, on_delete=models.CASCADE)
+class Certificate_level(models.Model):
+    type = models.ForeignKey(Certificate, on_delete=models.CASCADE)
 
     level = models.IntegerField('certificate-level', default=1)
     level_description = models.CharField('description for level', max_length=500)
@@ -36,7 +36,7 @@ class Certificate(models.Model):
 
 
 class Certificate_link(models.Model):
-    certificate = models.ForeignKey('Certificate', on_delete=models.CASCADE)
+    certificate_level = models.ForeignKey('Certificate_level', on_delete=models.CASCADE)
     assigner = models.ForeignKey('Person', related_name='certificate_assigner', on_delete=models.CASCADE)
     student = models.ForeignKey('Student', related_name='related_to_student', on_delete=models.CASCADE)
 
