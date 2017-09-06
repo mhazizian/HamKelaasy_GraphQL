@@ -12,5 +12,5 @@ from .tag import Tag
 from .files_link import File, Sys_file
 from .kelaas import Kelaas
 from .badge import Badge, Badge_link
-from .certificate_level import Certificate_level, Certificate, Certificate_link
+from .certificate import Certificate_level, Certificate, Certificate_link
 from .comment import Comment
