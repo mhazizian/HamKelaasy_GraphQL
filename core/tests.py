@@ -167,28 +167,12 @@ class Test(APITestCase):
 
         query = """
         {
-            kelaases{
-                title,
-                stories{
-                    title
-                    comments{
-                        body
-                        timePassed
-                        owner{
-                            username
-                        }
-                    }
-                }
-                kelaasPosts{
-                    title
-                    comments{
-                        body
-                        owner{
-                            username
-                        }
-                    }
+            teacher{
+                kelaases{
+                    inviteCode
                 }
             }
+            
         }
         """
         print ">>>  Query on 'kelaases'"
@@ -240,52 +224,142 @@ class Test(APITestCase):
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
 
+    def test_student(self):
+        c1 = Certificate(
+            title="first certificate type",
+            description="thank",
+            creator_id=User.objects.get(username="teacher_mha_0").person.id
+        )
+        c1.save()
+        c2 = Certificate(
+            title="second certificate type",
+            description="god",
+            creator_id=User.objects.get(username="teacher_mha_1").person.id
+        )
+        c2.save()
 
-    # def test_create_student(self):
-    #     signup_url = reverse('signup')
-    #     data = {
-    #         "type": "student",
-    #         "userName": "Student_for_test",
-    #         "firstName": "Test first name",
-    #         "lastName": "Test Last Name",
-    #         "email": "test@test.ir",
-    #         "gender": "1",
-    #         "accessToken": "Test_1234asdf5678901234567890",
-    #
-    #         "age": "14",
-    #         "nickName": "mha76",
-    #     }
-    #     print ">>> Test: Creating Student, response:"
-    #     response = self.client.post(signup_url, {'data': json.dumps(data)})
-    #     print response
-    #     print User.objects.get(username="Student_for_test").person.student.pic
 
-    # def test_create_parent(self):
-    #     signup_url = reverse('signup')
-    #     data = {
-    #         "type": "parent",
-    #         "userName": "Parent_for_test",
-    #         "firstName": "Test first name P",
-    #         "lastName": "Test Last Name P",
-    #         "email": "test@test.ir",
-    #         "gender": "1",
-    #         "accessToken": "Test_1234asdf5678901234567890",
-    #     }
-    #     print ">>> Test: Creating Parent, response:"
-    #     response = self.client.post(signup_url, {'data': json.dumps(data)})
-    #     print response
 
-    # def test_create_teacher(self):
-    #     signup_url = reverse('signup')
-    #     data = {
-    #         "type": "teacher",
-    #         "userName": "Teacher_for_test",
-    #         "firstName": "Test first name T",
-    #         "lastName": "Test Last Name T",
-    #         "email": "test@test.ir",
-    #         "gender": "1",
-    #         "accessToken": "Test_1234asdf5678901234567890",
-    #     }
-    #     print ">>> Test: Creating Teacher, response:"
-    #     response = self.client.post(signup_url, {'data': json.dumps(data)})
-    #     print response
+        c1_level = Certificate_level(
+            level=1,
+            level_description="1:an awseme certi",
+            type_id=c1.id
+        )
+        c1_level.save()
+        c2_level = Certificate_level(
+            level=2,
+            level_description="2:an awseme certi",
+            type_id=c1.id
+        )
+        c2_level.save()
+
+        c3_level = Certificate_level(
+            level=3,
+            level_description="3:an awseme certi",
+            type_id=c2.id
+        )
+        c3_level.save()
+        c4_level = Certificate_level(
+            level=4,
+            level_description="4:an awseme certi",
+            type_id=c2.id
+        )
+        c4_level.save()
+
+        user = User.objects.get(username="student_mha_0")
+        print user.person.student
+
+
+
+        c_link = Certificate_link(
+            owner=user.person.student,
+            certificate_level=c1_level,
+            assigner_id=User.objects.get(username="teacher_mha_4").person.id
+        )
+        c_link.save()
+        c_link = Certificate_link(
+            owner=user.person.student,
+            certificate_level=c3_level,
+            assigner_id=User.objects.get(username="teacher_mha_4").person.id
+        )
+        c_link.save()
+
+        print ">>> :D"
+        print ">>> Test: Query for Student: id=" + str(user.person.id)
+
+        self.client.force_authenticate(user=user)
+        index_url = reverse('index')
+
+        query = """
+          {
+              student{
+                  firstName
+                  certificates{
+                        title
+                        creator{
+                            firstName
+                        }
+                        levels{
+                            level
+                            assigner{
+                                firstName
+                            }
+                        }
+                  }
+    
+              }
+          }
+          """
+        print ">>>  Query on 'kelaases'"
+        response = self.client.post(index_url, json.dumps({'query': query}), content_type='application/json')
+        res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
+        print res
+
+        # def test_create_student(self):
+        #     signup_url = reverse('signup')
+        #     data = {
+        #         "type": "student",
+        #         "userName": "Student_for_test",
+        #         "firstName": "Test first name",
+        #         "lastName": "Test Last Name",
+        #         "email": "test@test.ir",
+        #         "gender": "1",
+        #         "accessToken": "Test_1234asdf5678901234567890",
+        #
+        #         "age": "14",
+        #         "nickName": "mha76",
+        #     }
+        #     print ">>> Test: Creating Student, response:"
+        #     response = self.client.post(signup_url, {'data': json.dumps(data)})
+        #     print response
+        #     print User.objects.get(username="Student_for_test").person.student.pic
+
+        # def test_create_parent(self):
+        #     signup_url = reverse('signup')
+        #     data = {
+        #         "type": "parent",
+        #         "userName": "Parent_for_test",
+        #         "firstName": "Test first name P",
+        #         "lastName": "Test Last Name P",
+        #         "email": "test@test.ir",
+        #         "gender": "1",
+        #         "accessToken": "Test_1234asdf5678901234567890",
+        #     }
+        #     print ">>> Test: Creating Parent, response:"
+        #     response = self.client.post(signup_url, {'data': json.dumps(data)})
+        #     print response
+
+        # def test_create_teacher(self):
+        #     signup_url = reverse('signup')
+        #     data = {
+        #         "type": "teacher",
+        #         "userName": "Teacher_for_test",
+        #         "firstName": "Test first name T",
+        #         "lastName": "Test Last Name T",
+        #         "email": "test@test.ir",
+        #         "gender": "1",
+        #         "accessToken": "Test_1234asdf5678901234567890",
+        #     }
+        #     print ">>> Test: Creating Teacher, response:"
+        #     response = self.client.post(signup_url, {'data': json.dumps(data)})
+        #     print response
