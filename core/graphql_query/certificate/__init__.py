@@ -1,1 +1,2 @@
 from .certificate_type import CertificateLevelType, CertificateType
+from .certificate_for_person import PersonCertificateType, CertificateLinkType

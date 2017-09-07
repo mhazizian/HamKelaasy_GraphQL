@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.utils import timezone
 from django.db import models
 from core.models import Sys_file
+from core.models.utilz import pretty_date
 
 
 class Certificate(models.Model):
@@ -37,7 +38,12 @@ class Certificate_level(models.Model):
 
 class Certificate_link(models.Model):
     certificate_level = models.ForeignKey('Certificate_level', on_delete=models.CASCADE)
-    assigner = models.ForeignKey('Person', related_name='certificate_assigner', on_delete=models.CASCADE)
-    owner = models.ForeignKey('Person', related_name='related_to_person', on_delete=models.CASCADE)
+    assigner = models.ForeignKey('Person', related_name='aasigned_certificate', on_delete=models.CASCADE)
+    owner = models.ForeignKey('Person', related_name='certificates', on_delete=models.CASCADE)
 
     create_date = models.DateTimeField('class creation date', default=timezone.now)
+
+    @property
+    def time_passed(self):
+        delta = timezone.now() - self.create_date
+        return pretty_date(delta)
