@@ -88,7 +88,10 @@ def resolve_me(root, info):
     raise GraphQLError('Permission denied')
 
 
-def resolve_badge_type(root, info):
+def resolve_badge_type(root, info, **kwargs):
+    if 'id' in kwargs:
+        id = kwargs['id']
+        return Badge.objects.get(pk=id)
     return Badge.objects.all()
 
 
@@ -109,38 +112,39 @@ def resolve_tags(root, info):
 class Query(graphene.ObjectType):
     me = graphene.Field(
         PersonType,
-        description="return basic info about the registered user.",
+        description="Authetivation required.\n\nreturn basic info about the registered user.",
         resolver=resolve_me,
     )
 
     student = graphene.Field(
         StudentType,
-        description="if registered as student, returns current user",
+        description="Authetivation required.\n\nif registered as student, returns current user",
         id=graphene.Int(description="Parent and Teacher: 'id' is necessary. 'id' refers to student_id"),
         resolver=resolve_student,
     )
     students = graphene.List(
         StudentType,
-        description="Parent: return all childrens."
+        description="Authetivation required.\n\nParent: return all childrens.\n\n"
                     + "Teacher: a 'kelaas_id' is necessary and return all students on that kelaas,",
         kelaas_id=graphene.Int( description="necessary for Teacher"),
         resolver=resolve_students,
     )
     teacher = graphene.Field(
         TeacherType,
-        description="only if current user is a teacher.",
+        description="Authetivation required.\n\nonly if current user is a teacher.",
         resolver=resolve_teacher
     )
 
     kelaas = graphene.Field(
         KelaasType,
+        description="Authetivation required.\n\n",
         id=graphene.Int(required=True, description="kelaas id."),
         resolver=resolve_kelaas,
     )
     kelaases = graphene.List(
         KelaasType,
-        description="Teacher: return all teacher's kelaases."
-                    + "Parent: 'student_id' is necessary and return all of student's kelaases,"
+        description="Authetivation required.\n\nTeacher: return all teacher's kelaases.\n\n"
+                    + "Parent: 'student_id' is necessary and return all of student's kelaases,\n\n"
                     + "(only of parent has access to student)",
         student_id=graphene.Int(description="necessary for parents. return all of student's kelaases,"),
         resolver=resolve_kelaases,
@@ -161,6 +165,7 @@ class Query(graphene.ObjectType):
 
     badge_types = graphene.List(
         BadgeModelType,
-        id=graphene.Int(),
+        description="returns all badges registered in system.\n\n(usage: showing to teacher on assigning page)",
+        id=graphene.Int(description="optional, if provided: return badge with related badge_id"),
         resolver=resolve_badge_type,
     )
