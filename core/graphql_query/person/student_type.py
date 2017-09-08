@@ -66,7 +66,7 @@ class StudentType(PersonType):
                 if 'kelaas_id' in kwargs:
                     self.badges.filter(kelaas_id=kwargs['kelaas_id'])
                 return self.badges.all()
-            
+
         raise GraphQLError('Permission denied')
 
     def resolve_certificates(self, info):

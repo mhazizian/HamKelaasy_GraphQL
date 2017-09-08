@@ -82,6 +82,15 @@ def resolve_teacher(root, info):
     raise GraphQLError('Permission denied')
 
 
+def resolve_parent(root, info):
+    if info.context.user.is_authenticated:
+        user = info.context.user.person
+
+        if user.type == PARENT_KEY_WORD:
+            return user.parent
+    raise GraphQLError('Permission denied')
+
+
 def resolve_me(root, info):
     if info.context.user.is_authenticated:
         return info.context.user.person
@@ -126,13 +135,18 @@ class Query(graphene.ObjectType):
         StudentType,
         description="Authetivation required.\n\nParent: return all childrens.\n\n"
                     + "Teacher: a 'kelaas_id' is necessary and return all students on that kelaas,",
-        kelaas_id=graphene.Int( description="necessary for Teacher"),
+        kelaas_id=graphene.Int(description="necessary for Teacher"),
         resolver=resolve_students,
     )
     teacher = graphene.Field(
         TeacherType,
         description="Authetivation required.\n\nonly if current user is a teacher.",
         resolver=resolve_teacher
+    )
+    parent = graphene.Field(
+        ParentType,
+        description="Authetivation required.\n\nonly if current user is a parent.",
+        resolver=resolve_parent
     )
 
     kelaas = graphene.Field(
