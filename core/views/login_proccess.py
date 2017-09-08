@@ -95,12 +95,13 @@ def resolve_fard(request):
     access_token = fard_api.access_token
 
     # if user has already signup and has a Token
-    if User.objects.filter(username=username):
+    if User.objects.filter(username=username).exists():
         user = User.objects.get(username=username)
         return HttpResponseRedirect(
             "http://127.0.0.1:3000/#!/fard/redirect" \
             + "?state=" + "1" \
-            + "&token=" + Token.objects.get(user=user).key
+            + "&token=" + Token.objects.get(user=user).key\
+            + "&type=" + user.person.type
         )
 
     fname = data.get('firstname', None)
