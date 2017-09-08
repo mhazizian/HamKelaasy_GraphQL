@@ -46,7 +46,6 @@ class StudentType(PersonType):
 
     def resolve_certificates(self, info):
         # user = info.context.user.person ?!!!
-        # what to do, what not to do?!!!
         # permission check
         res = {}
 
@@ -55,8 +54,6 @@ class StudentType(PersonType):
                 res[c_link.certificate_level.type.id] = []
 
             res[c_link.certificate_level.type.id].append(c_link)
-
-        print res[1][0].certificate_level.type.creator
 
         return [PersonCertificateType(
             id=res[key][0].certificate_level.type.id,
