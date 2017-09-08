@@ -27,19 +27,19 @@ def index(request):
     return HttpResponse("not post method!")
 
 
-@api_view(['POST', 'GET', 'FILES'])
-def upload_file(request):
-    if not request.user.is_authenticated:
-        return HttpResponse('user not authenticated')
-
-    # improvment for later:
-    #         1.upload i file for each request
-    #         2.get file detile like title and description
-
-    file = []
-    for f in request.FILES.getlist('post-files'):
-        temp = File(title=f.name, data=f)
-        temp.owner = request.user.person
-        temp.save()
-        file.append(temp)
-    return HttpResponse(json.dumps([f.id for f in file]))
+# @api_view(['POST', 'GET', 'FILES'])
+# def upload_file(request):
+#     if not request.user.is_authenticated:
+#         return HttpResponse('user not authenticated')
+#
+#     # improvment for later:
+#     #         1.upload 1 file for each request
+#     #         2.get file detail like title and description
+#
+#     uploaded_file = []
+#     for f in request.FILES.getlist('post-files'):
+#         temp = File(title=f.name, data=f)
+#         temp.owner = request.user.person
+#         temp.save()
+#         uploaded_file.append(temp)
+#     return HttpResponse(json.dumps([f.id for f in file]))

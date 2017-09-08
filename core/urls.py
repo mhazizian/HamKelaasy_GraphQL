@@ -10,8 +10,8 @@ urlpatterns = [
     # GraphQL main address:
     url(r'^graphql$', views.index, name='index'),
 
-    # Upload file endpoint:
-    url(r'^file/upload$', views.upload_file, name='upload'),
+    # # Upload file endpoint:
+    # url(r'^file/upload$', views.upload_file, name='upload'),
 
 
 
