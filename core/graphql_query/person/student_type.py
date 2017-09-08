@@ -17,6 +17,7 @@ class StudentType(PersonType):
 
     kelaases = graphene.List('core.graphql_query.KelaasType')
     parent = graphene.Field('core.graphql_query.ParentType')
+    badges = graphene.List('core.graphql_query.BadgeLink')
     certificates = graphene.List(PersonCertificateType)
 
     def resolve_kelaases(self, info):
@@ -42,6 +43,22 @@ class StudentType(PersonType):
 
         if it_is_him(user, self):
             return self.parents
+        raise GraphQLError('Permission denied')
+
+    def resolve_badges(self, info):
+        user = info.context.user.person
+
+        if it_is_him(user, self):
+            return self.badges.all()
+
+        if user.type == TEACHER_KEY_WORD:
+            for kelaas in user.teacher.kelaases.all():
+                if kelaas.students.filter(pk=self.id).exists():
+                    return self.badges.all()
+
+        if user.type == PARENT_KEY_WORD:
+            if it_is_him(user, self.parents):
+                return self.badges.all()
         raise GraphQLError('Permission denied')
 
     def resolve_certificates(self, info):
