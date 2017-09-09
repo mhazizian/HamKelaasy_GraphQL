@@ -169,7 +169,12 @@ class Test(APITestCase):
         {
             teacher{
                 kelaases{
-                    inviteCode
+                    id
+                    students{
+                        username
+                        firstName
+                        id
+                    }
                 }
             }
             
@@ -314,6 +319,32 @@ class Test(APITestCase):
         response = self.client.post(index_url, json.dumps({'query': query}), content_type='application/json')
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         print res
+
+
+    def test_assign_badge_mutation(self):
+        print ">>> first test on assign_badge:"
+        b = Badge(
+            title="good boy"
+        )
+        b.save()
+        user = User.objects.get(username="teacher_mha_0")
+        self.client.force_authenticate(user=user)
+        index_url = reverse('index')
+
+        mutation = """
+        mutation{
+             assignBadge(data:{kelaasId:1, studentId:41, badges:"%d"}){
+                type
+                message    
+            }
+        }
+        
+        """ % b.id
+
+        response = self.client.post(index_url, json.dumps({'query': mutation}), content_type='application/json')
+        res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
+        print res
+
 
         # def test_create_student(self):
         #     signup_url = reverse('signup')
