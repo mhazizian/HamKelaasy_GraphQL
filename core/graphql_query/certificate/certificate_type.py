@@ -11,7 +11,7 @@ class CertificateType(graphene.ObjectType):
     pic = graphene.String()
     creator = graphene.Field('core.graphql_query.PersonType')
 
-    levels = graphene.Field('core.graphql_query.CertificateLevelType')
+    levels = graphene.List('core.graphql_query.CertificateLevelType')
 
     def resolve_creator(self, info):
         return self.creator
