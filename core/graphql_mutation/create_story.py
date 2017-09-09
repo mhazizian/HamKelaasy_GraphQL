@@ -4,9 +4,9 @@ from core.models import Story, TEACHER_KEY_WORD
 
 
 class Story_input(graphene.InputObjectType):
-    kelaas_id = graphene.Int()
-    title = graphene.String()
-    description = graphene.String()
+    kelaas_id = graphene.Int(required=True)
+    title = graphene.String(default_value="")
+    description = graphene.String(default_value="")
 
 
 class Create_story(graphene.Mutation):

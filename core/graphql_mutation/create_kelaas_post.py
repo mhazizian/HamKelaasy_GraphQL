@@ -4,10 +4,10 @@ from core.models import Kelaas_post, TEACHER_KEY_WORD, File
 
 
 class Kelaas_post_input(graphene.InputObjectType):
-    kelaas_id = graphene.Int()
-    title = graphene.String()
-    description = graphene.String()
-    files = graphene.List(graphene.Int)
+    kelaas_id = graphene.Int(required=True)
+    title = graphene.String(default_value="")
+    description = graphene.String(default_value="")
+    files = graphene.String(description="a string of files id.\n\nexample: '1,2,10,4'")
 
 
 class Create_kelaas_post(graphene.Mutation):
@@ -36,7 +36,7 @@ class Create_kelaas_post(graphene.Mutation):
             owner=teacher,
         )
         post.save()
-        for file_id in data.files:
+        for file_id in data.files.split(','):
             if File.objects.filter(pk=file_id).exists():
                 input_file = File.objects.get(pk=file_id)
                 post.files.add(input_file)

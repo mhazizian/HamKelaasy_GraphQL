@@ -4,9 +4,9 @@ from core.models import Tag, Kelaas, TEACHER_KEY_WORD
 
 
 class Kelaas_input(graphene.InputObjectType):
-    title = graphene.String()
-    description = graphene.String()
-    tags = graphene.String()
+    title = graphene.String(required=True)
+    description = graphene.String(default_value="")
+    tags = graphene.String(description="a string of tag's id,\n\n example: '1,10,4,3,'")
 
 
 class Create_kelaas(graphene.Mutation):
