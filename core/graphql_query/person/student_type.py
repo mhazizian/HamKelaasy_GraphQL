@@ -27,12 +27,12 @@ class StudentType(PersonType):
         user = info.context.user.person
 
         if user.type == TEACHER_KEY_WORD:
-            return [kelaas for kelaas in self.kelaas_set.all() if user.teacher.kelaases.filter(id=kelaas.id).exists()]
+            return [kelaas for kelaas in self.kelaases.all() if user.teacher.kelaases.filter(id=kelaas.id).exists()]
         if user.type == PARENT_KEY_WORD:
             if it_is_him(user, self.parents):
-                return self.kelaas_set.all()
+                return self.kelaases.all()
         if it_is_him(user, self):
-            return self.kelaas_set.all()
+            return self.kelaases.all()
 
         raise GraphQLError('Permission denied')
 

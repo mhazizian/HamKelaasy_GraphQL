@@ -22,7 +22,7 @@ class KelaasType(graphene.ObjectType):
     def resolve_invite_code(self, info):
         user = info.context.user.person
 
-        if self.teacher_set.filter(pk=user.id).exists():
+        if self.teachers.filter(pk=user.id).exists():
             return self.invite_code
         raise GraphQLError('Permission denied')
 
@@ -32,7 +32,7 @@ class KelaasType(graphene.ObjectType):
     def resolve_students(self, info):
         user = info.context.user.person
 
-        if self.teacher_set.filter(pk=user.id).exists():
+        if self.teachers.filter(pk=user.id).exists():
             return self.students.all()
         if user.type == PARENT_KEY_WORD:
             return [student for student in self.students.all() if student.parents.id == user.parent.id]
@@ -41,7 +41,7 @@ class KelaasType(graphene.ObjectType):
     def resolve_kelaas_posts(self, info):
         user = info.context.user.person
 
-        if self.teacher_set.filter(pk=user.id).exists() or self.students.filter(pk=user.id).exists():
+        if self.teachers.filter(pk=user.id).exists() or self.students.filter(pk=user.id).exists():
             return self.post_set.filter(type=KELAAS_POST_KEY_WORD).all()[::-1]
 
         raise GraphQLError('Permission denied')
@@ -49,7 +49,7 @@ class KelaasType(graphene.ObjectType):
     def resolve_stories(self, info):
         user = info.context.user.person
 
-        if self.teacher_set.filter(pk=user.id).exists():
+        if self.teachers.filter(pk=user.id).exists():
             return self.post_set.filter(type=STORY_KEY_WORD).all()[::-1]
 
         if user.type == PARENT_KEY_WORD:

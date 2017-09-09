@@ -13,8 +13,8 @@ class Kelaas(models.Model):
     create_date = models.DateTimeField('class creation date', default=timezone.now)
     description = models.CharField('class description', max_length=500)
 
-    tags = models.ManyToManyField('Tag', blank=True)
-    students = models.ManyToManyField('Student', blank=True)
+    tags = models.ManyToManyField('Tag', related_name="kelaases", blank=True)
+    students = models.ManyToManyField('Student', related_name="kelaases", blank=True)
 
     invite_code = models.CharField('invite link for kelaas', max_length=10)
 

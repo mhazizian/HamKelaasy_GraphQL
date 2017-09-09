@@ -49,11 +49,11 @@ def resolve_kelaas(root, info, id):
                 return user.teacher.kelaases.get(pk=id)
         if user.type == PARENT_KEY_WORD:
             for student in user.parent.student_set.all():
-                if student.kelaas_set.filter(pk=id).exists():
-                    return student.kelaas_set.get(pk=id)
+                if student.kelaases.filter(pk=id).exists():
+                    return student.kelaases.get(pk=id)
         if user.type == STUDENT_KEY_WORD:
-            if user.student.kelaas_set.filter(pk=id).exists():
-                return user.student.kelaas_set.get(pk=id)
+            if user.student.kelaases.filter(pk=id).exists():
+                return user.student.kelaases.get(pk=id)
     raise GraphQLError('Permission denied')
 
 
@@ -66,10 +66,10 @@ def resolve_kelaases(root, info, **kwargs):
         if user.type == PARENT_KEY_WORD:
             if 'student_id' in kwargs:
                 if user.parent.student_set.filter(pl=kwargs['student_id']).exists():
-                    return user.parent.student_set.get(pk=kwargs['student_id']).kelaas_set.all()
+                    return user.parent.student_set.get(pk=kwargs['student_id']).kelaases.all()
 
         if user.type == STUDENT_KEY_WORD:
-            return user.student.kelaas_set.all()
+            return user.student.kelaases.all()
     raise GraphQLError('Permission denied')
 
 

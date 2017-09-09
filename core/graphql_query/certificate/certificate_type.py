@@ -17,7 +17,7 @@ class CertificateType(graphene.ObjectType):
         return self.creator
 
     def resolve_levels(self, info):
-        return self.certificate_level_set.all()
+        return self.levels.all()
 
 
 class CertificateLevelType(graphene.ObjectType):

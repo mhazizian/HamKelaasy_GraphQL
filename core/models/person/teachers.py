@@ -7,7 +7,7 @@ TEACHER_KEY_WORD = "teacher"
 
 
 class Teacher(Person):
-    kelaases = models.ManyToManyField('Kelaas', blank=True)
+    kelaases = models.ManyToManyField('Kelaas', related_name="teachers", blank=True)
 
     def save(self, *args, **kwargs):
         self.type = TEACHER_KEY_WORD

@@ -9,9 +9,9 @@ from core.models.utilz import pretty_date
 class Comment(models.Model):
     body = models.CharField('comment body', max_length=1000)
     create_date = models.DateTimeField('post creation date', default=timezone.now)
-    post = models.ForeignKey('Post', on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', related_name="comments", on_delete=models.CASCADE)
 
-    owner = models.ForeignKey('Person', on_delete=models.CASCADE)
+    owner = models.ForeignKey('Person', related_name="comments", on_delete=models.CASCADE)
 
     @property
     def time_passed(self):

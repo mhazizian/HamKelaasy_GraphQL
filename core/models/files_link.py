@@ -10,7 +10,7 @@ class File(models.Model):
     title = models.CharField('file title', max_length=200)
     description = models.CharField('file body', max_length=1000, blank=True, default='')
     create_date = models.DateTimeField('file creation date', default=timezone.now)
-    owner = models.ForeignKey('Person', on_delete=models.CASCADE)
+    owner = models.ForeignKey('Person', related_name="uploaded_files",on_delete=models.CASCADE)
 
     data = models.FileField('file', upload_to='%Y/%m/%d/')
 

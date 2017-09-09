@@ -31,7 +31,7 @@ class Post(models.Model):
 
     @property
     def comment_count(self):
-        return self.comment_set.count()
+        return self.comme.count()
 
     def __unicode__(self):
         return unicode(self.title)

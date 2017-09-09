@@ -10,7 +10,7 @@ class Certificate(models.Model):
     title = models.CharField('certificate title', max_length=200)
     description = models.CharField('certificate desc', max_length=400)
 
-    creator = models.ForeignKey('Person', on_delete=models.CASCADE)
+    creator = models.ForeignKey('Person', related_name="created_certificates",on_delete=models.CASCADE)
 
     @property
     def pic(self):
@@ -22,7 +22,7 @@ class Certificate(models.Model):
 
 
 class Certificate_level(models.Model):
-    type = models.ForeignKey(Certificate, on_delete=models.CASCADE)
+    type = models.ForeignKey(Certificate, related_name="levels",on_delete=models.CASCADE)
 
     level = models.IntegerField('certificate-level', default=1)
     level_description = models.CharField('description for level', max_length=500)
@@ -37,7 +37,7 @@ class Certificate_level(models.Model):
 
 
 class Certificate_link(models.Model):
-    certificate_level = models.ForeignKey('Certificate_level', on_delete=models.CASCADE)
+    certificate_level = models.ForeignKey('Certificate_level', related_name="links", on_delete=models.CASCADE)
     assigner = models.ForeignKey('Person', related_name='aasigned_certificate', on_delete=models.CASCADE)
     owner = models.ForeignKey('Person', related_name='certificates', on_delete=models.CASCADE)
 

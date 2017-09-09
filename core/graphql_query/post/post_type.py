@@ -13,7 +13,7 @@ class PostType(graphene.ObjectType):
     comments = graphene.List('core.graphql_query.CommentType')
 
     def resolve_comments(self, info):
-        return self.comment_set.all()[::-1]
+        return self.comments.all()[::-1]
 
     # kelaas = graphene.Field('core.graphql_query.KelaasType')
     #
