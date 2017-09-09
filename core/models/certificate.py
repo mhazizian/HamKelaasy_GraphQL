@@ -22,7 +22,7 @@ class Certificate(models.Model):
 
 
 class Certificate_level(models.Model):
-    type = models.ForeignKey(Certificate, related_name="levels",on_delete=models.CASCADE)
+    type = models.ForeignKey(Certificate, related_name="levels", on_delete=models.CASCADE)
 
     level = models.IntegerField('certificate-level', default=1)
     level_description = models.CharField('description for level', max_length=500)
