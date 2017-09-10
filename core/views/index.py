@@ -14,32 +14,14 @@ from core.models import File
 @csrf_exempt
 def index(request):
     if not request.user.is_authenticated:
-        return HttpResponse('user not authenticated')
+        return HttpResponse('user not authenticated', status=401)
 
     if request.method == "POST":
         data = json.loads(request.body)
 
         res = schema.execute(data.get('query', ''), context_value=request)
         if res.errors:
-            return HttpResponse(json.dumps(res.errors), content_type='application/json')
+            return HttpResponse("bad data input", status=400)
 
-        return HttpResponse(json.dumps(res.data), content_type='application/json')
-    return HttpResponse("not post method!")
-
-
-# @api_view(['POST', 'GET', 'FILES'])
-# def upload_file(request):
-#     if not request.user.is_authenticated:
-#         return HttpResponse('user not authenticated')
-#
-#     # improvment for later:
-#     #         1.upload 1 file for each request
-#     #         2.get file detail like title and description
-#
-#     uploaded_file = []
-#     for f in request.FILES.getlist('post-files'):
-#         temp = File(title=f.name, data=f)
-#         temp.owner = request.user.person
-#         temp.save()
-#         uploaded_file.append(temp)
-#     return HttpResponse(json.dumps([f.id for f in file]))
+        return HttpResponse(json.dumps(res.data), content_type='application/json', status=200)
+    return HttpResponse("not post method!", status=405)

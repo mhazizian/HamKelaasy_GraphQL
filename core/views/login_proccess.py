@@ -36,7 +36,7 @@ def signup(request):
         if User.objects.filter(username=username).exists():
             res['type'] = "error"
             res['message'] = "username is not available"
-            return HttpResponse(json.dumps(res))
+            return HttpResponse(json.dumps(res), status=406)
         user = User(username=username)
 
         if type == STUDENT_KEY_WORD:
@@ -82,11 +82,11 @@ def signup(request):
 
         res['type'] = "success"
         res['token'] = Token.objects.get(user=user).key
-        return HttpResponse(json.dumps(res))
+        return HttpResponse(json.dumps(res), status=200)
     except:
         res['type'] = "error"
         res['message'] = "bad data input"
-        return HttpResponse(json.dumps(res))
+        return HttpResponse(json.dumps(res), status=400)
 
 
 def resolve_fard(request):
@@ -131,6 +131,7 @@ def resolve_fard(request):
         "http://127.0.0.1:3000/#!/fard/redirect" \
         + "?state=" + "0" \
         + "&fd_id=" + str(user_temp.id)
+        , status=201
     )
 
 
@@ -149,5 +150,5 @@ def temp_user_handler(request):
                 'email': temp.email,
                 'gender': temp.gender,
             }
-            return HttpResponse(json.dumps(data))
-    return HttpResponse('')
+            return HttpResponse(json.dumps(data), status=200)
+    return HttpResponse('bad data input', status=400)
