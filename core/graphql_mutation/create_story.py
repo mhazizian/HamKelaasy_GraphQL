@@ -2,13 +2,14 @@ import graphene
 from graphql import GraphQLError
 
 from core.graphql_query import MessageType
-from core.models import Story, TEACHER_KEY_WORD
+from core.models import Story, TEACHER_KEY_WORD, File
 
 
 class Story_input(graphene.InputObjectType):
     kelaas_id = graphene.Int(required=True)
     title = graphene.String(default_value="")
     description = graphene.String(default_value="")
+    pic = graphene.Int(description="uploaded pic id")
 
 
 class Create_story(graphene.Mutation):
@@ -39,6 +40,7 @@ class Create_story(graphene.Mutation):
         )
         story.save()
 
-        if 'pic' in info.context.FILES:
-            story.story_pic = info.context.FILES['pic']
-            story.save()
+        if data.pic:
+            if File.objects.filter(pk=data.pic).exists():
+                story.story_pic_id = data.pic
+        return True

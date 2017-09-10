@@ -8,7 +8,7 @@ STORY_KEY_WORD = 'Story'
 
 
 class Story(Post):
-    story_pic = models.FileField('story pic', upload_to='story/%Y/%m/%d/', blank=True)
+    story_pic = models.OneToOneField('File', blank=True, default=None)
     likes = models.ManyToManyField('Person')
 
     def save(self, *args, **kwargs):
