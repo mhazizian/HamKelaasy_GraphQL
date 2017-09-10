@@ -13,8 +13,6 @@ urlpatterns = [
     # Upload file endpoint:
     url(r'^file/upload$', views.upload_file, name='upload'),
 
-
-
     # endpoint for redirecting to fard.ir with provided redirect_url
     url(r'^fard/login$', views.login, name='login'),
 
