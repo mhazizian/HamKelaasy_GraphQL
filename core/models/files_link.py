@@ -18,6 +18,8 @@ class File(models.Model):
     def url(self):
         return self.data.url
 
+    def __unicode__(self):
+        return unicode(self.title)
 
 class Sys_file(models.Model):
     title = models.CharField('file title', max_length=200)
