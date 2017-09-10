@@ -30,7 +30,6 @@ def signup(request):
         type = data['type']
 
         # check later:
-        gender = int(data.get('gender', temp.gender))
 
         temp.delete()
 
@@ -43,6 +42,7 @@ def signup(request):
         if type == STUDENT_KEY_WORD:
             age = int(data['age'])
             nickname = data['nickName']
+            gender = int(data.get('gender', temp.gender))
 
             user.save()
             student = Student(
@@ -56,7 +56,10 @@ def signup(request):
             )
             student.save()
         if type == TEACHER_KEY_WORD:
+            gender = int(data.get('gender', temp.gender))
+
             user.save()
+
             teacher = Teacher(
                 user=user,
                 first_name=first_name,
