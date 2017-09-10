@@ -28,9 +28,8 @@ def upload_file(request):
         files.append(f.id)
 
     return HttpResponse(json.dumps({
-        'id': ''.join(files),
+        'id': ','.join([str(f) for f in files]),
         # 'url': f.url,
         # 'title': f.title
     }), status=202)
-
     # return HttpResponse('bad data input', status=400)
