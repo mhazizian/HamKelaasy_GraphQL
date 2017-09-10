@@ -12,7 +12,7 @@ class File(models.Model):
     create_date = models.DateTimeField('file creation date', default=timezone.now)
     owner = models.ForeignKey('Person', related_name="uploaded_files",on_delete=models.CASCADE)
 
-    data = models.FileField('file', upload_to='%Y/%m/%d/')
+    data = models.FileField('file', upload_to='data/%Y/%m/%d/')
 
     @property
     def url(self):
