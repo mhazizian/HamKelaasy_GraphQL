@@ -48,7 +48,7 @@ def resolve_kelaas(root, info, id):
             if user.teacher.kelaases.filter(id=id).exists():
                 return user.teacher.kelaases.get(pk=id)
         if user.type == PARENT_KEY_WORD:
-            for student in user.parent.student_set.all():
+            for student in user.parent.childes.all():
                 if student.kelaases.filter(pk=id).exists():
                     return student.kelaases.get(pk=id)
         if user.type == STUDENT_KEY_WORD:
