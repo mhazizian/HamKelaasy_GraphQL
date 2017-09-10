@@ -174,7 +174,6 @@ class Test(APITestCase):
         print ">>> Test: assign_badge"
 
         self.client.force_authenticate(user=self.teachers[0].user)
-        index_url = reverse('index')
 
         mutation = """
             mutation{
@@ -187,7 +186,7 @@ class Test(APITestCase):
         """ % (self.global_kelaas.id, self.students[0].id, self.badges[0].id, self.badges[1].id)
 
         print "> send mutation"
-        response = self.client.post(index_url, json.dumps({'query': mutation}), content_type='application/json')
+        response = self.client.post(self.index_url, json.dumps({'query': mutation}), content_type='application/json')
         res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
         # TODO asssert required.
         print "done"
@@ -306,6 +305,21 @@ class Test(APITestCase):
                               '"pic": "http://94.182.227.193:8080/media/student.svg", "email": "test@test.ir", '
                               '"signupCompleted": false, "type": "student", "id": 14}}')
         print "done"
+
+        # mutation = """
+        #     mutation{
+        #          assignBadge(data:{kelaasId:%d, studentId:%d, badges:"%d,%d"}){
+        #             type
+        #             message
+        #         }
+        #     }
+        #
+        # """ % (self.global_kelaas.id, self.students[0].id, self.badges[0].id, self.badges[1].id)
+        #
+        # print "> send mutation"
+        # response = self.client.post(self.index_url, json.dumps({'query': mutation}), content_type='application/json')
+        # res = json.dumps(json.loads(response.content), indent=4, sort_keys=True)
+
 
         # story = Story(
         #     title="first story of all",
