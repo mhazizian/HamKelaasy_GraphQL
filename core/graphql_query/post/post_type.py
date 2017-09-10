@@ -8,6 +8,7 @@ class PostType(graphene.ObjectType):
     title = graphene.String()
     description = graphene.String()
     shamsi_date = graphene.String()
+    time_passed = graphene.String()
     type = graphene.String()
 
     comments = graphene.List('core.graphql_query.CommentType')
