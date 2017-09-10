@@ -1,4 +1,5 @@
 import graphene
+from graphql import GraphQLError
 
 from core.graphql_query import MessageType
 from core.models import TEACHER_KEY_WORD, File
@@ -22,7 +23,7 @@ class Upload_file(graphene.Mutation):
                 res = Upload_file.upload(info, data)
                 return MessageType(type="success", message=res)
 
-        return MessageType(type="error", message="Permission denied.")
+        raise GraphQLError('Permission denied')
 
     @staticmethod
     def upload(info, data):
@@ -37,5 +38,4 @@ class Upload_file(graphene.Mutation):
             temp.save()
             uploaded_file.append(temp)
 
-        # return [f.id for f in uploaded_file]
         return ''.join([str(f.id) for f in uploaded_file])

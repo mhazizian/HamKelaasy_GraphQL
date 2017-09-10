@@ -1,4 +1,6 @@
 import graphene
+from graphql import GraphQLError
+
 from core.graphql_query import MessageType
 from core.models import Kelaas_post, TEACHER_KEY_WORD, File
 
@@ -24,8 +26,9 @@ class Create_kelaas_post(graphene.Mutation):
                     kelaas = user.teacher.kelaases.get(pk=data.kelaas_id)
                     Create_kelaas_post.make_post(kelaas, data, user.teacher)
                     return MessageType(type="success", message="Kelaas added.")
+                raise GraphQLError('Bad data input')
 
-        return MessageType(type="error", message="Permission denied.")
+        raise GraphQLError('Permission denied')
 
     @staticmethod
     def make_post(kelaas, data, teacher):
