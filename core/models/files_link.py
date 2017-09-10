@@ -14,6 +14,10 @@ class File(models.Model):
 
     data = models.FileField('file', upload_to='%Y/%m/%d/')
 
+    @property
+    def url(self):
+        return self.data.url
+
 
 class Sys_file(models.Model):
     title = models.CharField('file title', max_length=200)
