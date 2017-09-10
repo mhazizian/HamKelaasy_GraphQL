@@ -2,7 +2,8 @@ from graphql import GraphQLError
 
 import graphene
 
-from graphql_mutation import Create_kelaas , Create_kelaas_post, Create_story, Upload_file, Assign_badge, Add_comment
+from graphql_mutation import Create_kelaas, Create_kelaas_post, Create_story, Upload_file, Assign_badge, Add_comment, \
+    Join_kelaas
 
 
 class Mutation(graphene.ObjectType):
@@ -12,3 +13,4 @@ class Mutation(graphene.ObjectType):
     upload_file = Upload_file.Field()
     assign_badge = Assign_badge.Field()
     add_comment = Add_comment.Field()
+    join_kelaas = Join_kelaas.Field()

@@ -4,3 +4,4 @@ from .create_story import Create_story
 from .file_input import Upload_file
 from .assign_badge import Assign_badge
 from .add_commnet import Add_comment
+from .join_kelaas import Join_kelaas
