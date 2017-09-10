@@ -131,7 +131,6 @@ def resolve_fard(request):
         "http://127.0.0.1:3000/#!/fard/redirect" \
         + "?state=" + "0" \
         + "&fd_id=" + str(user_temp.id)
-        , status=201
     )
 
 
