@@ -45,5 +45,10 @@ def upload_file(request):
         )
         f.owner = request.user.person
         f.save()
-        return HttpResponse(f.id, status=202)
-    return HttpResponse('bad things', status=400)
+
+        return HttpResponse(json.dumps({
+            'id': f.id,
+            'url': f.url,
+            'title': f.title
+        }), status=202)
+    return HttpResponse('bad data input', status=400)
