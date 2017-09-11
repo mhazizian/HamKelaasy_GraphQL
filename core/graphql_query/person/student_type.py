@@ -36,18 +36,12 @@ class StudentType(PersonType):
         offset = kwargs.get('page', 1) * page_size
 
         if user.type == TEACHER_KEY_WORD:
-            if offset == page_size:
-                return [kelaas for kelaas in self.kelaases.all() if user.teacher.kelaases.filter(id=kelaas.id).exists()][-offset:][::-1]
-            return [kelaas for kelaas in self.kelaases.all() if user.teacher.kelaases.filter(id=kelaas.id).exists()][-offset:-offset + page_size][::-1]
+            return [kelaas for kelaas in self.kelaases.all() if user.teacher.kelaases.filter(id=kelaas.id).exists()].reverse()[offset - page_size:offset]
         if user.type == PARENT_KEY_WORD:
             if it_is_him(user, self.parents):
-                if offset == page_size:
-                    return self.kelaases.all()[-offset:][::-1]
-                return self.kelaases.all()[-offset:-offset + page_size][::-1]
+                return self.kelaases.all().reverse()[offset - page_size:offset]
         if it_is_him(user, self):
-            if offset == page_size:
-                return self.kelaases.all()[-offset:][::-1]
-            return self.kelaases.all()[-offset:-offset + page_size][::-1]
+            return self.kelaases.all().reverse()[offset - page_size:offset]
 
         raise GraphQLError('Permission denied')
 

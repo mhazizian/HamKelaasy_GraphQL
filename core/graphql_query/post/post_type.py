@@ -12,6 +12,7 @@ class PostType(graphene.ObjectType):
     shamsi_date = graphene.String()
     time_passed = graphene.String()
     type = graphene.String()
+    owner = graphene.Field('core.graphql_query.PersonType')
 
     comments = graphene.List(
         'core.graphql_query.CommentType',
@@ -25,4 +26,7 @@ class PostType(graphene.ObjectType):
 
         if page_size == offset:
             return self.comments.all()[-offset:][::-1]
-        return self.comments.all()[-offset:-offset + page_size][::-1]
+        return self.comments.all().reverse()[offset - page_size:offset]
+
+    def resolve_owner(self, info):
+        return self.owner

@@ -36,5 +36,5 @@ class TeacherType(PersonType):
         if it_is_him(self, user):
             if offset == page_size:
                 return self.kelaases.all()[-offset:][::-1]
-            return self.kelaases.all()[-offset:-offset + page_size][::-1]
+            return self.kelaases.all().reverse()[offset - page_size:offset]
         raise GraphQLError('Permission denied')
