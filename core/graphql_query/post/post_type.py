@@ -1,5 +1,7 @@
 import graphene
 
+from core.graphql_query import DEFAULT_PAGE_SIZE
+
 
 class PostType(graphene.ObjectType):
     name = "post"
@@ -11,12 +13,16 @@ class PostType(graphene.ObjectType):
     time_passed = graphene.String()
     type = graphene.String()
 
-    comments = graphene.List('core.graphql_query.CommentType')
+    comments = graphene.List(
+        'core.graphql_query.CommentType',
+        page_size=graphene.Int(),
+        page=graphene.Int(),
+    )
 
-    def resolve_comments(self, info):
-        return self.comments.all()[::-1]
+    def resolve_comments(self, info, **kwargs):
+        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+        offset = kwargs.get('page', 1) * page_size
 
-    # kelaas = graphene.Field('core.graphql_query.KelaasType')
-    #
-    # def resolve_kelaas(self, info):
-    #     return self.kelaas
+        if page_size == offset:
+            return self.comments.all()[-offset:][::-1]
+        return self.comments.all()[-offset:-offset + page_size][::-1]

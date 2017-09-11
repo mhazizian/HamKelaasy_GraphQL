@@ -1,8 +1,8 @@
 import graphene
 from graphql import GraphQLError
 
-from core.graphql_query.utilz import it_is_him, parent_has_access_to_kelaas
-from core.models import STUDENT_KEY_WORD, TEACHER_KEY_WORD, PARENT_KEY_WORD, STORY_KEY_WORD, KELAAS_POST_KEY_WORD
+from core.graphql_query.utilz import parent_has_access_to_kelaas, DEFAULT_PAGE_SIZE
+from core.models import PARENT_KEY_WORD, STORY_KEY_WORD, KELAAS_POST_KEY_WORD
 
 
 class KelaasType(graphene.ObjectType):
@@ -14,9 +14,21 @@ class KelaasType(graphene.ObjectType):
     description = graphene.String()
     invite_code = graphene.String()
 
-    students = graphene.List('core.graphql_query.StudentType')
-    kelaas_posts = graphene.List('core.graphql_query.KelaasPostType')
-    stories = graphene.List('core.graphql_query.StoryType')
+    students = graphene.List(
+        'core.graphql_query.StudentType',
+        page_size=graphene.Int(),
+        page=graphene.Int(),
+    )
+    kelaas_posts = graphene.List(
+        'core.graphql_query.KelaasPostType',
+        page_size=graphene.Int(),
+        page=graphene.Int(),
+    )
+    stories = graphene.List(
+        'core.graphql_query.StoryType',
+        page_size=graphene.Int(),
+        page=graphene.Int(),
+    )
     tags = graphene.List('core.graphql_query.TagType')
 
     def resolve_invite_code(self, info):
@@ -29,31 +41,46 @@ class KelaasType(graphene.ObjectType):
     def resolve_tags(self, info):
         return self.tags.all()
 
-    def resolve_students(self, info):
+    def resolve_students(self, info, **kwargs):
         user = info.context.user.person
+
+        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+        offset = kwargs.get('page', 1) * page_size
 
         if self.teachers.filter(pk=user.id).exists():
-            return self.students.all()
+            return self.students.all()[offset - page_size:offset]
         if user.type == PARENT_KEY_WORD:
-            return [student for student in self.students.all() if student.parents.id == user.parent.id]
+            return [student for student in self.students.all() if student.parents.id == user.parent.id][offset - page_size:offset]
         raise GraphQLError('Permission denied')
 
-    def resolve_kelaas_posts(self, info):
+    def resolve_kelaas_posts(self, info, **kwargs):
         user = info.context.user.person
+
+        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+        offset = kwargs.get('page', 1) * page_size
 
         if self.teachers.filter(pk=user.id).exists() or self.students.filter(pk=user.id).exists():
-            return self.post_set.filter(type=KELAAS_POST_KEY_WORD).all()[::-1]
+            if page_size == offset:
+                return self.post_set.filter(type=KELAAS_POST_KEY_WORD).all()[-offset:][::-1]
+            return self.post_set.filter(type=KELAAS_POST_KEY_WORD).all()[-offset:-offset + page_size][::-1]
 
         raise GraphQLError('Permission denied')
 
-    def resolve_stories(self, info):
+    def resolve_stories(self, info, **kwargs):
         user = info.context.user.person
 
+        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+        offset = kwargs.get('page', 1) * page_size
+
         if self.teachers.filter(pk=user.id).exists():
-            return self.post_set.filter(type=STORY_KEY_WORD).all()[::-1]
+            if page_size == offset:
+                return self.post_set.filter(type=STORY_KEY_WORD).all()[-offset:][::-1]
+            return self.post_set.filter(type=STORY_KEY_WORD).all()[-offset:-offset + page_size][::-1]
 
         if user.type == PARENT_KEY_WORD:
             if parent_has_access_to_kelaas(kelaas=self, parent=user.parent):
-                return self.post_set.filter(type=STORY_KEY_WORD).all()[::-1]
+                if page_size == offset:
+                    return self.post_set.filter(type=STORY_KEY_WORD).all()[-offset:][::-1]
+                return self.post_set.filter(type=STORY_KEY_WORD).all()[-offset:-offset + page_size][::-1]
 
         raise GraphQLError('Permission denied')

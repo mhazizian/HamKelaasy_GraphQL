@@ -27,15 +27,19 @@ def resolve_student(root, info, **kwargs):
 
 def resolve_students(root, info, **kwargs):
     if info.context.user.is_authenticated:
+
+        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+        offset = kwargs.get('page', 1) * page_size
+
         user = info.context.user.person
 
         if user.type == PARENT_KEY_WORD:
-            return user.parent.childes.all()
+            return user.parent.childes.all()[offset - page_size:offset]
 
         if user.type == TEACHER_KEY_WORD:
             if 'kelaas_id' in kwargs:
                 if user.teacher.kelaases.filter(id=kwargs['kelaas_id']).exists():
-                    return Kelaas.objects.get(pk=kwargs['kelaas_id']).students.all()
+                    return Kelaas.objects.get(pk=kwargs['kelaas_id']).students.all()[offset - page_size:offset]
 
     raise GraphQLError('Permission denied')
 
@@ -61,15 +65,18 @@ def resolve_kelaases(root, info, **kwargs):
     if info.context.user.is_authenticated:
         user = info.context.user.person
 
+        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+        offset = kwargs.get('page', 1) * page_size
+
         if user.type == TEACHER_KEY_WORD:
-            return user.teacher.kelaases.all()
+            return user.teacher.kelaases.all()[offset - page_size:offset]
         if user.type == PARENT_KEY_WORD:
             if 'student_id' in kwargs:
                 if user.parent.childes.filter(pl=kwargs['student_id']).exists():
-                    return user.parent.childes.get(pk=kwargs['student_id']).kelaases.all()
+                    return user.parent.childes.get(pk=kwargs['student_id']).kelaases.all()[offset - page_size:offset]
 
         if user.type == STUDENT_KEY_WORD:
-            return user.student.kelaases.all()
+            return user.student.kelaases.all()[offset - page_size:offset]
     raise GraphQLError('Permission denied')
 
 
@@ -97,21 +104,20 @@ def resolve_me(root, info):
     raise GraphQLError('Permission denied')
 
 
-def resolve_badge_type(root, info, **kwargs):
+def resolve_badge_types(root, info, **kwargs):
     if 'id' in kwargs:
         id = kwargs['id']
         return Badge.objects.get(pk=id)
-    return Badge.objects.all()
+
+    page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+    offset = kwargs.get('page', 1) * page_size
+
+    return Badge.objects.all()[offset:offset + page_size]
 
 
 def resolve_certificate(root, info, id):
     if Certificate.objects.filter(pk=id).exists():
         return Certificate.objects.get(pk=id)
-
-
-# def resolve_persons(root, info):
-#     return Person.objects.all()
-
 
 def resolve_tags(root, info):
     return Tag.objects.all()
@@ -135,6 +141,8 @@ class Query(graphene.ObjectType):
         StudentType,
         description="Authetivation required.\n\nParent: return all childrens.\n\n"
                     + "Teacher: a 'kelaas_id' is necessary and return all students on that kelaas,",
+        page_size=graphene.Int(),
+        page=graphene.Int(),
         kelaas_id=graphene.Int(description="necessary for Teacher"),
         resolver=resolve_students,
     )
@@ -160,6 +168,8 @@ class Query(graphene.ObjectType):
         description="Authetivation required.\n\nTeacher: return all teacher's kelaases.\n\n"
                     + "Parent: 'student_id' is necessary and return all of student's kelaases,\n\n"
                     + "(only of parent has access to student)",
+        page_size=graphene.Int(),
+        page=graphene.Int(),
         student_id=graphene.Int(description="necessary for parents. return all of student's kelaases,"),
         resolver=resolve_kelaases,
     )
@@ -173,7 +183,7 @@ class Query(graphene.ObjectType):
 
     tags = graphene.List(
         TagType,
-        description="returns all tags registered in system.",
+        description="returns 'all' tags registered in system.",
         resolver=resolve_tags,
     )
 
@@ -181,5 +191,7 @@ class Query(graphene.ObjectType):
         BadgeModelType,
         description="returns all badges registered in system.\n\n(usage: showing to teacher on assigning page)",
         id=graphene.Int(description="optional, if provided: return badge with related badge_id"),
-        resolver=resolve_badge_type,
+        page_size=graphene.Int(),
+        page=graphene.Int(),
+        resolver=resolve_badge_types,
     )

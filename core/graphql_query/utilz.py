@@ -1,5 +1,7 @@
 from graphql import GraphQLError
 
+DEFAULT_PAGE_SIZE = 10
+
 
 def it_is_him(obj1, obj2):
     if not obj1.id == obj2.id:

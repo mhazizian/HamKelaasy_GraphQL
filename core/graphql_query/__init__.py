@@ -1,3 +1,5 @@
+from .utilz import DEFAULT_PAGE_SIZE
+
 from .certificate import CertificateLevelType, CertificateType
 from .certificate import PersonCertificateType, CertificateLinkType
 
