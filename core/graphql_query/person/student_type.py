@@ -84,7 +84,7 @@ class StudentType(PersonType):
             id=res[key][0].certificate_level.type.id,
             title=res[key][0].certificate_level.type.title,
             description=res[key][0].certificate_level.type.description,
-            # pic=res[key][0].type.pic,
+            pic=res[key][0].certificate_level.type.pic,
             creator=res[key][0].certificate_level.type.creator,
             levels=res[key]
         ) for key in res]
