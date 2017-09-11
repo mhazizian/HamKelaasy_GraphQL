@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 from django.db import models
 
+from Hamkelaasy_graphQL import settings
+
 
 class Badge(models.Model):
     title = models.CharField('badge names', max_length=200)
@@ -20,7 +22,7 @@ class Badge_link(models.Model):
 
     @property
     def pic(self):
-        return self.badge.type.pic.url
+        return settings.SERVER_ADDR[:-1] + self.type.pic.url
 
     @property
     def title(self):
