@@ -12,6 +12,7 @@ from khayyam import JalaliDatetime
 class Certificate(models.Model):
     title = models.CharField('certificate title', max_length=200)
     description = models.CharField('certificate desc', max_length=400)
+    create_date = models.DateTimeField('post creation date', default=timezone.now)
 
     creator = models.ForeignKey('Person', related_name="created_certificates",on_delete=models.CASCADE)
 
@@ -19,6 +20,16 @@ class Certificate(models.Model):
     def pic(self):
         f = Sys_file.objects.get(title="certificate")
         return settings.SERVER_ADDR[:-1] + f.data.url
+
+    @property
+    def time_passed(self):
+        delta = timezone.now() - self.create_date
+        return pretty_date(delta)
+
+    @property
+    def shamsi_date(self):
+        return JalaliDatetime(self.create_date).strftime(
+            '%A %D %B %N  %h:%v')
 
     def __unicode__(self):
         return self.title
@@ -29,11 +40,22 @@ class Certificate_level(models.Model):
 
     level = models.IntegerField('certificate-level', default=1)
     level_description = models.CharField('description for level', max_length=500)
+    create_date = models.DateTimeField('post creation date', default=timezone.now)
 
     @property
     def pic(self):
         f = Sys_file.objects.get(title="certificate " + str(self.level))
         return settings.SERVER_ADDR[:-1] + f.data.url
+
+    @property
+    def time_passed(self):
+        delta = timezone.now() - self.create_date
+        return pretty_date(delta)
+
+    @property
+    def shamsi_date(self):
+        return JalaliDatetime(self.create_date).strftime(
+            '%A %D %B %N  %h:%v')
 
     def __unicode__(self):
         return self.type.title + " level: " + str(self.level)
