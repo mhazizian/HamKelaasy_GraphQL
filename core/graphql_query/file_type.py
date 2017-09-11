@@ -9,4 +9,4 @@ class FileType(graphene.ObjectType):
     url = graphene.String()
 
     def resolve_url(self, info):
-        return self.data.url
+        return self.url
