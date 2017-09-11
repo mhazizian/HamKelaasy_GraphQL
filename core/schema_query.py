@@ -13,8 +13,8 @@ def resolve_student(root, info, **kwargs):
 
         id = kwargs['id']
         if user.type == PARENT_KEY_WORD:
-            if user.parent.student_set.filter(pk=id).exists():
-                return user.parent.student_set.get(pk=id)
+            if user.parent.childes.filter(pk=id).exists():
+                return user.parent.childes.get(pk=id)
             raise GraphQLError('Student not found')
 
         if user.type == TEACHER_KEY_WORD:
@@ -30,7 +30,7 @@ def resolve_students(root, info, **kwargs):
         user = info.context.user.person
 
         if user.type == PARENT_KEY_WORD:
-            return user.parent.student_set.all()
+            return user.parent.childes.all()
 
         if user.type == TEACHER_KEY_WORD:
             if 'kelaas_id' in kwargs:
@@ -65,8 +65,8 @@ def resolve_kelaases(root, info, **kwargs):
             return user.teacher.kelaases.all()
         if user.type == PARENT_KEY_WORD:
             if 'student_id' in kwargs:
-                if user.parent.student_set.filter(pl=kwargs['student_id']).exists():
-                    return user.parent.student_set.get(pk=kwargs['student_id']).kelaases.all()
+                if user.parent.childes.filter(pl=kwargs['student_id']).exists():
+                    return user.parent.childes.get(pk=kwargs['student_id']).kelaases.all()
 
         if user.type == STUDENT_KEY_WORD:
             return user.student.kelaases.all()

@@ -22,6 +22,7 @@ class Add_child(graphene.Mutation):
             raise GraphQLError('Bad data input')
 
         raise GraphQLError('Permission denied')
+    # TODO catch exeptions and convert in to message type
 
     @staticmethod
     def add(info, data):
