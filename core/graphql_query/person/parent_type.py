@@ -11,7 +11,7 @@ class ParentType(PersonType):
 
     childes = graphene.List('core.graphql_query.StudentType')
 
-    def resolve_childs(self, info):
+    def resolve_childes(self, info):
         user = info.context.user.person
 
         if it_is_him(self, user):
