@@ -16,6 +16,7 @@ class PersonCertificateType(graphene.ObjectType):
 
 class CertificateLinkType(graphene.ObjectType):
     # a Certificate_level model should be passed
+    # TODO rename this class
     pic = graphene.String()
     level = graphene.Int()
     level_description = graphene.String()

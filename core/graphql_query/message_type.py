@@ -5,3 +5,4 @@ class MessageType(graphene.ObjectType):
     name = "kelaas"
     type = graphene.String()
     message = graphene.String()
+    status = graphene.Int()
