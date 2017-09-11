@@ -39,6 +39,13 @@ class KelaasType(graphene.ObjectType):
         if user.type == STUDENT_KEY_WORD:
             if user.student.kelaases.filter(pk=self.id).exists():
                 return self.invite_code
+
+        # TODO why pass invite code to parent?!!!!
+        if user.type == PARENT_KEY_WORD:
+            for student in user.parent.childes.all():
+                if student.kelaases.filter(pk=self.id).exists():
+                    return self.invite_code
+
         raise GraphQLError('Permission denied')
 
     def resolve_tags(self, info):
