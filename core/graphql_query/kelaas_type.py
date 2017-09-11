@@ -2,7 +2,7 @@ import graphene
 from graphql import GraphQLError
 
 from core.graphql_query.utilz import parent_has_access_to_kelaas, DEFAULT_PAGE_SIZE
-from core.models import PARENT_KEY_WORD, STORY_KEY_WORD, KELAAS_POST_KEY_WORD
+from core.models import PARENT_KEY_WORD, STORY_KEY_WORD, KELAAS_POST_KEY_WORD, STUDENT_KEY_WORD
 
 
 class KelaasType(graphene.ObjectType):
@@ -36,6 +36,9 @@ class KelaasType(graphene.ObjectType):
 
         if self.teachers.filter(pk=user.id).exists():
             return self.invite_code
+        if user.type == STUDENT_KEY_WORD:
+            if user.student.kelaases.filter(pk=self.id).exists():
+                return self.invite_code
         raise GraphQLError('Permission denied')
 
     def resolve_tags(self, info):
@@ -60,9 +63,7 @@ class KelaasType(graphene.ObjectType):
         offset = kwargs.get('page', 1) * page_size
 
         if self.teachers.filter(pk=user.id).exists() or self.students.filter(pk=user.id).exists():
-            if page_size == offset:
-                return self.post_set.filter(type=KELAAS_POST_KEY_WORD).all()[-offset:][::-1]
-            return self.post_set.filter(type=KELAAS_POST_KEY_WORD).all()[-offset:-offset + page_size][::-1]
+            return self.post_set.filter(type=KELAAS_POST_KEY_WORD).all().reverse()[offset - page_size:offset]
 
         raise GraphQLError('Permission denied')
 
@@ -73,14 +74,10 @@ class KelaasType(graphene.ObjectType):
         offset = kwargs.get('page', 1) * page_size
 
         if self.teachers.filter(pk=user.id).exists():
-            if page_size == offset:
-                return self.post_set.filter(type=STORY_KEY_WORD).all()[-offset:][::-1]
-            return self.post_set.filter(type=STORY_KEY_WORD).all()[-offset:-offset + page_size][::-1]
+            return self.post_set.filter(type=STORY_KEY_WORD).all().reverse()[offset - page_size:offset]
 
         if user.type == PARENT_KEY_WORD:
             if parent_has_access_to_kelaas(kelaas=self, parent=user.parent):
-                if page_size == offset:
-                    return self.post_set.filter(type=STORY_KEY_WORD).all()[-offset:][::-1]
-                return self.post_set.filter(type=STORY_KEY_WORD).all()[-offset:-offset + page_size][::-1]
+                return self.post_set.filter(type=STORY_KEY_WORD).all().reverse()[offset - page_size:offset]
 
         raise GraphQLError('Permission denied')
