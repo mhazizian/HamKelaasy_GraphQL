@@ -10,6 +10,8 @@ class PersonCertificateType(graphene.ObjectType):
     description = graphene.String()
     pic = graphene.String()
     creator = graphene.Field('core.graphql_query.PersonType')
+    shamsi_date = graphene.String()
+    time_passed = graphene.String()
 
     levels = graphene.List('core.graphql_query.CertificateLinkType')
 
@@ -21,6 +23,7 @@ class CertificateLinkType(graphene.ObjectType):
     level = graphene.Int()
     level_description = graphene.String()
     assigner = graphene.Field('core.graphql_query.PersonType')
+    shamsi_date = graphene.String()
     time_passed = graphene.String()
 
     def resolve_pic(self, info):
