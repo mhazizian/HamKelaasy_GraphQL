@@ -2,8 +2,11 @@ from __future__ import unicode_literals
 
 from django.utils import timezone
 from django.db import models
+
+from Hamkelaasy_graphQL import settings
 from core.models import Sys_file
 from core.models.utilz import pretty_date
+from khayyam import JalaliDatetime
 
 
 class Certificate(models.Model):
@@ -15,7 +18,7 @@ class Certificate(models.Model):
     @property
     def pic(self):
         f = Sys_file.objects.get(title="certificate")
-        return f.data.url
+        return settings.SERVER_ADDR[:-1] + f.data.url
 
     def __unicode__(self):
         return self.title
@@ -30,7 +33,7 @@ class Certificate_level(models.Model):
     @property
     def pic(self):
         f = Sys_file.objects.get(title="certificate " + str(self.level))
-        return f.data.url
+        return settings.SERVER_ADDR[:-1] + f.data.url
 
     def __unicode__(self):
         return self.type.title + " level: " + str(self.level)
@@ -47,3 +50,8 @@ class Certificate_link(models.Model):
     def time_passed(self):
         delta = timezone.now() - self.create_date
         return pretty_date(delta)
+
+    @property
+    def shamsi_date(self):
+        return JalaliDatetime(self.create_date).strftime(
+            '%A %D %B %N  %h:%v')
