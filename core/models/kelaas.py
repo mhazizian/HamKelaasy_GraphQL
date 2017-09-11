@@ -20,8 +20,7 @@ class Kelaas(models.Model):
 
     @property
     def shamsi_date(self):
-        local_tz = pytz.timezone('Asia/Tehran')
-        return JalaliDatetime(self.create_date.replace(tzinfo=pytz.utc).astimezone(local_tz)).strftime(
+        return JalaliDatetime(self.create_date).strftime(
             '%A %D %B %N  %h:%v')
 
     def save(self, *args, **kwargs):

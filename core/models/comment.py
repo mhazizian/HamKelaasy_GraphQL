@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 from core.models.utilz import pretty_date
+from khayyam import JalaliDatetime
 
 
 class Comment(models.Model):
@@ -17,6 +18,11 @@ class Comment(models.Model):
     def time_passed(self):
         delta = timezone.now() - self.create_date
         return pretty_date(delta)
+
+    @property
+    def shamsi_date(self):
+        return JalaliDatetime(self.create_date).strftime(
+            '%A %D %B %N  %h:%v')
 
     def __unicode__(self):
         return unicode(self.body)
