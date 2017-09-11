@@ -24,6 +24,12 @@ class File(models.Model):
 class Sys_file(models.Model):
     title = models.CharField('file title', max_length=200)
     data = models.FileField('file', upload_to='sys/')
+    '''
+    registered titles:
+    
+    >certificate : pic for each certificate model pic
+    >certificate <level num> : pic for all certificates_level with same level_num 
+    '''
 
     def __unicode__(self):
         return unicode(self.title)
