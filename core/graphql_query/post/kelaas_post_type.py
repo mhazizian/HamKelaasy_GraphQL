@@ -8,5 +8,5 @@ class KelaasPostType(PostType):
     files = graphene.List('core.graphql_query.FileType')
 
     def resolve_files(self, info):
-        return self.files.all()
+        return self.kelaas_post.files.all()[:]
 
