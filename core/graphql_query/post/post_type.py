@@ -23,10 +23,7 @@ class PostType(graphene.ObjectType):
     def resolve_comments(self, info, **kwargs):
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
-
-        if page_size == offset:
-            return self.comments.all()[-offset:][::-1]
-        return self.comments.all().reverse()[offset - page_size:offset]
+        return self.comments.all().reverse().reverse()[offset - page_size:offset]
 
     def resolve_owner(self, info):
         return self.owner
