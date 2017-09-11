@@ -10,6 +10,9 @@ urlpatterns = [
     # GraphQL main address:
     url(r'^graphql$', views.index, name='index'),
 
+    # logout url
+    url(r'^logout$', views.logout, name='logout'),
+
     # Upload file endpoint:
     url(r'^file/upload$', views.upload_file, name='upload'),
 

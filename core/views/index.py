@@ -18,11 +18,13 @@ def index(request):
 
         res = schema.execute(data.get('query', ''), context_value=request)
         if res.errors:
-            print res.errors[0].message
             return HttpResponse(res.errors[0].message, status=400)
         return HttpResponse(json.dumps(res.data), content_type='application/json', status=200)
 
     return HttpResponse("not post method!", status=405)
 
 
-
+@api_view(['POST'])
+def logout(request):
+    # TODO expire given token
+    return HttpResponse('')
