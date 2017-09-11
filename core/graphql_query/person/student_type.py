@@ -57,9 +57,11 @@ class StudentType(PersonType):
             return self.badges.all()
 
         if user.type == TEACHER_KEY_WORD:
+            badges = []
             for kelaas in user.teacher.kelaases.all():
                 if kelaas.students.filter(pk=self.id).exists():
-                    return self.badges.filter(kelaas=kelaas)
+                    badges.append(self.badges.filter(kelaas=kelaas))
+            return badges
 
         if user.type == PARENT_KEY_WORD:
             if it_is_him(user, self.parents):
