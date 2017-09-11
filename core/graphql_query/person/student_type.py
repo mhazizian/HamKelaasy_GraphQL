@@ -20,6 +20,10 @@ class StudentType(PersonType):
         page_size=graphene.Int(),
         page=graphene.Int(),
     )
+    kelaas = graphene.Field(
+        'core.graphql_query.KelaasType',
+        id=graphene.Int(),
+    )
     parent = graphene.Field('core.graphql_query.ParentType')
     badges = graphene.List(
         'core.graphql_query.BadgeLink',
@@ -42,6 +46,25 @@ class StudentType(PersonType):
                 return self.kelaases.all().reverse()[offset - page_size:offset]
         if it_is_him(user, self):
             return self.kelaases.all().reverse()[offset - page_size:offset]
+
+        raise GraphQLError('Permission denied')
+
+    def resolve_kelaas(self, info, id):
+        user = info.context.user.person
+
+        if user.type == PARENT_KEY_WORD:
+            if it_is_him(user, self.parents):
+                if self.kelaases.filter(pk=id).exists():
+                    return self.kelaases.get(pk=id)
+
+        if user.type == TEACHER_KEY_WORD:
+            if self.kelaases.filter(pk=id).exists():
+                if user.teacher.kelaases.filter(pk=id).exists():
+                    return self.kelaases.get(pk=id)
+
+        if it_is_him(user, self):
+            if self.kelaases.filter(pk=id).exists():
+                return self.kelaases.get(pk=id)
 
         raise GraphQLError('Permission denied')
 
