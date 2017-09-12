@@ -43,4 +43,5 @@ class Create_story(graphene.Mutation):
         if data.pic:
             if File.objects.filter(pk=data.pic).exists():
                 story.story_pic_id = data.pic
+        story.save()
         return True
