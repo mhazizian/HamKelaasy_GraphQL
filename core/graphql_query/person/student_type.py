@@ -88,10 +88,13 @@ class StudentType(PersonType):
 
         if it_is_him(user, self):
             if 'kelaas_id' in kwargs:
-                self.badges.filter(kelaas_id=kwargs['kelaas_id'])
+                return self.badges.filter(kelaas_id=kwargs['kelaas_id'])[offset - page_size:offset]
             return self.badges.all()[offset - page_size:offset]
 
         if user.type == TEACHER_KEY_WORD:
+            if 'kelaas_id' in kwargs:
+                if user.teacher.kelaases.filter(kelaas_id=kwargs['kelaas_id']).exists():
+                    return self.badges.filter(kelaas_id=kwargs['kelaas_id'])[offset - page_size:offset]
             badges = []
             for kelaas in user.teacher.kelaases.all():
                 if kelaas.students.filter(pk=self.id).exists():
