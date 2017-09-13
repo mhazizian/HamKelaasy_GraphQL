@@ -1,3 +1,6 @@
+from .chat_model import Conversation, Conversation_message
+
+
 from .person import Person
 from .person import Parent, PARENT_KEY_WORD
 from .person import Student, STUDENT_KEY_WORD
