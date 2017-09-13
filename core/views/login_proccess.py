@@ -101,7 +101,7 @@ def resolve_fard(request):
     if User.objects.filter(username=username).exists():
         user = User.objects.get(username=username)
         return HttpResponseRedirect(
-            "http://94.182.227.193:9092/#!/fard/redirect" \
+            "http://94.182.227.193:9091/#!/fard/redirect" \
             + "?state=" + "1" \
             + "&token=" + Token.objects.get(user=user).key \
             + "&type=" + user.person.type
@@ -128,7 +128,7 @@ def resolve_fard(request):
         user_temp.save()
 
     return HttpResponseRedirect(
-        "http://94.182.227.193:9092/#!/fard/redirect" \
+        "http://94.182.227.193:9091/#!/fard/redirect" \
         + "?state=" + "0" \
         + "&fd_id=" + str(user_temp.id)
     )
