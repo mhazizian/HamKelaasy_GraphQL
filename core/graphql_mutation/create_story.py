@@ -2,7 +2,7 @@ import graphene
 from core import myGraphQLError
 
 from core.graphql_query import MessageType
-from core.models import Story, TEACHER_KEY_WORD, File
+from core.models import Story, TEACHER_KEY_WORD, File, Kelaas
 
 
 class Story_input(graphene.InputObjectType):
@@ -19,24 +19,28 @@ class Create_story(graphene.Mutation):
     Output = MessageType
 
     def mutate(self, info, data):
-        if info.context.user.is_authenticated:
-            user = info.context.user.person
-            if user.type == TEACHER_KEY_WORD:
-                if user.teacher.kelaases.filter(pk=data.kelaas_id).exists():
-                    kelaas = user.teacher.kelaases.get(pk=data.kelaas_id)
-                    Create_story.make_story(info, kelaas, data, user.teacher)
-                    return MessageType(type="success", message="Story added.")
-                raise myGraphQLError('Bad data input')
-
-        raise myGraphQLError('Permission denied')
+        if Create_story.make_story(info, data):
+            return MessageType(type="success", message="Story added.")
 
     @staticmethod
-    def make_story(info, kelaas, data, teacher):
+    def make_story(info, data):
+        if not info.context.user.is_authenticated:
+            raise myGraphQLError('user not authenticated', status=401)
+        user = info.context.user.person
+
+        if not user.type == TEACHER_KEY_WORD:
+            raise myGraphQLError('Permission denied', status=403)
+
+        try:
+            kelaas = user.teacher.kelaases.get(pk=data.kelaas_id)
+        except Kelaas.DoesNotExist:
+            raise myGraphQLError('Kelaas not found', status=404)
+
         story = Story(
             title=data.title,
             description=data.description,
             kelaas=kelaas,
-            owner=teacher,
+            owner=user.teacher,
         )
         story.save()
 

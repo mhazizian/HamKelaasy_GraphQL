@@ -16,23 +16,24 @@ class Join_kelaas(graphene.Mutation):
     Output = MessageType
 
     def mutate(self, info, data):
-        if info.context.user.is_authenticated:
-            if Join_kelaas.join(info, data):
-                return MessageType(type="success", message="badge_count")
-            raise myGraphQLError('Bad data input')
-
-        raise myGraphQLError('Permission denied')
+        if Join_kelaas.join(info, data):
+            return MessageType(type="success", message="badge_count")
 
     @staticmethod
     def join(info, data):
+        if not info.context.user.is_authenticated:
+            raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
-        if not user.type == STUDENT_KEY_WORD:
-            return False
 
-        if not Kelaas.objects.filter(invite_code=data.invite_code).exists():
-            return False
-        kelaas = Kelaas.objects.get(invite_code=data.invite_code)
+        if not user.type == STUDENT_KEY_WORD:
+            raise myGraphQLError('Permission denied', status=403)
+
+        try:
+            kelaas = Kelaas.objects.get(invite_code=data.invite_code)
+        except Kelaas.DoesNotExist:
+            raise myGraphQLError('Kelaas not found', status=404)
+
         if not kelaas.students.filter(pk=user.id).exists():
             kelaas.students.add(user.student)
-
+            kelaas.save()
         return True

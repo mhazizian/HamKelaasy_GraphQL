@@ -17,16 +17,18 @@ class Upload_file(graphene.Mutation):
     Output = MessageType
 
     def mutate(self, info, data):
-        if info.context.user.is_authenticated:
-            user = info.context.user.person
-            if user.type == TEACHER_KEY_WORD:
-                res = Upload_file.upload(info, data)
-                return MessageType(type="success", message=res)
-
-        raise myGraphQLError('Permission denied')
+        res = Upload_file.upload(info, data)
+        return MessageType(type="success", message=res)
 
     @staticmethod
     def upload(info, data):
+        if not info.context.user.is_authenticated:
+            raise myGraphQLError('user not authenticated', status=401)
+        user = info.context.user.person
+
+        if not user.type == TEACHER_KEY_WORD:
+            raise myGraphQLError('Permission denied', status=403)
+
         uploaded_file = []
         for f in info.context.FILES.getlist('post-files'):
             temp = File(

@@ -17,36 +17,36 @@ class Add_comment(graphene.Mutation):
     Output = MessageType
 
     def mutate(self, info, data):
-        if info.context.user.is_authenticated:
-            if Add_comment.add_comment(info, data):
-                return MessageType(type="success", message="badge_count")
-            raise myGraphQLError('Bad data input')
-
-        raise myGraphQLError('Permission denied')
+        if Add_comment.add_comment(info, data):
+            return MessageType(type="success", message="badge_count")
 
     @staticmethod
     def add_comment(info, data):
+        if not info.context.user.is_authenticated:
+            raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
-        if not Post.objects.filter(pk=data.post_id).exists():
-            return False
-        post = Post.objects.get(pk=data.post_id)
+
+        try:
+            post = Post.objects.get(pk=data.post_id)
+        except Post.DoesNotExist:
+            raise myGraphQLError('Post not found', status=404)
 
         if user.type == STUDENT_KEY_WORD:
             if not user.student.kelaases.filter(pk=post.kelaas_id).exists():
-                return False
+                raise myGraphQLError('Permission denied', status=403)
 
         if user.type == TEACHER_KEY_WORD:
             if not user.teacher.kelaases.filter(pk=post.kelaas_id).exists():
-                return False
+                raise myGraphQLError('Permission denied', status=403)
 
         if user.type == PARENT_KEY_WORD:
-            f = False
+            access_flag = False
             for student in user.parent.childes.all():
                 if student.kelaases.filter(pk=post.kelaas_id).exists():
-                    f = True
+                    access_flag = True
                     break
-            if not f:
-                return False
+            if not access_flag:
+                raise myGraphQLError('Permission denied', status=403)
 
         comment = Comment(
             body=data.body,

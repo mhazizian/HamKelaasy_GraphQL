@@ -28,7 +28,7 @@ class ParentType(PersonType):
         if it_is_him(self, user):
             return self.childes.all()[offset - page_size:offset]
 
-        raise myGraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied', status=403)
 
     def resolve_child(self, info, id):
         user = info.context.user.person
@@ -37,4 +37,4 @@ class ParentType(PersonType):
             if self.childes.filter(pk=id).exists():
                 return self.childes.get(pk=id)
 
-        raise myGraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied', status=403)

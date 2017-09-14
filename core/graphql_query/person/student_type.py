@@ -41,13 +41,15 @@ class StudentType(PersonType):
 
         if user.type == TEACHER_KEY_WORD:
             return [kelaas for kelaas in self.kelaases.all() if user.teacher.kelaases.filter(id=kelaas.id).exists()].reverse()[offset - page_size:offset]
+
         if user.type == PARENT_KEY_WORD:
             if it_is_him(user, self.parents):
                 return self.kelaases.all().reverse()[offset - page_size:offset]
+
         if it_is_him(user, self):
             return self.kelaases.all().reverse()[offset - page_size:offset]
 
-        raise myGraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied', status=403)
 
     def resolve_kelaas(self, info, id):
         user = info.context.user.person
@@ -66,7 +68,7 @@ class StudentType(PersonType):
             if self.kelaases.filter(pk=id).exists():
                 return self.kelaases.get(pk=id)
 
-        raise myGraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied', status=403)
 
     def resolve_parent(self, info):
         user = info.context.user.person
@@ -78,7 +80,8 @@ class StudentType(PersonType):
 
         if it_is_him(user, self):
             return self.parents
-        raise myGraphQLError('Permission denied')
+
+        raise myGraphQLError('Permission denied', status=403)
 
     def resolve_badges(self, info, **kwargs):
         user = info.context.user.person
@@ -107,7 +110,7 @@ class StudentType(PersonType):
                     self.badges.filter(kelaas_id=kwargs['kelaas_id'])
                 return self.badges.all()[offset - page_size:offset]
 
-        raise myGraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied', status=403)
 
     def resolve_certificates(self, info):
         # user = info.context.user.person ?!!!
@@ -117,7 +120,6 @@ class StudentType(PersonType):
         for c_link in self.certificates.all():
             if not c_link.certificate_level.type.id in res:
                 res[c_link.certificate_level.type.id] = []
-
             res[c_link.certificate_level.type.id].append(c_link)
 
         return [PersonCertificateType(

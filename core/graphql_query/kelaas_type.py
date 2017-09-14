@@ -1,7 +1,7 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query.utilz import parent_has_access_to_kelaas, DEFAULT_PAGE_SIZE
+from core.graphql_query.utilz import parent_has_access_to_kelaas, DEFAULT_PAGE_SIZE, teacher_has_access_to_kelaas
 from core.models import PARENT_KEY_WORD, STORY_KEY_WORD, KELAAS_POST_KEY_WORD, STUDENT_KEY_WORD, TEACHER_KEY_WORD
 
 
@@ -39,19 +39,22 @@ class KelaasType(graphene.ObjectType):
     def resolve_invite_code(self, info):
         user = info.context.user.person
 
-        if self.teachers.filter(pk=user.id).exists():
-            return self.invite_code
+        if user.type == TEACHER_KEY_WORD:
+            if teacher_has_access_to_kelaas(self, user.teacher):
+                return self.invite_code
+            raise myGraphQLError('Permission denied', status=403)
+
         if user.type == STUDENT_KEY_WORD:
             if user.student.kelaases.filter(pk=self.id).exists():
                 return self.invite_code
+            raise myGraphQLError('Permission denied', status=403)
 
         # TODO why pass invite code to parent?!!!!
         if user.type == PARENT_KEY_WORD:
             for student in user.parent.childes.all():
                 if student.kelaases.filter(pk=self.id).exists():
                     return self.invite_code
-
-        raise myGraphQLError('Permission denied')
+            raise myGraphQLError('Permission denied', status=403)
 
     def resolve_tags(self, info):
         return self.tags.all()
@@ -61,13 +64,17 @@ class KelaasType(graphene.ObjectType):
 
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
+
         if user.type == TEACHER_KEY_WORD:
-            if self.teachers.filter(pk=user.id).exists():
+            if teacher_has_access_to_kelaas(self, user.teacher):
                 return self.students.all()[offset - page_size:offset]
+            raise myGraphQLError('Permission denied', status=403)
+
         if user.type == PARENT_KEY_WORD:
             return [student for student in self.students.all() if student.parents.id == user.parent.id][
                    offset - page_size:offset]
-        raise myGraphQLError('Permission denied')
+
+        raise myGraphQLError('Permission denied', status=403)
 
     def resolve_kelaas_posts(self, info, **kwargs):
         user = info.context.user.person
@@ -75,10 +82,10 @@ class KelaasType(graphene.ObjectType):
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
 
-        if self.teachers.filter(pk=user.id).exists() or self.students.filter(pk=user.id).exists():
+        if teacher_has_access_to_kelaas(self, user.teacher) or self.students.filter(pk=user.id).exists():
             return self.post_set.filter(type=KELAAS_POST_KEY_WORD).all().reverse()[offset - page_size:offset]
 
-        raise myGraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied', status=403)
 
     def resolve_stories(self, info, **kwargs):
         user = info.context.user.person
@@ -87,27 +94,23 @@ class KelaasType(graphene.ObjectType):
         offset = kwargs.get('page', 1) * page_size
 
         if user.type == TEACHER_KEY_WORD:
-            if self.teachers.filter(pk=user.id).exists():
+            if teacher_has_access_to_kelaas(self, user.teacher):
                 return self.post_set.filter(type=STORY_KEY_WORD).all().reverse()[offset - page_size:offset]
 
         if user.type == PARENT_KEY_WORD:
             if parent_has_access_to_kelaas(kelaas=self, parent=user.parent):
                 return self.post_set.filter(type=STORY_KEY_WORD).all().reverse()[offset - page_size:offset]
 
-        raise myGraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied', status=403)
 
-    # def resolve_conversations(self, info, **kwargs):
-    #     user = info.context.user.person
-    #
-    #     page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-    #     offset = kwargs.get('page', 1) * page_size
-    #
-    #     if user.type == TEACHER_KEY_WORD:
-    #         return self.conversations.filter(member_count=2).reverse()[offset - page_size:offset]
-    #
-    #     if user.type == PARENT_KEY_WORD:
-    #         conv = []
-
-
-
-
+        # def resolve_conversations(self, info, **kwargs):
+        #     user = info.context.user.person
+        #
+        #     page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+        #     offset = kwargs.get('page', 1) * page_size
+        #
+        #     if user.type == TEACHER_KEY_WORD:
+        #         return self.conversations.filter(member_count=2).reverse()[offset - page_size:offset]
+        #
+        #     if user.type == PARENT_KEY_WORD:
+        #         conv = []

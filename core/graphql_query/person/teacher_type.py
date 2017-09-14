@@ -25,7 +25,7 @@ class TeacherType(PersonType):
         if it_is_him(self, user):
             if user.teacher.kelaases.filter(pk=id).exists():
                 return self.kelaases.get(pk=id)
-        raise myGraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied', status=403)
 
     def resolve_kelaases(self, info, **kwargs):
         user = info.context.user.person
@@ -35,4 +35,4 @@ class TeacherType(PersonType):
 
         if it_is_him(self, user):
             return self.kelaases.all().reverse()[offset - page_size:offset]
-        raise myGraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied', status=403)

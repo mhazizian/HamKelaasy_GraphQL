@@ -18,24 +18,25 @@ class Create_kelaas(graphene.Mutation):
     Output = MessageType
 
     def mutate(self, info, data):
-        if info.context.user.is_authenticated:
-            user = info.context.user.person
-            if user.type == TEACHER_KEY_WORD:
-                Create_kelaas.make_kelaas(user.teacher, data)
-                return MessageType(type="success", message="Kelaas added.")
-            raise myGraphQLError('Bad data input')
-
-        raise myGraphQLError('Permission denied')
+        if Create_kelaas.make_kelaas(info, data):
+            return MessageType(type="success", message="Kelaas added.")
 
     @staticmethod
-    def make_kelaas(teacher, data):
+    def make_kelaas(info, data):
+        if not info.context.user.is_authenticated:
+            raise myGraphQLError('user not authenticated', status=401)
+        user = info.context.user.person
+
+        if not user.type == TEACHER_KEY_WORD:
+            raise myGraphQLError('Permission denied', status=403)
+
         kelaas = Kelaas(
             title=data.title,
             description=data.description,
         )
         kelaas.save()
-        teacher.kelaases.add(kelaas)
-        teacher.save()
+        user.teacher.kelaases.add(kelaas)
+        user.teacher.save()
         for tag_id in data.tags.split(','):
             if Tag.objects.filter(pk=tag_id).exists():
                 tag = Tag.objects.get(pk=tag_id)

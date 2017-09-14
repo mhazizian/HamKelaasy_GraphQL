@@ -2,7 +2,7 @@ import graphene
 from core import myGraphQLError
 
 from core.graphql_query import MessageType
-from core.models import TEACHER_KEY_WORD, Student, Badge_link, Badge
+from core.models import TEACHER_KEY_WORD, Student, Badge_link, Badge, Kelaas
 
 
 class Assign_badge_input(graphene.InputObjectType):
@@ -18,30 +18,28 @@ class Assign_badge(graphene.Mutation):
     Output = MessageType
 
     def mutate(self, info, data):
-        if info.context.user.is_authenticated:
-            if Assign_badge.assign_badge(info, data):
-                return MessageType(type="success", message="badge_count")
-            raise myGraphQLError('Bad data input')
-
-        raise myGraphQLError('Permission denied')
+        if Assign_badge.assign_badge(info, data):
+            return MessageType(type="success", message="badge_count")
 
     @staticmethod
     def assign_badge(info, data):
+        if not info.context.user.is_authenticated:
+            raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
+
         if not user.type == TEACHER_KEY_WORD:
-            return False
+            raise myGraphQLError('Permission denied', status=403)
         teacher = user.teacher
 
         if not teacher.kelaases.filter(pk=data.kelaas_id).exists():
             return False
-        kelaas = user.teacher.kelaases.get(pk=data.kelaas_id)
-
-        if not Student.objects.filter(pk=data.student_id).exists():
-            return False
-        student = Student.objects.get(pk=data.student_id)
-
-        if not student.kelaases.filter(pk=kelaas.id).exists():
-            return False
+        try:
+            kelaas = user.teacher.kelaases.get(pk=data.kelaas_id)
+            student = Student.objects.get(pk=data.student_id)
+        except Kelaas.DoesNotExist:
+            raise myGraphQLError('Kelaas not found', status=404)
+        except Student.DoesNotExist:
+            raise myGraphQLError('Student not found', status=404)
 
         for badge_id in data.badges.split(','):
             if Badge_link.objects.filter(student=student, type_id=badge_id, kelaas=kelaas).exists():
@@ -49,11 +47,12 @@ class Assign_badge(graphene.Mutation):
                 t.count = t.count + 1
                 t.save()
             else:
-                if Badge.objects.filter(pk=badge_id).exists():
-                    t = Badge_link(
-                        student=student,
-                        kelaas=kelaas,
-                        type_id=badge_id,
-                    )
-                    t.save()
+                if not Badge.objects.filter(pk=badge_id).exists():
+                    raise myGraphQLError('Badge not found', status=404)
+                t = Badge_link(
+                    student=student,
+                    kelaas=kelaas,
+                    type_id=badge_id,
+                )
+                t.save()
         return True
