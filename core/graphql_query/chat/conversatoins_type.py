@@ -16,4 +16,4 @@ class ConversationType(graphene.ObjectType):
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
 
-        return self.messages.all().reverse()[offset - page_size:offset]
+        return self.messages.all().order_by('-id')[offset - page_size:offset]

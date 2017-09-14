@@ -34,5 +34,5 @@ class TeacherType(PersonType):
         offset = kwargs.get('page', 1) * page_size
 
         if it_is_him(self, user):
-            return self.kelaases.all().reverse()[offset - page_size:offset]
+            return self.kelaases.all().order_by('-id')[offset - page_size:offset]
         raise myGraphQLError('Permission denied', status=403)
