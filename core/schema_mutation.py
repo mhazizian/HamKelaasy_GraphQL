@@ -1,5 +1,3 @@
-from core import myGraphQLError
-
 import graphene
 
 from graphql_mutation import Create_kelaas, Create_kelaas_post, Create_story, Upload_file, Assign_badge, Add_comment, \
