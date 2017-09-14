@@ -1,5 +1,5 @@
 import graphene
-from graphql import GraphQLError
+from core import myGraphQLError
 
 from core.graphql_query import MessageType
 from core.models import Tag, Kelaas, TEACHER_KEY_WORD
@@ -23,9 +23,9 @@ class Create_kelaas(graphene.Mutation):
             if user.type == TEACHER_KEY_WORD:
                 Create_kelaas.make_kelaas(user.teacher, data)
                 return MessageType(type="success", message="Kelaas added.")
-            raise GraphQLError('Bad data input')
+            raise myGraphQLError('Bad data input')
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     @staticmethod
     def make_kelaas(teacher, data):

@@ -1,5 +1,5 @@
 import graphene
-from graphql import GraphQLError
+from core import myGraphQLError
 
 from core.graphql_query import MessageType
 from core.models import Story, TEACHER_KEY_WORD, File
@@ -26,9 +26,9 @@ class Create_story(graphene.Mutation):
                     kelaas = user.teacher.kelaases.get(pk=data.kelaas_id)
                     Create_story.make_story(info, kelaas, data, user.teacher)
                     return MessageType(type="success", message="Story added.")
-                raise GraphQLError('Bad data input')
+                raise myGraphQLError('Bad data input')
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     @staticmethod
     def make_story(info, kelaas, data, teacher):

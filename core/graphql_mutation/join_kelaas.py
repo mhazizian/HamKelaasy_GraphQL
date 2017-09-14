@@ -1,5 +1,5 @@
 import graphene
-from graphql import GraphQLError
+from core import myGraphQLError
 
 from core.graphql_query import MessageType
 from core.models import STUDENT_KEY_WORD, Kelaas
@@ -19,9 +19,9 @@ class Join_kelaas(graphene.Mutation):
         if info.context.user.is_authenticated:
             if Join_kelaas.join(info, data):
                 return MessageType(type="success", message="badge_count")
-            raise GraphQLError('Bad data input')
+            raise myGraphQLError('Bad data input')
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     @staticmethod
     def join(info, data):

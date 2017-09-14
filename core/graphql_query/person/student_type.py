@@ -1,5 +1,5 @@
 import graphene
-from graphql import GraphQLError
+from core import myGraphQLError
 
 from core.models import TEACHER_KEY_WORD, STUDENT_KEY_WORD, PARENT_KEY_WORD
 from core.graphql_query.utilz import it_is_him, DEFAULT_PAGE_SIZE
@@ -47,7 +47,7 @@ class StudentType(PersonType):
         if it_is_him(user, self):
             return self.kelaases.all().reverse()[offset - page_size:offset]
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     def resolve_kelaas(self, info, id):
         user = info.context.user.person
@@ -66,7 +66,7 @@ class StudentType(PersonType):
             if self.kelaases.filter(pk=id).exists():
                 return self.kelaases.get(pk=id)
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     def resolve_parent(self, info):
         user = info.context.user.person
@@ -78,7 +78,7 @@ class StudentType(PersonType):
 
         if it_is_him(user, self):
             return self.parents
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     def resolve_badges(self, info, **kwargs):
         user = info.context.user.person
@@ -107,7 +107,7 @@ class StudentType(PersonType):
                     self.badges.filter(kelaas_id=kwargs['kelaas_id'])
                 return self.badges.all()[offset - page_size:offset]
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     def resolve_certificates(self, info):
         # user = info.context.user.person ?!!!

@@ -1,5 +1,5 @@
 import graphene
-from graphql import GraphQLError
+from core import myGraphQLError
 
 from core.graphql_query import MessageType
 from core.models import TEACHER_KEY_WORD, Post, STUDENT_KEY_WORD, PARENT_KEY_WORD, Comment
@@ -20,9 +20,9 @@ class Add_comment(graphene.Mutation):
         if info.context.user.is_authenticated:
             if Add_comment.add_comment(info, data):
                 return MessageType(type="success", message="badge_count")
-            raise GraphQLError('Bad data input')
+            raise myGraphQLError('Bad data input')
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     @staticmethod
     def add_comment(info, data):

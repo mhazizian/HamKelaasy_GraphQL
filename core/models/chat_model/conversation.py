@@ -9,3 +9,7 @@ class Conversation(models.Model):
     @property
     def message_count(self):
         return self.messages.count()
+
+    @property
+    def member_count(self):
+        return self.members.count()

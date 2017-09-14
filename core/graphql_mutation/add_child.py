@@ -1,5 +1,5 @@
 import graphene
-from graphql import GraphQLError
+from core import myGraphQLError
 
 from core.graphql_query import MessageType
 from core.models import PARENT_KEY_WORD, Student
@@ -19,9 +19,9 @@ class Add_child(graphene.Mutation):
         if info.context.user.is_authenticated:
             if Add_child.add(info, data):
                 return MessageType(type="success", message="child added.")
-            raise GraphQLError('Bad data input')
+            raise myGraphQLError('Bad data input')
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
     # TODO catch exeptions and convert in to message type
 
     @staticmethod
@@ -31,10 +31,10 @@ class Add_child(graphene.Mutation):
             return False
 
         if not Student.objects.filter(parent_code=data.child_code).exists():
-            raise GraphQLError('Permission denied')
+            raise myGraphQLError('Permission denied')
         student = Student.objects.get(parent_code=data.child_code)
         if student.parents:
-            raise GraphQLError('Permission denied')
+            raise myGraphQLError('Permission denied')
 
         student.parents = user.parent
         student.save()

@@ -1,4 +1,4 @@
-from graphql import GraphQLError
+from core import myGraphQLError
 
 DEFAULT_PAGE_SIZE = 10
 

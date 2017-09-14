@@ -1,4 +1,4 @@
-from graphql import GraphQLError
+from core import myGraphQLError
 
 import graphene
 from core.models import *
@@ -15,14 +15,14 @@ def resolve_student(root, info, **kwargs):
         if user.type == PARENT_KEY_WORD:
             if user.parent.childes.filter(pk=id).exists():
                 return user.parent.childes.get(pk=id)
-            raise GraphQLError('Student not found')
+            raise myGraphQLError('Student not found')
 
         if user.type == TEACHER_KEY_WORD:
             for kelaas in user.teacher.kelaases.all():
                 if kelaas.students.filter(id=id).exists():
                     return Student.objects.get(pk=id)
 
-    raise GraphQLError('Permission denied')
+    raise myGraphQLError('Permission denied')
 
 
 def resolve_students(root, info, **kwargs):
@@ -41,7 +41,7 @@ def resolve_students(root, info, **kwargs):
                 if user.teacher.kelaases.filter(id=kwargs['kelaas_id']).exists():
                     return Kelaas.objects.get(pk=kwargs['kelaas_id']).students.all()[offset - page_size:offset]
 
-    raise GraphQLError('Permission denied')
+    raise myGraphQLError('Permission denied')
 
 
 def resolve_kelaas(root, info, id):
@@ -58,7 +58,7 @@ def resolve_kelaas(root, info, id):
         if user.type == STUDENT_KEY_WORD:
             if user.student.kelaases.filter(pk=id).exists():
                 return user.student.kelaases.get(pk=id)
-    raise GraphQLError('Permission denied')
+    raise myGraphQLError('Permission denied')
 
 
 def resolve_kelaases(root, info, **kwargs):
@@ -77,7 +77,7 @@ def resolve_kelaases(root, info, **kwargs):
 
         if user.type == STUDENT_KEY_WORD:
             return user.student.kelaases.all()[offset - page_size:offset]
-    raise GraphQLError('Permission denied')
+    raise myGraphQLError('Permission denied')
 
 
 def resolve_teacher(root, info):
@@ -86,7 +86,7 @@ def resolve_teacher(root, info):
 
         if user.type == TEACHER_KEY_WORD:
             return user.teacher
-    raise GraphQLError('Permission denied')
+    raise myGraphQLError('Permission denied')
 
 
 def resolve_parent(root, info):
@@ -95,13 +95,13 @@ def resolve_parent(root, info):
 
         if user.type == PARENT_KEY_WORD:
             return user.parent
-    raise GraphQLError('Permission denied')
+    raise myGraphQLError('Permission denied')
 
 
 def resolve_me(root, info):
     if info.context.user.is_authenticated:
         return info.context.user.person
-    raise GraphQLError('Permission denied')
+    raise myGraphQLError('Permission denied')
 
 
 def resolve_badge_types(root, info, **kwargs):

@@ -1,8 +1,8 @@
 import graphene
-from graphql import GraphQLError
+from core import myGraphQLError
 
 from core.graphql_query.utilz import parent_has_access_to_kelaas, DEFAULT_PAGE_SIZE
-from core.models import PARENT_KEY_WORD, STORY_KEY_WORD, KELAAS_POST_KEY_WORD, STUDENT_KEY_WORD
+from core.models import PARENT_KEY_WORD, STORY_KEY_WORD, KELAAS_POST_KEY_WORD, STUDENT_KEY_WORD, TEACHER_KEY_WORD
 
 
 class KelaasType(graphene.ObjectType):
@@ -13,6 +13,11 @@ class KelaasType(graphene.ObjectType):
     shamsi_date = graphene.String()
     description = graphene.String()
     invite_code = graphene.String()
+    # conversations = graphene.List(
+    #     'core.graphql_query.ConversationType',
+    #     page_size=graphene.Int(),
+    #     page=graphene.Int(),
+    # )
 
     students = graphene.List(
         'core.graphql_query.StudentType',
@@ -46,7 +51,7 @@ class KelaasType(graphene.ObjectType):
                 if student.kelaases.filter(pk=self.id).exists():
                     return self.invite_code
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     def resolve_tags(self, info):
         return self.tags.all()
@@ -60,8 +65,9 @@ class KelaasType(graphene.ObjectType):
         if self.teachers.filter(pk=user.id).exists():
             return self.students.all()[offset - page_size:offset]
         if user.type == PARENT_KEY_WORD:
-            return [student for student in self.students.all() if student.parents.id == user.parent.id][offset - page_size:offset]
-        raise GraphQLError('Permission denied')
+            return [student for student in self.students.all() if student.parents.id == user.parent.id][
+                   offset - page_size:offset]
+        raise myGraphQLError('Permission denied')
 
     def resolve_kelaas_posts(self, info, **kwargs):
         user = info.context.user.person
@@ -72,7 +78,7 @@ class KelaasType(graphene.ObjectType):
         if self.teachers.filter(pk=user.id).exists() or self.students.filter(pk=user.id).exists():
             return self.post_set.filter(type=KELAAS_POST_KEY_WORD).all().reverse()[offset - page_size:offset]
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     def resolve_stories(self, info, **kwargs):
         user = info.context.user.person
@@ -80,11 +86,28 @@ class KelaasType(graphene.ObjectType):
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
 
-        if self.teachers.filter(pk=user.id).exists():
-            return self.post_set.filter(type=STORY_KEY_WORD).all().reverse()[offset - page_size:offset]
+        if user.type == TEACHER_KEY_WORD:
+            if self.teachers.filter(pk=user.id).exists():
+                return self.post_set.filter(type=STORY_KEY_WORD).all().reverse()[offset - page_size:offset]
 
         if user.type == PARENT_KEY_WORD:
             if parent_has_access_to_kelaas(kelaas=self, parent=user.parent):
                 return self.post_set.filter(type=STORY_KEY_WORD).all().reverse()[offset - page_size:offset]
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
+
+    # def resolve_conversations(self, info, **kwargs):
+    #     user = info.context.user.person
+    #
+    #     page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+    #     offset = kwargs.get('page', 1) * page_size
+    #
+    #     if user.type == TEACHER_KEY_WORD:
+    #         return self.conversations.filter(member_count=2).reverse()[offset - page_size:offset]
+    #
+    #     if user.type == PARENT_KEY_WORD:
+    #         conv = []
+
+
+
+

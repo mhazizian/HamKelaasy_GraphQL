@@ -1,5 +1,5 @@
 import graphene
-from graphql import GraphQLError
+from core import myGraphQLError
 
 from core.graphql_query.utilz import it_is_him, DEFAULT_PAGE_SIZE
 from core.graphql_query.person import PersonType
@@ -25,7 +25,7 @@ class TeacherType(PersonType):
         if it_is_him(self, user):
             if user.teacher.kelaases.filter(pk=id).exists():
                 return self.kelaases.get(pk=id)
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     def resolve_kelaases(self, info, **kwargs):
         user = info.context.user.person
@@ -35,4 +35,4 @@ class TeacherType(PersonType):
 
         if it_is_him(self, user):
             return self.kelaases.all().reverse()[offset - page_size:offset]
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')

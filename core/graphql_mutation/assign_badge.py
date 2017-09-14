@@ -1,5 +1,5 @@
 import graphene
-from graphql import GraphQLError
+from core import myGraphQLError
 
 from core.graphql_query import MessageType
 from core.models import TEACHER_KEY_WORD, Student, Badge_link, Badge
@@ -21,9 +21,9 @@ class Assign_badge(graphene.Mutation):
         if info.context.user.is_authenticated:
             if Assign_badge.assign_badge(info, data):
                 return MessageType(type="success", message="badge_count")
-            raise GraphQLError('Bad data input')
+            raise myGraphQLError('Bad data input')
 
-        raise GraphQLError('Permission denied')
+        raise myGraphQLError('Permission denied')
 
     @staticmethod
     def assign_badge(info, data):
