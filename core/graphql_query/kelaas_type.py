@@ -61,9 +61,9 @@ class KelaasType(graphene.ObjectType):
 
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
-
-        if self.teachers.filter(pk=user.id).exists():
-            return self.students.all()[offset - page_size:offset]
+        if user.type == TEACHER_KEY_WORD:
+            if self.teachers.filter(pk=user.id).exists():
+                return self.students.all()[offset - page_size:offset]
         if user.type == PARENT_KEY_WORD:
             return [student for student in self.students.all() if student.parents.id == user.parent.id][
                    offset - page_size:offset]
