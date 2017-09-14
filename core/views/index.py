@@ -20,17 +20,17 @@ def index(request):
         print ">>> request:"
         print data.get('query', '')
 
-        try:
-            res = schema.execute(data.get('query', ''), context_value=request)
-            print ">>> query done"
+        res = schema.execute(data.get('query', ''), context_value=request)
 
-            print ">>> respond:"
-            print json.dumps(res.data, indent=4, sort_keys=True)
-            return HttpResponse(json.dumps(res.data), content_type='application/json', status=200)
-        except myGraphQLError:
-            if res.errors:
-                print res.errors[0].message
-                return HttpResponse(res.errors[0].message, status=400)
+        if res.errors:
+            print res.errors
+            print res.errors[0].original_error.message
+            print res.errors[0].original_error.status
+            return HttpResponse(res.errors[0].message, status=400)
+
+        print ">>> respond:"
+        print json.dumps(res.data, indent=4, sort_keys=True)
+        return HttpResponse(json.dumps(res.data), content_type='application/json', status=200)
 
     return HttpResponse("not post method!", status=405)
 
