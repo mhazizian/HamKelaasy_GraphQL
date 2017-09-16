@@ -15,8 +15,8 @@ class Post(models.Model):
     create_date = models.DateTimeField('post creation date', default=timezone.now)
     type = models.CharField('post type', max_length=7, default='')
 
-    kelaas = models.ForeignKey('Kelaas', on_delete=models.CASCADE)
-    owner = models.ForeignKey('Teacher', on_delete=models.CASCADE)
+    kelaas = models.ForeignKey('Kelaas', related_name="posts", on_delete=models.CASCADE)
+    owner = models.ForeignKey('Teacher', related_name="posts", on_delete=models.CASCADE)
 
     @property
     def shamsi_date(self):

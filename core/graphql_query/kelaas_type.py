@@ -85,7 +85,7 @@ class KelaasType(graphene.ObjectType):
 
         if teacher_has_access_to_kelaas(self, user.teacher) or self.students.filter(pk=user.id).exists():
             print "here"
-            return self.post_set.filter(type=KELAAS_POST_KEY_WORD).order_by('-id')[offset - page_size:offset]
+            return self.posts.filter(type=KELAAS_POST_KEY_WORD).order_by('-id')[offset - page_size:offset]
 
         raise myGraphQLError('Permission denied', status=403)
 
@@ -97,11 +97,11 @@ class KelaasType(graphene.ObjectType):
 
         if user.type == TEACHER_KEY_WORD:
             if teacher_has_access_to_kelaas(self, user.teacher):
-                return self.post_set.filter(type=STORY_KEY_WORD).all().order_by('-id')[offset - page_size:offset]
+                return self.posts.filter(type=STORY_KEY_WORD).all().order_by('-id')[offset - page_size:offset]
 
         if user.type == PARENT_KEY_WORD:
             if parent_has_access_to_kelaas(kelaas=self, parent=user.parent):
-                return self.post_set.filter(type=STORY_KEY_WORD).all().order_by('-id')[offset - page_size:offset]
+                return self.posts.filter(type=STORY_KEY_WORD).all().order_by('-id')[offset - page_size:offset]
 
         raise myGraphQLError('Permission denied', status=403)
 
