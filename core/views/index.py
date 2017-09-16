@@ -21,19 +21,27 @@ def index(request):
         print data.get('query', '')
 
         res = schema.execute(data.get('query', ''), context_value=request)
-
+        responde = {'data': '', 'error': ''}
         if res.errors:
             print res.errors
-            print res.errors[0].original_error.message
-            print res.errors[0].original_error.status
+
+            responde['error'] = res.errors[0].message
 
             if isinstance(res.errors[0], myGraphQLError):
+                # return HttpResponse(json.dumps(responde), status=res.errors[0].original_error.status)
                 return HttpResponse(res.errors[0].message, status=res.errors[0].original_error.status)
             else:
+                # return HttpResponse(json.dumps(responde), status=400)
                 return HttpResponse(res.errors[0].message, status=400)
+
+        responde['data'] = res.data
 
         print ">>> respond:"
         print json.dumps(res.data, indent=4, sort_keys=True)
+        # print json.dumps(responde, indent=4, sort_keys=True)
+
+        # TODO change the format of responde
+        # TODO in case of error, ther should be {'data': ''} or nothing about 'data' ?!
         return HttpResponse(json.dumps(res.data), content_type='application/json', status=200)
 
     return HttpResponse("not post method!", status=405)
