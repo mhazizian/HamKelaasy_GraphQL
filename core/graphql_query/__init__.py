@@ -3,6 +3,9 @@ from .utilz import DEFAULT_PAGE_SIZE
 from .certificate import CertificateLevelType, CertificateType
 from .certificate import PersonCertificateType, CertificateLinkType
 
+from .chat import ConversationType
+from .chat import ConversationMessageType
+
 
 from .person import PersonType
 from .person import StudentType

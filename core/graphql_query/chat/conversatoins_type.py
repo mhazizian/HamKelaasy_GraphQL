@@ -11,6 +11,8 @@ class ConversationType(graphene.ObjectType):
         page_size=graphene.Int(),
         page=graphene.Int(),
     )
+    member_count = graphene.Int()
+    message_count = graphene.Int()
 
     def resolve_messages(self, info, **kwargs):
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)

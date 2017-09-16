@@ -1,9 +1,9 @@
 import graphene
 
 
-class ConversationMessage(graphene.ObjectType):
+class ConversationMessageType(graphene.ObjectType):
     body = graphene.String()
-    owner = graphene.Field('core.graphql_query.PerosnType')
+    writer = graphene.Field('core.graphql_query.PersonType')
 
     is_my_message = graphene.Boolean()
 
@@ -13,6 +13,6 @@ class ConversationMessage(graphene.ObjectType):
     def resolve_is_my_message(self, info):
         user = info.context.user.person
 
-        if user.id == self.owner.id:
+        if user.id == self.writer.id:
             return True
         return False
