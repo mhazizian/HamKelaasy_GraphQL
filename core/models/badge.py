@@ -18,7 +18,7 @@ class Badge_link(models.Model):
     kelaas = models.ForeignKey('Kelaas', related_name="badges", on_delete=models.CASCADE)
     count = models.IntegerField('number of achiving this badge', default=1)
 
-    student = models.ForeignKey('Student',related_name="badges" , on_delete=models.CASCADE)
+    student = models.ForeignKey('Student', related_name="badges", on_delete=models.CASCADE)
 
     @property
     def pic(self):
