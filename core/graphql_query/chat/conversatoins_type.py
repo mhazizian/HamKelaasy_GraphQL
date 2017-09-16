@@ -12,6 +12,7 @@ class ConversationType(graphene.ObjectType):
         page_size=graphene.Int(),
         page=graphene.Int(),
     )
+    last_message = graphene.Field('core.graphql_query.ConversationMessageType')
     member_count = graphene.Int()
     message_count = graphene.Int()
 
@@ -20,3 +21,6 @@ class ConversationType(graphene.ObjectType):
         offset = kwargs.get('page', 1) * page_size
 
         return self.messages.all().order_by('-id')[offset - page_size:offset]
+
+    def resolve_last_message(self, info):
+        return self.messages.all().last()
