@@ -13,11 +13,12 @@ class KelaasType(graphene.ObjectType):
     shamsi_date = graphene.String()
     description = graphene.String()
     invite_code = graphene.String()
-    # conversations = graphene.List(
-    #     'core.graphql_query.ConversationType',
-    #     page_size=graphene.Int(),
-    #     page=graphene.Int(),
-    # )
+
+    conversations = graphene.List(
+        'core.graphql_query.ConversationType',
+        page_size=graphene.Int(),
+        page=graphene.Int(),
+    )
 
     students = graphene.List(
         'core.graphql_query.StudentType',
@@ -104,14 +105,11 @@ class KelaasType(graphene.ObjectType):
 
         raise myGraphQLError('Permission denied', status=403)
 
-        # def resolve_conversations(self, info, **kwargs):
-        #     user = info.context.user.person
-        #
-        #     page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-        #     offset = kwargs.get('page', 1) * page_size
-        #
-        #     if user.type == TEACHER_KEY_WORD:
-        #         return self.conversations.filter(member_count=2).reverse()[offset - page_size:offset]
-        #
-        #     if user.type == PARENT_KEY_WORD:
-        #         conv = []
+    def resolve_conversations(self, info, **kwargs):
+        user = info.context.user.person
+
+        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+        offset = kwargs.get('page', 1) * page_size
+
+        return self.conversations.filter(members__id=user.id).order_by('-last_message_time')[offset - page_size:offset]
+
