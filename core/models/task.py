@@ -13,7 +13,7 @@ class Task(models.Model):
 
     body = models.CharField('task body', max_length=1000)
     create_date = models.DateTimeField('task creation date', default=timezone.now)
-    due_data = models.DateTimeField('task due date', null=True, default=None)
+    due_date = models.DateTimeField('task due date', null=True, default=None)
 
     is_done = models.BooleanField(default=False)
 
@@ -26,6 +26,14 @@ class Task(models.Model):
     def shamsi_date(self):
         return JalaliDatetime(self.create_date).strftime(
             '%A %D %B %N  %h:%v')
+
+    @property
+    def remaning_time(self):
+        if self.due_date:
+            if self.due_date < timezone.now():
+                return "time's up!!"
+            delta = self.due_date - timezone.now()
+            return pretty_date(delta)
 
     def __unicode__(self):
         return self.body

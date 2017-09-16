@@ -6,6 +6,7 @@ from .certificate import PersonCertificateType, CertificateLinkType
 from .chat import ConversationType
 from .chat import ConversationMessageType
 
+from .task_type import TaskType
 
 from .person import PersonType
 from .person import StudentType
