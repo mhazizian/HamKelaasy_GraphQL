@@ -17,3 +17,5 @@ from .kelaas import Kelaas
 from .badge import Badge, Badge_link
 from .certificate import Certificate_level, Certificate, Certificate_link
 from .comment import Comment
+
+from .task import Task
