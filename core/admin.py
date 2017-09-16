@@ -3,8 +3,9 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.contrib.sessions.models import Session
-from core.models import Student, Kelaas, Parent, Post, Tag, Teacher, Certificate_level,\
-    Badge, Person, File, Certificate, Sys_file, Story, Comment, Kelaas_post, Certificate_link, User_temp, Badge_link
+from core.models import Student, Kelaas, Parent, Post, Tag, Teacher, Certificate_level, \
+    Badge, Person, File, Certificate, Sys_file, Story, Comment, Kelaas_post, Certificate_link, User_temp, Badge_link, \
+    Conversation, Conversation_message
 
 # Register your models here.
 
@@ -28,3 +29,5 @@ admin.site.register(Comment)
 admin.site.register(Kelaas_post)
 admin.site.register(Certificate_link)
 admin.site.register(User_temp)
+admin.site.register(Conversation)
+admin.site.register(Conversation_message)

@@ -13,6 +13,12 @@ class Conversation_message(models.Model):
     body = models.CharField('message body', max_length=1000)
     create_date = models.DateTimeField('message creation date', default=timezone.now)
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.conversation.last_message_time = timezone.now()
+            self.conversation.save()
+        super(Conversation_message, self).save(args, kwargs)
+
     def __unicode__(self):
         return self.writer.first_name + " body:" + self.body
 
