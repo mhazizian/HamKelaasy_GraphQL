@@ -1,7 +1,8 @@
+import exceptions
 import graphene
 from core import myGraphQLError
 
-from core.models import TEACHER_KEY_WORD, STUDENT_KEY_WORD, PARENT_KEY_WORD
+from core.models import TEACHER_KEY_WORD, STUDENT_KEY_WORD, PARENT_KEY_WORD, Kelaas
 from core.graphql_query.utilz import it_is_him, DEFAULT_PAGE_SIZE
 from core.graphql_query.person import PersonType
 
@@ -32,6 +33,12 @@ class StudentType(PersonType):
         page=graphene.Int(),
     )
     certificates = graphene.List(PersonCertificateType)
+    tasks = graphene.List(
+        'core.graphql_query.TaskType',
+        kelaas_id=graphene.Int(description="Optional.\n\n if provided, only shows badges from this kelaas"),
+        page_size=graphene.Int(),
+        page=graphene.Int(),
+    )
 
     def resolve_kelaases(self, info, **kwargs):
         user = info.context.user.person
@@ -113,8 +120,8 @@ class StudentType(PersonType):
         raise myGraphQLError('Permission denied', status=403)
 
     def resolve_certificates(self, info):
+        # TODO permission check
         # user = info.context.user.person ?!!!
-        # permission check
         res = {}
 
         for c_link in self.certificates.all():
@@ -130,3 +137,25 @@ class StudentType(PersonType):
             creator=res[key][0].certificate_level.type.creator,
             levels=res[key]
         ) for key in res]
+
+    def resolve_tasks(self, info, **kwargs):
+        user = info.context.user.person
+
+        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+        offset = kwargs.get('page', 1) * page_size
+
+        if it_is_him(user, self):
+            if 'kelaas_id' in kwargs:
+                return self.tasks.filter(kelaas_id=kwargs['kelaas_id'], is_done=False)[offset - page_size:offset]
+            return self.tasks.all(is_done=False)[offset - page_size:offset]
+
+        if user.type == TEACHER_KEY_WORD:
+            try:
+                kelaas = Kelaas.objects.get(pk=kwargs['kelaas_id'])
+                return self.tasks.filter(kelaas_id=kelaas.id)[offset - page_size:offset]
+            except Kelaas.DoesNotExist:
+                raise myGraphQLError('Kelaas not found', status=404)
+            except exceptions.KeyError:
+                raise myGraphQLError('"kelaas_id" is necessary', status=400)
+
+        raise myGraphQLError('Permission denied', status=403)

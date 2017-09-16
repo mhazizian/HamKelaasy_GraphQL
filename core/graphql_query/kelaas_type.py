@@ -84,7 +84,6 @@ class KelaasType(graphene.ObjectType):
         offset = kwargs.get('page', 1) * page_size
 
         if teacher_has_access_to_kelaas(self, user.teacher) or self.students.filter(pk=user.id).exists():
-            print "here"
             return self.posts.filter(type=KELAAS_POST_KEY_WORD).order_by('-id')[offset - page_size:offset]
 
         raise myGraphQLError('Permission denied', status=403)
