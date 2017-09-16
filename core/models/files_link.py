@@ -9,13 +9,6 @@ def get_upload_path(instance, filename):
     return '/'.join(['data', get_random_string(length=32), filename])
 
 
-# TODO remove these to func on deleting db:
-def get_my_string(instance, filename):
-    return '/'.join(['data', get_random_string(length=32), filename])
-def get_string(instance, filename):
-    return '/'.join(['data', get_random_string(length=32), filename])
-
-
 class File(models.Model):
     title = models.CharField('file title', max_length=200)
     description = models.CharField('file body', max_length=1000, blank=True, default='')

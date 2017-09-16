@@ -25,6 +25,7 @@ class Create_convesation(graphene.Mutation):
     @staticmethod
     def create(info, data):
         # TODO permission denied!!
+
         if not info.context.user.is_authenticated:
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
