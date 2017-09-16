@@ -16,5 +16,5 @@ class BadgeLink(graphene.ObjectType):
 
     title = graphene.String()
     pic = graphene.String()
-    count = graphene.Int
+    count = graphene.Int()
     kelaas = graphene.Field('core.graphql_query.KelaasType')
