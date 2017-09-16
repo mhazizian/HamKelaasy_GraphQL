@@ -26,7 +26,11 @@ def index(request):
             print res.errors
             print res.errors[0].original_error.message
             print res.errors[0].original_error.status
-            return HttpResponse(res.errors[0].message, status=400)
+
+            if isinstance(res.errors[0], myGraphQLError):
+                return HttpResponse(res.errors[0].message, status=res.errors[0].original_error.status)
+            else:
+                return HttpResponse(res.errors[0].message, status=400)
 
         print ">>> respond:"
         print json.dumps(res.data, indent=4, sort_keys=True)
