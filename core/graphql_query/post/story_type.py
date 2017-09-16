@@ -7,4 +7,7 @@ class StoryType(PostType):
 
     pic = graphene.String()
 
+    def resolve_pic(self, info):
+        return self.story.pic
+
 
