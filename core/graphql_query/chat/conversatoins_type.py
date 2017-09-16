@@ -6,6 +6,7 @@ from core.graphql_query import DEFAULT_PAGE_SIZE
 class ConversationType(graphene.ObjectType):
     name = "conversation"
 
+    id = graphene.Int()
     messages = graphene.List(
         'core.graphql_query.ConversationMessageType',
         page_size=graphene.Int(),
