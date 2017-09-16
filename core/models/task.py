@@ -29,6 +29,7 @@ class Task(models.Model):
 
     @property
     def remaning_time(self):
+        # TODO now it  shows the remainig time lke is is passed away: '10 hours ago'
         if self.due_date:
             if self.due_date < timezone.now():
                 return "time's up!!"
