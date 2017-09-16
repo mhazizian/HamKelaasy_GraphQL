@@ -1,7 +1,7 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query import MessageType
+from core.graphql_query import KelaasType
 from core.models import STUDENT_KEY_WORD, Kelaas
 
 
@@ -13,11 +13,10 @@ class Join_kelaas(graphene.Mutation):
     class Arguments:
         data = Join_kelaas_input(required=True)
 
-    Output = MessageType
+    Output = KelaasType
 
     def mutate(self, info, data):
-        if Join_kelaas.join(info, data):
-            return MessageType(type="success", message="badge_count")
+        return Join_kelaas.join(info, data)
 
     @staticmethod
     def join(info, data):
@@ -36,4 +35,4 @@ class Join_kelaas(graphene.Mutation):
         if not kelaas.students.filter(pk=user.id).exists():
             kelaas.students.add(user.student)
             kelaas.save()
-        return True
+        return kelaas

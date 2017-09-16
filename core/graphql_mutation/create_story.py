@@ -1,7 +1,7 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query import MessageType
+from core.graphql_query import StoryType
 from core.models import Story, TEACHER_KEY_WORD, File, Kelaas
 
 
@@ -16,11 +16,10 @@ class Create_story(graphene.Mutation):
     class Arguments:
         data = Story_input(required=True)
 
-    Output = MessageType
+    Output = StoryType
 
     def mutate(self, info, data):
-        if Create_story.make_story(info, data):
-            return MessageType(type="success", message="Story added.")
+        return Create_story.make_story(info, data)
 
     @staticmethod
     def make_story(info, data):
@@ -48,4 +47,4 @@ class Create_story(graphene.Mutation):
             if File.objects.filter(pk=data.pic).exists():
                 story.story_pic_id = data.pic
         story.save()
-        return True
+        return story

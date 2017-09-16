@@ -1,7 +1,7 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query import MessageType
+from core.graphql_query import KelaasType
 from core.models import Tag, Kelaas, TEACHER_KEY_WORD
 
 
@@ -15,11 +15,10 @@ class Create_kelaas(graphene.Mutation):
     class Arguments:
         data = Kelaas_input(required=True)
 
-    Output = MessageType
+    Output = KelaasType
 
     def mutate(self, info, data):
-        if Create_kelaas.make_kelaas(info, data):
-            return MessageType(type="success", message="Kelaas added.")
+        return Create_kelaas.make_kelaas(info, data)
 
     @staticmethod
     def make_kelaas(info, data):
@@ -42,3 +41,5 @@ class Create_kelaas(graphene.Mutation):
                 tag = Tag.objects.get(pk=tag_id)
                 kelaas.tags.add(tag)
         kelaas.save()
+
+        return kelaas

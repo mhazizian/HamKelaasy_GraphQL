@@ -1,7 +1,7 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query import MessageType
+from core.graphql_query import CommentType
 from core.models import TEACHER_KEY_WORD, Post, STUDENT_KEY_WORD, PARENT_KEY_WORD, Comment
 
 
@@ -14,11 +14,10 @@ class Add_comment(graphene.Mutation):
     class Arguments:
         data = Add_comment_input(required=True)
 
-    Output = MessageType
+    Output = CommentType
 
     def mutate(self, info, data):
-        if Add_comment.add_comment(info, data):
-            return MessageType(type="success", message="badge_count")
+        return Add_comment.add_comment(info, data)
 
     @staticmethod
     def add_comment(info, data):
@@ -54,4 +53,4 @@ class Add_comment(graphene.Mutation):
             owner_id=user.id,
         )
         comment.save()
-        return True
+        return comment

@@ -1,7 +1,7 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query import MessageType
+from core.graphql_query import ConversationMessageType
 from core.models import Conversation, Conversation_message
 
 
@@ -14,11 +14,10 @@ class Send_message(graphene.Mutation):
     class Arguments:
         data = Send_message_input(required=True)
 
-    Output = MessageType
+    Output = ConversationMessageType
 
     def mutate(self, info, data):
-        if Send_message.send_message(info, data):
-            return MessageType(type="success", message="message added")
+        return Send_message.send_message(info, data)
 
     @staticmethod
     def send_message(info, data):
@@ -40,4 +39,4 @@ class Send_message(graphene.Mutation):
             conversation_id=data.conversation_id
         )
         msg.save()
-        return True
+        return msg

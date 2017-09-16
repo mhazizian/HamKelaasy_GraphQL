@@ -1,7 +1,7 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query import MessageType
+from core.graphql_query import StudentType
 from core.models import PARENT_KEY_WORD, Student
 
 
@@ -13,13 +13,10 @@ class Add_child(graphene.Mutation):
     class Arguments:
         data = Add_child_input(required=True)
 
-    Output = MessageType
+    Output = StudentType
 
     def mutate(self, info, data):
-        if Add_child.add(info, data):
-            return MessageType(type="success", message="child added.")
-
-    # TODO catch exeptions and convert in to message type
+        return Add_child.add(info, data)
 
     @staticmethod
     def add(info, data):
@@ -39,5 +36,4 @@ class Add_child(graphene.Mutation):
             student.save()
         except Student.DoesNotExist:
             raise myGraphQLError('Student not found', status=404)
-
-        return True
+        return student

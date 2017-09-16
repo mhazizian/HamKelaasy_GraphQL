@@ -1,7 +1,7 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query import MessageType
+from core.graphql_query import KelaasPostType
 from core.models import Kelaas_post, TEACHER_KEY_WORD, File, Kelaas
 
 
@@ -16,11 +16,10 @@ class Create_kelaas_post(graphene.Mutation):
     class Arguments:
         data = Kelaas_post_input(required=True)
 
-    Output = MessageType
+    Output = KelaasPostType
 
     def mutate(self, info, data):
-        if Create_kelaas_post.make_post(info, data):
-            return MessageType(type="success", message="Kelaas added.")
+        return Create_kelaas_post.make_post(info, data)
 
     @staticmethod
     def make_post(info, data):
@@ -48,3 +47,5 @@ class Create_kelaas_post(graphene.Mutation):
                 input_file = File.objects.get(pk=file_id)
                 post.files.add(input_file)
         post.save()
+
+        return post

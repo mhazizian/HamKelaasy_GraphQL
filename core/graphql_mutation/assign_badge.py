@@ -1,7 +1,7 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query import MessageType
+from core.graphql_query import BadgeLink
 from core.models import TEACHER_KEY_WORD, Student, Badge_link, Badge, Kelaas
 
 
@@ -15,11 +15,10 @@ class Assign_badge(graphene.Mutation):
     class Arguments:
         data = Assign_badge_input(required=True)
 
-    Output = MessageType
+    Output = BadgeLink
 
     def mutate(self, info, data):
-        if Assign_badge.assign_badge(info, data):
-            return MessageType(type="success", message="badge_count")
+        return Assign_badge.assign_badge(info, data)
 
     @staticmethod
     def assign_badge(info, data):
@@ -55,4 +54,4 @@ class Assign_badge(graphene.Mutation):
                     type_id=badge_id,
                 )
                 t.save()
-        return True
+        return t
