@@ -2,17 +2,27 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils import timezone
-# from khayyam import *
-import pytz
+from django.utils.crypto import get_random_string
+
+
+def get_upload_path(instance, filename):
+    return '/'.join(['data', get_random_string(length=32), filename])
+
+
+# TODO remove these to func on deleting db:
+def get_my_string(instance, filename):
+    return '/'.join(['data', get_random_string(length=32), filename])
+def get_string(instance, filename):
+    return '/'.join(['data', get_random_string(length=32), filename])
 
 
 class File(models.Model):
     title = models.CharField('file title', max_length=200)
     description = models.CharField('file body', max_length=1000, blank=True, default='')
     create_date = models.DateTimeField('file creation date', default=timezone.now)
-    owner = models.ForeignKey('Person', related_name="uploaded_files",on_delete=models.CASCADE)
+    owner = models.ForeignKey('Person', related_name="uploaded_files", on_delete=models.CASCADE)
 
-    data = models.FileField('file', upload_to='data/%Y/%m/%d/')
+    data = models.FileField('file', upload_to=get_upload_path)
 
     @property
     def url(self):
@@ -20,6 +30,7 @@ class File(models.Model):
 
     def __unicode__(self):
         return unicode(self.title)
+
 
 class Sys_file(models.Model):
     title = models.CharField('file title', max_length=200)
