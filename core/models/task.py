@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 
-from core.models.utilz import pretty_date
+from core.models.utilz import pretty_past_time, pretty_remaining_time
 from khayyam import JalaliDatetime
 
 
@@ -20,7 +20,7 @@ class Task(models.Model):
     @property
     def time_passed(self):
         delta = timezone.now() - self.create_date
-        return pretty_date(delta)
+        return pretty_past_time(delta)
 
     @property
     def shamsi_date(self):
@@ -29,12 +29,11 @@ class Task(models.Model):
 
     @property
     def remaning_time(self):
-        # TODO now it  shows the remainig time lke is is passed away: '10 hours ago'
         if self.due_date:
             if self.due_date < timezone.now():
                 return "time's up!!"
             delta = self.due_date - timezone.now()
-            return pretty_date(delta)
+            return pretty_remaining_time(delta)
 
     def __unicode__(self):
         return self.body
