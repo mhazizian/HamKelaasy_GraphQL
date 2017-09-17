@@ -8,3 +8,4 @@ from .join_kelaas import Join_kelaas
 from .add_child import Add_child
 from .send_message import Send_message
 from .create_conversation import Create_convesation
+from .assign_certificate import Assign_certificate
