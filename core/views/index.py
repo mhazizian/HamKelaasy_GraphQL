@@ -20,19 +20,33 @@ def index(request):
         print ">>> request:"
         print data.get('query', '')
 
-        res = schema.execute(data.get('query', ''), context_value=request)
-        responde = {'data': '', 'error': ''}
+        res = schema.execute(
+            data.get('query', ''),
+            context_value=request,
+            variable_values=data.get('variables', None),
+            operation_name=data.get('operationName', None),
+        )
+        responde = {}
         if res.errors:
             print res.errors
 
-            responde['error'] = res.errors[0].message
+            responde['errors'] = res.errors
+            responde['data'] = ''
 
             if isinstance(res.errors[0], myGraphQLError):
-                # return HttpResponse(json.dumps(responde), status=res.errors[0].original_error.status)
-                return HttpResponse(res.errors[0].message, status=res.errors[0].original_error.status)
+                # TODO change 'res.errors[0].message' to 'json.dumps(responde)'
+                return HttpResponse(
+                    res.errors[0].message,
+                    status=res.errors[0].original_error.status,
+                    content_type='application/json',
+                )
             else:
-                # return HttpResponse(json.dumps(responde), status=400)
-                return HttpResponse(res.errors[0].message, status=400)
+                # TODO change 'res.errors[0].message' to 'json.dumps(responde)'
+                return HttpResponse(
+                    res.errors[0].message,
+                    status=400,
+                    content_type='application/json',
+                )
 
         responde['data'] = res.data
 
@@ -41,7 +55,6 @@ def index(request):
         # print json.dumps(responde, indent=4, sort_keys=True)
 
         # TODO change the format of responde
-        # TODO in case of error, ther should be {'data': ''} or nothing about 'data' ?!
         return HttpResponse(json.dumps(res.data), content_type='application/json', status=200)
 
     return HttpResponse("not post method!", status=405)
