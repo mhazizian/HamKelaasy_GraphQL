@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils import timezone
-from core.models.utilz import pretty_date
+from core.models.utilz import pretty_past_time
 from khayyam import JalaliDatetime
 
 
@@ -17,7 +17,7 @@ class Comment(models.Model):
     @property
     def time_passed(self):
         delta = timezone.now() - self.create_date
-        return pretty_date(delta)
+        return pretty_past_time(delta)
 
     @property
     def shamsi_date(self):

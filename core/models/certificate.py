@@ -5,7 +5,7 @@ from django.db import models
 
 from Hamkelaasy_graphQL import settings
 from core.models import Sys_file
-from core.models.utilz import pretty_date
+from core.models.utilz import pretty_past_time
 from khayyam import JalaliDatetime
 
 
@@ -24,7 +24,7 @@ class Certificate(models.Model):
     @property
     def time_passed(self):
         delta = timezone.now() - self.create_date
-        return pretty_date(delta)
+        return pretty_past_time(delta)
 
     @property
     def shamsi_date(self):
@@ -50,7 +50,7 @@ class Certificate_level(models.Model):
     @property
     def time_passed(self):
         delta = timezone.now() - self.create_date
-        return pretty_date(delta)
+        return pretty_past_time(delta)
 
     @property
     def shamsi_date(self):
@@ -71,7 +71,7 @@ class Certificate_link(models.Model):
     @property
     def time_passed(self):
         delta = timezone.now() - self.create_date
-        return pretty_date(delta)
+        return pretty_past_time(delta)
 
     @property
     def shamsi_date(self):
