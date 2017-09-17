@@ -1,5 +1,4 @@
 import graphene
-from django.db.models import Count
 
 from core import myGraphQLError
 
