@@ -1,7 +1,7 @@
 import graphene
 
 from graphql_mutation import Create_kelaas, Create_kelaas_post, Create_story, Upload_file, Assign_badge, Add_comment, \
-    Join_kelaas, Add_child, Send_message, Create_convesation, Assign_certificate
+    Join_kelaas, Add_child, Send_message, Create_convesation, Assign_certificate, Create_certificate
 
 
 class Mutation(graphene.ObjectType):
@@ -19,3 +19,4 @@ class Mutation(graphene.ObjectType):
     add_child = Add_child.Field()
     assign_badge = Assign_badge.Field()
     assign_certificate = Assign_certificate.Field()
+    create_certificate = Create_certificate.Field()
