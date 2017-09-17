@@ -47,7 +47,8 @@ class StudentType(PersonType):
         offset = kwargs.get('page', 1) * page_size
 
         if user.type == TEACHER_KEY_WORD:
-            return [kelaas for kelaas in self.kelaases.all() if user.teacher.kelaases.filter(id=kelaas.id).exists()].reverse()[offset - page_size:offset]
+            return [kelaas for kelaas in self.kelaases.all() if
+                    user.teacher.kelaases.filter(id=kelaas.id).exists()].reverse()[offset - page_size:offset]
 
         if user.type == PARENT_KEY_WORD:
             if it_is_him(user, self.parents):
@@ -144,12 +145,12 @@ class StudentType(PersonType):
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
 
-
         # TODO fix order of tasks, suggestion: ordered by remaning time from less to bigger
         # to do so: user annotate along with order_by
         if it_is_him(user, self):
             if 'kelaas_id' in kwargs:
-                return self.tasks.filter(kelaas_id=kwargs['kelaas_id'], is_done=False).order_by('-id')[offset - page_size:offset]
+                return self.tasks.filter(kelaas_id=kwargs['kelaas_id'], is_done=False).order_by('-id')[
+                       offset - page_size:offset]
             return self.tasks.filter.order_by('-id')(is_done=False)[offset - page_size:offset]
 
         if user.type == TEACHER_KEY_WORD:
