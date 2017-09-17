@@ -306,6 +306,32 @@ class Test(APITestCase):
                               '"signupCompleted": false, "type": "student", "id": 14}}')
         print "done"
 
+    def test_variable_graphQL(self):
+        print ">>> Test: graphql variables"
+        self.client.force_authenticate(user=self.students[3].user)
+
+        query = """
+            query TEST($tid: Int!){
+                certificate(id: $tid){
+                    title
+                    description
+                    creator{
+                      username
+                    }
+                }
+            }
+        """
+        var = """
+        {
+            "tid": 1
+        }
+        """
+        response = self.client.post(self.index_url, json.dumps({'query': query, 'variables': {'tid': 1}}), content_type='application/json')
+        print response
+        res = json.dumps(json.loads(response.content))
+        print res
+
+
         # mutation = """
         #     mutation{
         #          assignBadge(data:{kelaasId:%d, studentId:%d, badges:"%d,%d"}){
