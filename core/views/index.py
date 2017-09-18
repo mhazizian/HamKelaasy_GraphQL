@@ -35,7 +35,6 @@ def index(request):
         if res.errors:
 
             response['errors'] = [format_error(e) for e in res.errors]
-            # response['errors'] = format_error(res.errors[0])
             response['data'] = res.data
 
             print json.dumps(response, indent=4, sort_keys=True)
@@ -52,7 +51,7 @@ def index(request):
             )
 
         response['data'] = res.data
-        print json.dumps(responde, indent=4, sort_keys=True)
+        print json.dumps(response, indent=4, sort_keys=True)
 
         # TODO change the format of response
         return HttpResponse(json.dumps(res.data), content_type='application/json', status=200)
