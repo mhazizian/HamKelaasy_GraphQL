@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 import json
+import six
 
-from django.http import HttpResponse
 from core import myGraphQLError
-from rest_framework.decorators import api_view
+from graphql import GraphQLError
+from graphql.error import format_error as format_graphql_error
+
 from Hamkelaasy_graphQL.schema import schema
+from rest_framework.decorators import api_view
+from django.http import HttpResponse
 
 
 @api_view(['POST'])
@@ -19,48 +22,53 @@ def index(request):
         data = json.loads(request.body)
         print ">>> request:"
         print data.get('query', '')
+        print data.get('variables', None)
+        print ">>> respond:"
 
         res = schema.execute(
             data.get('query', ''),
             context_value=request,
-            variable_values=data.get('variables', None),
             operation_name=data.get('operationName', None),
+            variable_values=data.get('variables', None),
         )
-        responde = {}
+        response = {}
         if res.errors:
-            print res.errors
 
-            responde['errors'] = res.errors
-            responde['data'] = ''
+            response['errors'] = [format_error(e) for e in res.errors]
+            # response['errors'] = format_error(res.errors[0])
+            response['data'] = res.data
 
+            print json.dumps(response, indent=4, sort_keys=True)
+
+            status_code = 400
             if isinstance(res.errors[0], myGraphQLError):
-                # TODO change 'res.errors[0].message' to 'json.dumps(responde)'
-                return HttpResponse(
-                    res.errors[0].message,
-                    status=res.errors[0].original_error.status,
-                    content_type='application/json',
-                )
-            else:
-                # TODO change 'res.errors[0].message' to 'json.dumps(responde)'
-                return HttpResponse(
-                    res.errors[0].message,
-                    status=400,
-                    content_type='application/json',
-                )
+                status_code = res.errors[0].original_error.status
 
-        responde['data'] = res.data
+            # TODO change 'res.errors[0].message' to 'json.dumps(response)'
+            return HttpResponse(
+                res.errors[0].message,
+                status=status_code,
+                content_type='application/json',
+            )
 
-        print ">>> respond:"
-        print json.dumps(res.data, indent=4, sort_keys=True)
-        # print json.dumps(responde, indent=4, sort_keys=True)
+        response['data'] = res.data
+        print json.dumps(responde, indent=4, sort_keys=True)
 
-        # TODO change the format of responde
+        # TODO change the format of response
         return HttpResponse(json.dumps(res.data), content_type='application/json', status=200)
 
     return HttpResponse("not post method!", status=405)
 
 
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 def logout(request):
     # TODO expire given token
+
     return HttpResponse('')
+
+
+def format_error(error):
+    if isinstance(error, GraphQLError):
+        return format_graphql_error(error)
+
+    return {'message': six.text_type(error)}
