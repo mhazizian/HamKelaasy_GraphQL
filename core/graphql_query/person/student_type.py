@@ -40,6 +40,12 @@ class StudentType(PersonType):
         page=graphene.Int(),
     )
 
+    def resolve_parent_code(self, info):
+        user = info.context.user.person
+
+        if it_is_him(user, self):
+            return self.parent_code
+
     def resolve_kelaases(self, info, **kwargs):
         user = info.context.user.person
 
