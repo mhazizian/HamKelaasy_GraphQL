@@ -29,6 +29,7 @@ class CertificateLevelType(graphene.ObjectType):
     level_description = graphene.String()
     shamsi_date = graphene.String()
     time_passed = graphene.String()
+    certificate = graphene.Field('core.graphql_query.CertificateType')
 
     def resolve_pic(self, info):
         return self.pic
@@ -38,6 +39,9 @@ class CertificateLevelType(graphene.ObjectType):
 
     def resolve_level_description(self, info):
         return self.level_description
+
+    def resolve_certificate(self, info):
+        return self.type
 
 
 class CertificateLinkType(graphene.ObjectType):
