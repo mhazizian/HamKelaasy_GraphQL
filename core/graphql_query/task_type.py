@@ -12,4 +12,4 @@ class TaskType(graphene.ObjectType):
 
     time_passed = graphene.String()
     shamsi_date = graphene.String()
-    remaning_time = graphene.String()
+    remaining_time = graphene.String()
