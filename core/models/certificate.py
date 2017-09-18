@@ -18,8 +18,11 @@ class Certificate(models.Model):
 
     @property
     def pic(self):
-        f = Sys_file.objects.get(title="certificate")
-        return settings.SERVER_ADDR[:-1] + f.data.url
+        try:
+            f = Sys_file.objects.get(title="certificate")
+            return settings.SERVER_ADDR[:-1] + f.data.url
+        except Sys_file.DoesNotExist:
+            return None
 
     @property
     def time_passed(self):
@@ -44,8 +47,11 @@ class Certificate_level(models.Model):
 
     @property
     def pic(self):
-        f = Sys_file.objects.get(title="certificate " + str(self.level))
-        return settings.SERVER_ADDR[:-1] + f.data.url
+        try:
+            f = Sys_file.objects.get(title="certificate " + str(self.level))
+            return settings.SERVER_ADDR[:-1] + f.data.url
+        except Sys_file.DoesNotExist:
+            return None
 
     @property
     def time_passed(self):
