@@ -33,9 +33,11 @@ class Create_certificate_level(graphene.Mutation):
         except Certificate.DoesNotExist:
             raise myGraphQLError('Certificate not found', status=404)
 
-
         if not user.id == certificate.creator.id:
             raise myGraphQLError('Permission denied', status=403)
+
+        if certificate.levels.filter(level=data.level).exists():
+            raise myGraphQLError('duplicate certificate-level', status=400)
 
         certi_level = Certificate_level(
             level=data.level,

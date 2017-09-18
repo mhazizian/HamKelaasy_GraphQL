@@ -23,10 +23,16 @@ class Create_certificate(graphene.Mutation):
 
     @staticmethod
     def create(info, data):
+
         # TODO permission check!!
+        # TODO duplicate certificate?
+
         if not info.context.user.is_authenticated:
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
+
+        if user.created_certificates.filter(title=data.title).exists():
+            raise myGraphQLError('duplicate certificate', status=400)
 
         certificate = Certificate(
             title=data.title,
