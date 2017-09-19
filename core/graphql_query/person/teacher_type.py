@@ -1,9 +1,7 @@
 import graphene
-from core import myGraphQLError
 
-from core.graphql_query.utilz import it_is_him, DEFAULT_PAGE_SIZE
+from core.graphql_query.utilz import DEFAULT_PAGE_SIZE, apply_pagination
 from core.graphql_query.person import PersonType
-from core.models import TEACHER_KEY_WORD
 
 
 class TeacherType(PersonType):
@@ -22,10 +20,7 @@ class TeacherType(PersonType):
     def resolve_kelaas(self, info, id):
         user = info.context.user.person
 
-        if it_is_him(self, user):
-            if user.teacher.kelaases.filter(pk=id).exists():
-                return self.kelaases.get(pk=id)
-        raise myGraphQLError('Permission denied', status=403)
+        return self.get_kelaas(user, id)
 
     def resolve_kelaases(self, info, **kwargs):
         user = info.context.user.person
@@ -33,6 +28,4 @@ class TeacherType(PersonType):
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
 
-        if it_is_him(self, user):
-            return self.kelaases.all().order_by('-id')[offset - page_size:offset]
-        raise myGraphQLError('Permission denied', status=403)
+        return apply_pagination(self.get_kelaases(user), page_size=page_size, page=offset)
