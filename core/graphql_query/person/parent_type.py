@@ -1,9 +1,9 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query.utilz import it_is_him, DEFAULT_PAGE_SIZE
+from core.graphql_query.utilz import it_is_him, DEFAULT_PAGE_SIZE, apply_pagination
 from core.graphql_query.person import PersonType
-from core.models import PARENT_KEY_WORD
+from core.models import PARENT_KEY_WORD, Parent
 
 
 class ParentType(PersonType):
@@ -25,16 +25,8 @@ class ParentType(PersonType):
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
 
-        if it_is_him(self, user):
-            return self.childes.all()[offset - page_size:offset]
-
-        raise myGraphQLError('Permission denied', status=403)
+        return apply_pagination(self.get_childes(user), page=offset, page_size=page_size)
 
     def resolve_child(self, info, id):
         user = info.context.user.person
-
-        if it_is_him(self, user):
-            if self.childes.filter(pk=id).exists():
-                return self.childes.get(pk=id)
-
-        raise myGraphQLError('Permission denied', status=403)
+        return self.get_child(user, id)
