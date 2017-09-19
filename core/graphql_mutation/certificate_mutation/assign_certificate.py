@@ -2,7 +2,7 @@ import graphene
 from core import myGraphQLError
 
 from core.graphql_query import CertificateLinkType
-from core.models import Certificate, Person, Certificate_link
+from core.models import Certificate, Person, Certificate_link, TEACHER_KEY_WORD, Teacher
 
 
 class Assign_certificate_input(graphene.InputObjectType):
@@ -30,7 +30,12 @@ class Assign_certificate(graphene.Mutation):
             certificate_level = Certificate.objects.get(pk=data.type_id).levels.filter(level=data.level).first()
             owner = Person.objects.get(pk=data.owner_id)
 
-            # TODO Permission checking ?!
+            if not user.type == TEACHER_KEY_WORD:
+                raise myGraphQLError('Permission denied', status=403)
+
+            if not user.teacher.kelaases.filter(students__in=[owner.id]).exists():
+                raise myGraphQLError('Permission denied', status=403)
+
             # TODO continuously levels checking
             # TODO same certificate level from different persons!!!
 
