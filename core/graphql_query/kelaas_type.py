@@ -1,9 +1,5 @@
 import graphene
-from core import myGraphQLError
-
-from core.graphql_query.utilz import parent_has_access_to_kelaas, teacher_has_access_to_kelaas
-from core.models import PARENT_KEY_WORD, STORY_KEY_WORD, KELAAS_POST_KEY_WORD, STUDENT_KEY_WORD, TEACHER_KEY_WORD
-from core.services import DEFAULT_PAGE_SIZE
+from core import services
 
 
 class KelaasType(graphene.ObjectType):
@@ -17,8 +13,8 @@ class KelaasType(graphene.ObjectType):
 
     conversations = graphene.List(
         'core.graphql_query.ConversationType',
-        page_size=graphene.Int(),
-        page=graphene.Int(),
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
     )
     conversation = graphene.Field(
         'core.graphql_query.ConversationType',
@@ -27,96 +23,52 @@ class KelaasType(graphene.ObjectType):
 
     students = graphene.List(
         'core.graphql_query.StudentType',
-        page_size=graphene.Int(),
-        page=graphene.Int(),
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
     )
     kelaas_posts = graphene.List(
         'core.graphql_query.KelaasPostType',
-        page_size=graphene.Int(),
-        page=graphene.Int(),
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
     )
     stories = graphene.List(
         'core.graphql_query.StoryType',
-        page_size=graphene.Int(),
-        page=graphene.Int(),
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
     )
     tags = graphene.List('core.graphql_query.TagType')
 
     def resolve_invite_code(self, info):
         user = info.context.user.person
-
-        if user.type == TEACHER_KEY_WORD:
-            if teacher_has_access_to_kelaas(self, user.teacher):
-                return self.invite_code
-            raise myGraphQLError('Permission denied', status=403)
-
-        if user.type == STUDENT_KEY_WORD:
-            if user.student.kelaases.filter(pk=self.id).exists():
-                return self.invite_code
-            raise myGraphQLError('Permission denied', status=403)
-
-        # TODO why pass invite code to parent?!!!!
-        if user.type == PARENT_KEY_WORD:
-            for student in user.parent.childes.all():
-                if student.kelaases.filter(pk=self.id).exists():
-                    return self.invite_code
-            raise myGraphQLError('Permission denied', status=403)
+        return services.kelaas__get_invite_code(kelaas=self, user=user)
 
     def resolve_tags(self, info):
-        return self.tags.all()
+        return services.kelaas__get_tags(self)
 
-    def resolve_students(self, info, **kwargs):
+    def resolve_students(self, info, page, page_size):
         user = info.context.user.person
 
-        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-        offset = kwargs.get('page', 1) * page_size
+        query_set = services.kelaas__get_student(kelaas=self, user=user)
+        return services.apply_pagination(query_set, page_size=page_size, page=page)
 
-        if user.type == TEACHER_KEY_WORD:
-            if teacher_has_access_to_kelaas(self, user.teacher):
-                return self.students.all()[offset - page_size:offset]
-            raise myGraphQLError('Permission denied', status=403)
-
-        if user.type == PARENT_KEY_WORD:
-            return [student for student in self.students.all() if student.parents.id == user.parent.id][
-                   offset - page_size:offset]
-
-        raise myGraphQLError('Permission denied', status=403)
-
-    def resolve_kelaas_posts(self, info, **kwargs):
+    def resolve_kelaas_posts(self, info, page, page_size):
         user = info.context.user.person
 
-        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-        offset = kwargs.get('page', 1) * page_size
+        query_set = services.kelaas__get_kelaas_post(kelaas=self, user=user)
+        return services.apply_pagination(query_set, page=page, page_size=page_size)
 
-        if teacher_has_access_to_kelaas(self, user.teacher) or self.students.filter(pk=user.id).exists():
-            return self.posts.filter(type=KELAAS_POST_KEY_WORD).order_by('-id')[offset - page_size:offset]
-
-        raise myGraphQLError('Permission denied', status=403)
-
-    def resolve_stories(self, info, **kwargs):
+    def resolve_stories(self, info, page, page_size):
         user = info.context.user.person
 
-        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-        offset = kwargs.get('page', 1) * page_size
+        query_set = services.kelaas_get_stories(kelaas=self, user=user)
+        return services.apply_pagination(query_set, page=page, page_size=page_size)
 
-        if user.type == TEACHER_KEY_WORD:
-            if teacher_has_access_to_kelaas(self, user.teacher):
-                return self.posts.filter(type=STORY_KEY_WORD).all().order_by('-id')[offset - page_size:offset]
-
-        if user.type == PARENT_KEY_WORD:
-            if parent_has_access_to_kelaas(kelaas=self, parent=user.parent):
-                return self.posts.filter(type=STORY_KEY_WORD).all().order_by('-id')[offset - page_size:offset]
-
-        raise myGraphQLError('Permission denied', status=403)
-
-    def resolve_conversations(self, info, **kwargs):
+    def resolve_conversations(self, info, page, page_size):
         user = info.context.user.person
 
-        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-        offset = kwargs.get('page', 1) * page_size
-
-        return self.conversations.filter(members__id=user.id).order_by('-last_message_time')[offset - page_size:offset]
+        query_set = services.kelaas__get_conversations(kelaas=self, user=user)
+        return services.apply_pagination(query_set, page=page, page_size=page_size)
 
     def resolve_conversation(self, info, id):
         user = info.context.user.person
-        return self.conversations.filter(members__id=user.id, id=id)
+        return services.kelaas__get_conversation(kelaas=self, user=user, conversation_id=id)

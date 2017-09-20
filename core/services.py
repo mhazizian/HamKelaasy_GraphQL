@@ -1,7 +1,8 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from core import myGraphQLError
-from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas
+from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
+    STUDENT_KEY_WORD
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -18,6 +19,19 @@ def apply_pagination(input_list, page=1, page_size=DEFAULT_PAGE_SIZE):
         res = paginator.page(paginator.num_pages)
 
     return res
+
+
+def parent_has_access_to_kelaas(kelaas, parent):
+    for student in parent.childes.all():
+        if kelaas.students.filter(pk=student.id).exists():
+            return True
+    return False
+
+
+def teacher_has_access_to_kelaas(kelaas, teacher):
+    if kelaas.teachers.filter(pk=teacher.id).exists():
+        return True
+    return False
 
 
 def parent__get_childes(parent, user):
@@ -127,5 +141,65 @@ def student__get_parent(student, user):
 
     if user.type == PARENT_KEY_WORD and user.id == student.parents.id:
         return student.parents
+
+    raise myGraphQLError('Permission denied', status=403)
+
+
+def kelaas__get_tags(kelaas):
+    return kelaas.tags.all()
+
+
+def kelaas__get_student(kelaas, user):
+    if user.type == TEACHER_KEY_WORD:
+        if teacher_has_access_to_kelaas(kelaas=kelaas, teacher=user.teacher):
+            return kelaas.students.all()
+
+    if user.type == PARENT_KEY_WORD:
+        return kelaas.students.filter(parents_id=user.id)
+
+    raise myGraphQLError('Permission denied', status=403)
+
+
+def kelaas__get_kelaas_post(kelaas, user):
+    if teacher_has_access_to_kelaas(kelaas, user.teacher) or kelaas.students.filter(pk=user.id).exists():
+        return kelaas.posts.filter(type=KELAAS_POST_KEY_WORD).order_by('-id')
+
+    raise myGraphQLError('Permission denied', status=403)
+
+
+def kelaas_get_stories(kelaas, user):
+    if user.type == TEACHER_KEY_WORD:
+        if teacher_has_access_to_kelaas(kelaas, user.teacher):
+            return kelaas.posts.filter(type=STORY_KEY_WORD).all().order_by('-id')
+
+    if user.type == PARENT_KEY_WORD:
+        if parent_has_access_to_kelaas(kelaas=kelaas, parent=user.parent):
+            return kelaas.posts.filter(type=STORY_KEY_WORD).all().order_by('-id')
+
+    raise myGraphQLError('Permission denied', status=403)
+
+
+def kelaas__get_conversations(kelaas, user):
+    return kelaas.conversations.filter(members__id=user.id).order_by('-last_message_time')
+
+
+def kelaas__get_conversation(kelaas, user, conversation_id):
+    # TODO exception handling(in case of invalid id)
+    return kelaas.conversations.filter(members__id=user.id, id=conversation_id).first()
+
+
+def kelaas__get_invite_code(kelaas, user):
+    if user.type == TEACHER_KEY_WORD:
+        if teacher_has_access_to_kelaas(kelaas, user.teacher):
+            return kelaas.invite_code
+
+    if user.type == STUDENT_KEY_WORD:
+        if user.student.kelaases.filter(pk=kelaas.id).exists():
+            return kelaas.invite_code
+
+    # TODO why pass invite code to parent?!!!!
+    if user.type == PARENT_KEY_WORD:
+        if parent_has_access_to_kelaas(kelaas=kelaas, parent=user.parent):
+            return kelaas.invite_code
 
     raise myGraphQLError('Permission denied', status=403)
