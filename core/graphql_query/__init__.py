@@ -1,5 +1,3 @@
-from .utilz import it_is_him, parent_has_access_to_kelaas, teacher_has_access_to_kelaas
-
 from .certificate import CertificateLevelType, CertificateType
 from .certificate import PersonCertificateType, CertificateLinkType
 
