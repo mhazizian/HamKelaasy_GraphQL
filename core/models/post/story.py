@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from Hamkelaasy_graphQL import settings
 from core.models.post import Post
 from django.db import models
 
@@ -17,7 +18,8 @@ class Story(Post):
 
     @property
     def pic(self):
-        return self.story_pic.url
+        if self.story_pic:
+            return settings.SERVER_ADDR[:-1] + self.story_pic.url
 
     @property
     def like_count(self):

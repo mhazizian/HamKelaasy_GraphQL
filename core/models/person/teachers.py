@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-from core import myGraphQLError
 from .person import Person
 from django.db import models
 
