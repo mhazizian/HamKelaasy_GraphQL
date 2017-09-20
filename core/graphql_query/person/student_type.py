@@ -9,7 +9,8 @@ from core.graphql_query.utilz import it_is_him
 from core.graphql_query.person import PersonType
 
 from core.graphql_query.certificate import PersonCertificateType
-from core.services import DEFAULT_PAGE_SIZE
+from core.services import DEFAULT_PAGE_SIZE, student__get_invite_code, student__get_kelaases, apply_pagination, \
+    student__get_kelaas, student__get_badges, student__get_parent
 
 
 class StudentType(PersonType):
@@ -47,9 +48,7 @@ class StudentType(PersonType):
 
     def resolve_parent_code(self, info):
         user = info.context.user.person
-
-        if it_is_him(user, self):
-            return self.parent_code
+        return student__get_invite_code(student=self, user=user)
 
     def resolve_kelaases(self, info, **kwargs):
         user = info.context.user.person
@@ -57,50 +56,17 @@ class StudentType(PersonType):
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
 
-        if user.type == TEACHER_KEY_WORD:
-            return [kelaas for kelaas in self.kelaases.all() if
-                    user.teacher.kelaases.filter(id=kelaas.id).exists()].reverse()[offset - page_size:offset]
-
-        if user.type == PARENT_KEY_WORD:
-            if it_is_him(user, self.parents):
-                return self.kelaases.all().order_by('-id')[offset - page_size:offset]
-
-        if it_is_him(user, self):
-            return self.kelaases.all().order_by('-id')[offset - page_size:offset]
-
-        raise myGraphQLError('Permission denied', status=403)
+        query_set = student__get_kelaases(student=self, user=user)
+        return apply_pagination(query_set, page_size=page_size, page=offset)
 
     def resolve_kelaas(self, info, id):
         user = info.context.user.person
 
-        if user.type == PARENT_KEY_WORD:
-            if it_is_him(user, self.parents):
-                if self.kelaases.filter(pk=id).exists():
-                    return self.kelaases.get(pk=id)
-
-        if user.type == TEACHER_KEY_WORD:
-            if self.kelaases.filter(pk=id).exists():
-                if user.teacher.kelaases.filter(pk=id).exists():
-                    return self.kelaases.get(pk=id)
-
-        if it_is_him(user, self):
-            if self.kelaases.filter(pk=id).exists():
-                return self.kelaases.get(pk=id)
-
-        raise myGraphQLError('Permission denied', status=403)
+        return student__get_kelaas(student=self, user=user, kelaas_id=id)
 
     def resolve_parent(self, info):
         user = info.context.user.person
-
-        if user.type == TEACHER_KEY_WORD:
-            for kelaas in user.teacher.kelaases.all():
-                if kelaas.students.filter(pk=self.id).exists():
-                    return self.parents
-
-        if it_is_him(user, self):
-            return self.parents
-
-        raise myGraphQLError('Permission denied', status=403)
+        return student__get_parent(student=self, user=user)
 
     def resolve_badges(self, info, **kwargs):
         user = info.context.user.person
@@ -108,28 +74,8 @@ class StudentType(PersonType):
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
 
-        if it_is_him(user, self):
-            if 'kelaas_id' in kwargs:
-                return self.badges.filter(kelaas_id=kwargs['kelaas_id'])[offset - page_size:offset]
-            return self.badges.all()[offset - page_size:offset]
-
-        if user.type == TEACHER_KEY_WORD:
-            if 'kelaas_id' in kwargs:
-                if user.teacher.kelaases.filter(kelaas_id=kwargs['kelaas_id']).exists():
-                    return self.badges.filter(kelaas_id=kwargs['kelaas_id'])[offset - page_size:offset]
-            badges = []
-            for kelaas in user.teacher.kelaases.all():
-                if kelaas.students.filter(pk=self.id).exists():
-                    badges.extend(self.badges.filter(kelaas=kelaas))
-            return badges[offset - page_size:offset]
-
-        if user.type == PARENT_KEY_WORD:
-            if it_is_him(user, self.parents):
-                if 'kelaas_id' in kwargs:
-                    self.badges.filter(kelaas_id=kwargs['kelaas_id'])
-                return self.badges.all()[offset - page_size:offset]
-
-        raise myGraphQLError('Permission denied', status=403)
+        query_set = student__get_badges(student=self, user=user, **kwargs)
+        return apply_pagination(query_set, page_size=page_size, page=offset)
 
     def resolve_certificates(self, info):
         # TODO permission check
