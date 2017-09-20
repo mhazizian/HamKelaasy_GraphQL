@@ -34,7 +34,7 @@ def index(request):
 
     # TODO change 'response['data']' to 'response'
     return HttpResponse(
-        json.dumps(response['data']),
+        json.dumps(response),
         status=status_code,
         content_type='application/json',
     )
