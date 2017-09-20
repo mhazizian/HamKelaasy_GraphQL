@@ -1,8 +1,9 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query.utilz import parent_has_access_to_kelaas, DEFAULT_PAGE_SIZE, teacher_has_access_to_kelaas
+from core.graphql_query.utilz import parent_has_access_to_kelaas, teacher_has_access_to_kelaas
 from core.models import PARENT_KEY_WORD, STORY_KEY_WORD, KELAAS_POST_KEY_WORD, STUDENT_KEY_WORD, TEACHER_KEY_WORD
+from core.services import DEFAULT_PAGE_SIZE
 
 
 class KelaasType(graphene.ObjectType):

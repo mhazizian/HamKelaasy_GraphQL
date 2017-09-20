@@ -1,6 +1,6 @@
 import graphene
 
-from core.graphql_query import DEFAULT_PAGE_SIZE
+from core.services import DEFAULT_PAGE_SIZE
 
 
 class ConversationType(graphene.ObjectType):

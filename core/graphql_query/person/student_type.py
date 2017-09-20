@@ -1,12 +1,15 @@
 import exceptions
 import graphene
+from django.db.models import Sum
+
 from core import myGraphQLError
 
 from core.models import TEACHER_KEY_WORD, STUDENT_KEY_WORD, PARENT_KEY_WORD, Kelaas
-from core.graphql_query.utilz import it_is_him, DEFAULT_PAGE_SIZE
+from core.graphql_query.utilz import it_is_him
 from core.graphql_query.person import PersonType
 
 from core.graphql_query.certificate import PersonCertificateType
+from core.services import DEFAULT_PAGE_SIZE
 
 
 class StudentType(PersonType):
@@ -36,6 +39,8 @@ class StudentType(PersonType):
     tasks = graphene.List(
         'core.graphql_query.TaskType',
         kelaas_id=graphene.Int(description="Optional.\n\n if provided, only shows badges from this kelaas"),
+        done=graphene.Boolean(default_value=False,
+                              description="if True, then only shows tasks whiches are already done\n\ndefauly: False"),
         page_size=graphene.Int(),
         page=graphene.Int(),
     )
@@ -155,14 +160,14 @@ class StudentType(PersonType):
         # to do so: user annotate along with order_by
         if it_is_him(user, self):
             if 'kelaas_id' in kwargs:
-                return self.tasks.filter(kelaas_id=kwargs['kelaas_id'], is_done=False).order_by('-id')[
+                return self.tasks.filter(kelaas_id=kwargs['kelaas_id'], is_done=kwargs['done']).order_by('-id')[
                        offset - page_size:offset]
-            return self.tasks.filter.order_by('-id')(is_done=False)[offset - page_size:offset]
+            return self.tasks.filter(is_done=kwargs['done']).order_by('-id')[offset - page_size:offset]
 
         if user.type == TEACHER_KEY_WORD:
             try:
                 kelaas = Kelaas.objects.get(pk=kwargs['kelaas_id'])
-                return self.tasks.filter(kelaas_id=kelaas.id)[offset - page_size:offset]
+                return self.tasks.filter(kelaas_id=kelaas.id, is_done=kwargs['done'])[offset - page_size:offset]
             except Kelaas.DoesNotExist:
                 raise myGraphQLError('Kelaas not found', status=404)
             except exceptions.KeyError:

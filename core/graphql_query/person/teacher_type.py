@@ -1,7 +1,7 @@
 import graphene
 
-from core.graphql_query.utilz import DEFAULT_PAGE_SIZE, apply_pagination
 from core.graphql_query.person import PersonType
+from core.services import DEFAULT_PAGE_SIZE, apply_pagination
 
 
 class TeacherType(PersonType):

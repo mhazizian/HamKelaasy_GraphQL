@@ -1,9 +1,10 @@
 import graphene
 from core import myGraphQLError
 
-from core.graphql_query.utilz import it_is_him, DEFAULT_PAGE_SIZE, apply_pagination
+from core.graphql_query.utilz import it_is_him
 from core.graphql_query.person import PersonType
 from core.models import PARENT_KEY_WORD, Parent
+from core.services import DEFAULT_PAGE_SIZE, apply_pagination
 
 
 class ParentType(PersonType):
