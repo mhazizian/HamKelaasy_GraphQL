@@ -1,10 +1,7 @@
 import graphene
-from core import myGraphQLError
 
-from core.graphql_query.utilz import it_is_him
 from core.graphql_query.person import PersonType
-from core.models import PARENT_KEY_WORD, Parent
-from core.services import DEFAULT_PAGE_SIZE, apply_pagination
+from core.services import DEFAULT_PAGE_SIZE, apply_pagination, parent__get_childes, parent__get_child
 
 
 class ParentType(PersonType):
@@ -26,8 +23,8 @@ class ParentType(PersonType):
         page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
 
-        return apply_pagination(self.get_childes(user), page=offset, page_size=page_size)
+        return apply_pagination(parent__get_childes(self, user), page=offset, page_size=page_size)
 
     def resolve_child(self, info, id):
         user = info.context.user.person
-        return self.get_child(user, id)
+        return parent__get_child(self, user, id)

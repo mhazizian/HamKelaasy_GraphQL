@@ -18,18 +18,3 @@ class Parent(Person):
 
     def __unicode__(self):
         return "parents: " + unicode(self.last_name)
-
-    def get_childes(self, user):
-        if not self.id == user.id:
-            raise myGraphQLError('Permission denied', status=403)
-
-        return self.childes.all()
-
-    def get_child(self, user, childe_id):
-        if not self.id == user.id:
-            raise myGraphQLError('Permission denied', status=403)
-
-        try:
-            return self.childes.get(pk=childe_id)
-        except Parent.DoesNotExist:
-            raise myGraphQLError('Child not found', status=404)
