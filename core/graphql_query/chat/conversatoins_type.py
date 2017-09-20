@@ -13,6 +13,7 @@ class ConversationType(graphene.ObjectType):
         page=graphene.Int(),
     )
     last_message = graphene.Field('core.graphql_query.ConversationMessageType')
+    members = graphene.List('core.graphql_query.PersonType')
     member_count = graphene.Int()
     message_count = graphene.Int()
 
@@ -24,3 +25,6 @@ class ConversationType(graphene.ObjectType):
 
     def resolve_last_message(self, info):
         return self.messages.all().last()
+
+    def resolve_members(self, info):
+        return self.members.all()

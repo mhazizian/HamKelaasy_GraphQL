@@ -20,6 +20,10 @@ class KelaasType(graphene.ObjectType):
         page_size=graphene.Int(),
         page=graphene.Int(),
     )
+    conversation = graphene.Field(
+        'core.graphql_query.ConversationType',
+        id=graphene.Int(required=True)
+    )
 
     students = graphene.List(
         'core.graphql_query.StudentType',
@@ -113,3 +117,6 @@ class KelaasType(graphene.ObjectType):
 
         return self.conversations.filter(members__id=user.id).order_by('-last_message_time')[offset - page_size:offset]
 
+    def resolve_conversation(self, info, id):
+        user = info.context.user.person
+        return self.conversations.filter(members__id=user.id, id=id)
