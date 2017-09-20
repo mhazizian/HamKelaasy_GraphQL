@@ -14,22 +14,28 @@ def upload_file(request):
     if not request.user.is_authenticated:
         return HttpResponse('user not authenticated', status=401)
 
-    # if 'data' in request.FILES:
-    files = []
-    for uploaded_file in request.FILES.getlist('data'):
+    if 'data' in request.FILES:
+        input_file = request.FILES['data']
         f = File(
-            # title=request.POST.get('title', uploaded_file.name),
-            title=uploaded_file.name,
+            title=request.POST.get('title', input_file.name),
             description=request.POST.get('description', 'بدون توضیح'),
-            data=uploaded_file
+            data=input_file
         )
         f.owner = request.user.person
         f.save()
-        files.append(f.id)
+
+        return HttpResponse(json.dumps({
+            'data': {
+                'id': f.id,
+                'url': f.url,
+                'title': f.title
+            }
+        }), content_type='application/json', status=202)
 
     return HttpResponse(json.dumps({
-        'id': ','.join([str(f) for f in files]),
-        # 'url': f.url,
-        # 'title': f.title
-    }), content_type='application/json', status=202)
-    # return HttpResponse('bad data input', status=400)
+        'errors': [
+            {
+                'message': 'bad_file_input'
+            }
+        ]
+    }), content_type='application/json', status=400)
