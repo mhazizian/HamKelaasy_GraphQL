@@ -27,4 +27,7 @@ class ConversationType(graphene.ObjectType):
         return self.messages.all().last()
 
     def resolve_members(self, info):
-        return self.members.all()
+        user = info.context.user.person
+
+        queryset = self.members.exclude(id=user.id)
+        return [user].extend(queryset)
