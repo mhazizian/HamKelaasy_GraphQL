@@ -32,7 +32,6 @@ def index(request):
 
     print json.dumps(response, indent=4, sort_keys=True)
 
-    # TODO change 'response['data']' to 'response'
     return HttpResponse(
         json.dumps(response),
         status=status_code,

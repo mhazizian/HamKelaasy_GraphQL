@@ -1,16 +1,14 @@
 import exceptions
 import graphene
-from django.db.models import Sum
 
 from core import myGraphQLError
 
-from core.models import TEACHER_KEY_WORD, STUDENT_KEY_WORD, PARENT_KEY_WORD, Kelaas
+from core.models import TEACHER_KEY_WORD, Kelaas
 from core.graphql_query.utilz import it_is_him
 from core.graphql_query.person import PersonType
 
 from core.graphql_query.certificate import PersonCertificateType
-from core.services import DEFAULT_PAGE_SIZE, student__get_invite_code, student__get_kelaases, apply_pagination, \
-    student__get_kelaas, student__get_badges, student__get_parent
+import core.services as services
 
 
 class StudentType(PersonType):
@@ -22,8 +20,8 @@ class StudentType(PersonType):
 
     kelaases = graphene.List(
         'core.graphql_query.KelaasType',
-        page_size=graphene.Int(),
-        page=graphene.Int(),
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
     )
     kelaas = graphene.Field(
         'core.graphql_query.KelaasType',
@@ -33,8 +31,8 @@ class StudentType(PersonType):
     badges = graphene.List(
         'core.graphql_query.BadgeLink',
         kelaas_id=graphene.Int(description="Optional.\n\n if provided, only shows badges from this kelaas"),
-        page_size=graphene.Int(),
-        page=graphene.Int(),
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
     )
     certificates = graphene.List(PersonCertificateType)
     tasks = graphene.List(
@@ -42,40 +40,34 @@ class StudentType(PersonType):
         kelaas_id=graphene.Int(description="Optional.\n\n if provided, only shows badges from this kelaas"),
         done=graphene.Boolean(default_value=False,
                               description="if True, then only shows tasks whiches are already done\n\ndefauly: False"),
-        page_size=graphene.Int(),
-        page=graphene.Int(),
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
     )
 
     def resolve_parent_code(self, info):
         user = info.context.user.person
-        return student__get_invite_code(student=self, user=user)
+        return services.student__get_invite_code(student=self, user=user)
 
-    def resolve_kelaases(self, info, **kwargs):
+    def resolve_kelaases(self, info, page, page_size):
         user = info.context.user.person
 
-        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-        offset = kwargs.get('page', 1) * page_size
-
-        query_set = student__get_kelaases(student=self, user=user)
-        return apply_pagination(query_set, page_size=page_size, page=offset)
+        query_set = services.student__get_kelaases(student=self, user=user)
+        return services.apply_pagination(query_set, page_size=page_size, page=page)
 
     def resolve_kelaas(self, info, id):
         user = info.context.user.person
 
-        return student__get_kelaas(student=self, user=user, kelaas_id=id)
+        return services.student__get_kelaas(student=self, user=user, kelaas_id=id)
 
     def resolve_parent(self, info):
         user = info.context.user.person
-        return student__get_parent(student=self, user=user)
+        return services.student__get_parent(student=self, user=user)
 
-    def resolve_badges(self, info, **kwargs):
+    def resolve_badges(self, info, page, page_size, **kwargs):
         user = info.context.user.person
 
-        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-        offset = kwargs.get('page', 1) * page_size
-
-        query_set = student__get_badges(student=self, user=user, **kwargs)
-        return apply_pagination(query_set, page_size=page_size, page=offset)
+        query_set = services.student__get_badges(student=self, user=user, **kwargs)
+        return services.apply_pagination(query_set, page_size=page_size, page=page)
 
     def resolve_certificates(self, info):
         # TODO permission check
@@ -99,7 +91,7 @@ class StudentType(PersonType):
     def resolve_tasks(self, info, **kwargs):
         user = info.context.user.person
 
-        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+        page_size = kwargs.get('page_size', services.DEFAULT_PAGE_SIZE)
         offset = kwargs.get('page', 1) * page_size
 
         # TODO fix order of tasks, suggestion: ordered by remaning time from less to bigger

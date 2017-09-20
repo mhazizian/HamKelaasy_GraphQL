@@ -1,7 +1,7 @@
 import graphene
 
 from core.graphql_query.person import PersonType
-from core.services import DEFAULT_PAGE_SIZE, apply_pagination, parent__get_childes, parent__get_child
+import core.services as services
 
 
 class ParentType(PersonType):
@@ -9,22 +9,20 @@ class ParentType(PersonType):
 
     childes = graphene.List(
         'core.graphql_query.StudentType',
-        page_size=graphene.Int(),
-        page=graphene.Int(),
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
     )
     child = graphene.Field(
         'core.graphql_query.StudentType',
         id=graphene.Int(required=True)
     )
 
-    def resolve_childes(self, info, **kwargs):
+    def resolve_childes(self, info, page, page_size):
         user = info.context.user.person
 
-        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-        offset = kwargs.get('page', 1) * page_size
-
-        return apply_pagination(parent__get_childes(self, user), page=offset, page_size=page_size)
+        query_set = services.parent__get_childes(self, user)
+        return services.apply_pagination(query_set, page=page, page_size=page_size)
 
     def resolve_child(self, info, id):
         user = info.context.user.person
-        return parent__get_child(self, user, id)
+        return services.parent__get_child(self, user, id)

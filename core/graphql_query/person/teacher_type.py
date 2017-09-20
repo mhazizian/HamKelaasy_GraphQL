@@ -1,7 +1,7 @@
 import graphene
 
 from core.graphql_query.person import PersonType
-from core.services import DEFAULT_PAGE_SIZE, apply_pagination, teacher__get_kelaases, teacher__get_kelaas
+import core.services as services
 
 
 class TeacherType(PersonType):
@@ -9,8 +9,8 @@ class TeacherType(PersonType):
 
     kelaases = graphene.List(
         'core.graphql_query.KelaasType',
-        page_size=graphene.Int(),
-        page=graphene.Int(),
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
     )
     kelaas = graphene.Field(
         'core.graphql_query.KelaasType',
@@ -20,12 +20,10 @@ class TeacherType(PersonType):
     def resolve_kelaas(self, info, id):
         user = info.context.user.person
 
-        return teacher__get_kelaas(self, user, id)
+        return services.teacher__get_kelaas(self, user, id)
 
-    def resolve_kelaases(self, info, **kwargs):
+    def resolve_kelaases(self, info, page_size, page):
         user = info.context.user.person
 
-        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-        offset = kwargs.get('page', 1) * page_size
-
-        return apply_pagination(teacher__get_kelaases(self, user), page_size=page_size, page=offset)
+        query_set = services.teacher__get_kelaases(self, user)
+        return services.apply_pagination(query_set, page_size=page_size, page=page)
