@@ -2,7 +2,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
-    STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment
+    STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -338,3 +338,35 @@ def add_comment(user, post_id, body):
     )
     comment.save()
     return comment
+
+
+def assign_badge(user, kelaas_id, student_id, badges):
+    if not user.type == TEACHER_KEY_WORD:
+        raise myGraphQLError('Permission denied', status=403)
+    teacher = user.teacher
+
+    if not teacher.kelaases.filter(pk=kelaas_id).exists():
+        return False
+    try:
+        kelaas = user.teacher.kelaases.get(pk=kelaas_id)
+        student = Student.objects.get(pk=student_id)
+    except Kelaas.DoesNotExist:
+        raise myGraphQLError('Kelaas not found', status=404)
+    except Student.DoesNotExist:
+        raise myGraphQLError('Student not found', status=404)
+
+    for badge_id in badges.split(','):
+        if Badge_link.objects.filter(student=student, type_id=badge_id, kelaas=kelaas).exists():
+            t = Badge_link.objects.filter(student=student, type_id=badge_id, kelaas=kelaas).first()
+            t.count = t.count + 1
+            t.save()
+        else:
+            if not Badge.objects.filter(pk=badge_id).exists():
+                raise myGraphQLError('Badge not found', status=404)
+            t = Badge_link(
+                student=student,
+                kelaas=kelaas,
+                type_id=badge_id,
+            )
+            t.save()
+    return t
