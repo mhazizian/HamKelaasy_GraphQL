@@ -1,8 +1,8 @@
 import graphene
+import core.services as services
 from core import myGraphQLError
 
 from core.graphql_query import StoryType
-from core.models import Story, TEACHER_KEY_WORD, File, Kelaas
 
 
 class Story_input(graphene.InputObjectType):
@@ -26,25 +26,13 @@ class Create_story(graphene.Mutation):
         if not info.context.user.is_authenticated:
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
-
-        if not user.type == TEACHER_KEY_WORD:
-            raise myGraphQLError('Permission denied', status=403)
-
-        try:
-            kelaas = user.teacher.kelaases.get(pk=data.kelaas_id)
-        except Kelaas.DoesNotExist:
-            raise myGraphQLError('Kelaas not found', status=404)
-
-        story = Story(
-            title=data.title,
-            description=data.description,
-            kelaas=kelaas,
-            owner=user.teacher,
-        )
-        story.save()
-
+        input_data = {
+            'user': user,
+            'kelaas_id': data.kelaas_id,
+            'title': data.title,
+            'description': data.description
+        }
         if data.pic:
-            if File.objects.filter(pk=data.pic).exists():
-                story.story_pic_id = data.pic
-        story.save()
-        return story
+            input_data['pic_id'] = data.pic
+
+        return services.create_story(**input_data)
