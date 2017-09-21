@@ -90,7 +90,7 @@ def teacher__get_kelaas(teacher, user, kelaas_id):
 
 def student__get_invite_code(student, user):
     if student.id == user.id:
-        return student.parent_cod
+        return student.parent_code
     raise myGraphQLError('Permission denied', status=403)
 
 
