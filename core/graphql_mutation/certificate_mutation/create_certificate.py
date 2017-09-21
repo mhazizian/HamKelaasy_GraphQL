@@ -26,7 +26,7 @@ class Create_certificate(graphene.Mutation):
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
 
-        return services.create_certiicate(
+        return services.create_certificate(
             user=user,
             title=data.title,
             description=data.description,
