@@ -1,14 +1,12 @@
 from __future__ import unicode_literals
 
 from .person import Person
-from django.db import models
 
 TEACHER_KEY_WORD = "teacher"
 
 
 class Teacher(Person):
-    kelaases = models.ManyToManyField('Kelaas', related_name="teachers", blank=True)
-
+    
     def save(self, *args, **kwargs):
         self.type = TEACHER_KEY_WORD
         if not self.profile_pic:

@@ -5,7 +5,6 @@ import uuid
 from django.db import models
 from django.utils import timezone
 from khayyam import *
-import pytz
 
 
 class Kelaas(models.Model):
@@ -15,6 +14,7 @@ class Kelaas(models.Model):
 
     tags = models.ManyToManyField('Tag', related_name="kelaases", blank=True)
     students = models.ManyToManyField('Student', related_name="kelaases", blank=True)
+    teacher = models.ForeignKey('Teacher', related_name='kelaases')
 
     invite_code = models.CharField('invite link for kelaas', max_length=10)
 
