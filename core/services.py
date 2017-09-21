@@ -39,7 +39,6 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
 # ______________________________________________________________________________________________________
 
 
-
 def parent__get_childes(parent, user, **kwargs):
     # type: (Parent, Person) -> object
     if parent.id == user.id:
@@ -283,10 +282,9 @@ def create_kelaas(user, title, description, tags):
     kelaas = Kelaas(
         title=title,
         description=description,
+        teacher=user.teacher
     )
     kelaas.save()
-    user.teacher.kelaases.add(kelaas)
-    user.teacher.save()
 
     for tag_id in tags.split(','):
         if Tag.objects.filter(pk=tag_id).exists():
