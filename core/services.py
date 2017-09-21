@@ -289,3 +289,20 @@ def create_kelaas(user, title, description, tags):
     kelaas.save()
 
     return kelaas
+
+
+def add_child(user, child_code):
+    if not user.type == PARENT_KEY_WORD:
+        raise myGraphQLError('Permission denied', status=403)
+
+    try:
+        student = Student.objects.get(parent_code=child_code)
+        if student.parents:
+            raise myGraphQLError('Permission denied', status=403)
+
+        student.parents = user.parent
+        student.save()
+    except Student.DoesNotExist:
+        raise myGraphQLError('Student not found', status=404)
+
+    return student

@@ -1,8 +1,8 @@
 import graphene
 from core import myGraphQLError
+import core.services as services
 
 from core.graphql_query import StudentType
-from core.models import PARENT_KEY_WORD, Student
 
 
 class Add_child_input(graphene.InputObjectType):
@@ -24,16 +24,4 @@ class Add_child(graphene.Mutation):
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
 
-        if not user.type == PARENT_KEY_WORD:
-            raise myGraphQLError('Permission denied', status=403)
-
-        try:
-            student = Student.objects.get(parent_code=data.child_code)
-            if student.parents:
-                raise myGraphQLError('Permission denied', status=403)
-
-            student.parents = user.parent
-            student.save()
-        except Student.DoesNotExist:
-            raise myGraphQLError('Student not found', status=404)
-        return student
+        return services.add_child(user=user, child_code=data.child_code)
