@@ -1,6 +1,6 @@
 import graphene
 
-from core.services import DEFAULT_PAGE_SIZE
+import core.services as services
 
 
 class ConversationType(graphene.ObjectType):
@@ -9,19 +9,19 @@ class ConversationType(graphene.ObjectType):
     id = graphene.Int()
     messages = graphene.List(
         'core.graphql_query.ConversationMessageType',
-        page_size=graphene.Int(),
-        page=graphene.Int(),
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
     )
     last_message = graphene.Field('core.graphql_query.ConversationMessageType')
     members = graphene.List('core.graphql_query.PersonType')
     member_count = graphene.Int()
     message_count = graphene.Int()
 
-    def resolve_messages(self, info, **kwargs):
-        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-        offset = kwargs.get('page', 1) * page_size
+    def resolve_messages(self, info, page, page_size):
+        user = info.context.user.person
 
-        return self.messages.all().order_by('-id')[offset - page_size:offset]
+        query_set = services.conversation__get_messages(conversation=self, user=user)
+        return services.apply_pagination(query_set, page=page, page_size=page_size)
 
     def resolve_last_message(self, info):
         return self.messages.all().last()

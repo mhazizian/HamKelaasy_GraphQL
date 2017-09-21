@@ -1,5 +1,6 @@
 import graphene
 from core.graphql_query.post import PostType
+import core.services as services
 
 
 class StoryType(PostType):
@@ -12,6 +13,5 @@ class StoryType(PostType):
         return self.story.pic
 
     def resolve_like_count(self, info):
-        return self.story.like_count
-
-
+        user = info.context.user.person
+        return services.story__get_likes_count(story=self.story, user=user)

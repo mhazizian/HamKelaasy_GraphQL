@@ -1,6 +1,6 @@
 import graphene
 
-from core.services import DEFAULT_PAGE_SIZE
+import core.services as services
 
 
 class PostType(graphene.ObjectType):
@@ -16,18 +16,20 @@ class PostType(graphene.ObjectType):
 
     comments = graphene.List(
         'core.graphql_query.CommentType',
-        page_size=graphene.Int(),
-        page=graphene.Int(),
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
     )
     comment_count = graphene.Int()
 
-    def resolve_comments(self, info, **kwargs):
-        page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
-        offset = kwargs.get('page', 1) * page_size
-        return self.comments.all().order_by('-id')[offset - page_size:offset]
+    def resolve_comments(self, info, page, page_size):
+        user = info.context.user.person
+
+        query_set = services.post__get_comments(post=self, user=user)
+        return services.apply_pagination(query_set, page=page, page_size=page_size)
 
     def resolve_comment_count(self, info):
-        return self.comments.count()
+        user = info.context.user.person
+        return services.post__get_comments_count(post=self, user=user)
 
     def resolve_owner(self, info):
         return self.owner

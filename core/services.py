@@ -2,7 +2,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
-    STUDENT_KEY_WORD
+    STUDENT_KEY_WORD, Post, Person
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -189,6 +189,7 @@ def kelaas__get_conversation(kelaas, user, conversation_id):
 
 
 def kelaas__get_invite_code(kelaas, user):
+    # type: (Kelaas, Person) -> string
     if user.type == TEACHER_KEY_WORD:
         if teacher_has_access_to_kelaas(kelaas, user.teacher):
             return kelaas.invite_code
@@ -203,3 +204,29 @@ def kelaas__get_invite_code(kelaas, user):
             return kelaas.invite_code
 
     raise myGraphQLError('Permission denied', status=403)
+
+
+def post__get_comments(post, user):
+    # TODO permission checking
+    return post.comments.all().order_by('-id')
+
+
+def post__get_comments_count(post, user):
+    # type: (Post, Person) -> int
+    # TODO permission checking
+    return post.comments.count()
+
+
+def story__get_likes_count(story, user):
+    # TODO permission checking
+    return story.like_count
+
+
+def kelaas_post__get_files(kelaas_post, user):
+    # TODO permission checking
+    return kelaas_post.files.all()
+
+
+def conversation__get_messages(conversation, user):
+    # TODO permission checking
+    return conversation.messages.all().order_by('-id')

@@ -1,6 +1,7 @@
 import exceptions
 import graphene
 
+import core.services as services
 from core import myGraphQLError
 from core.models import *
 from graphql_query import *
@@ -36,7 +37,7 @@ def resolve_students(root, info, **kwargs):
         raise myGraphQLError('user not authenticated', status=401)
     user = info.context.user.person
 
-    page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+    page_size = kwargs.get('page_size', services.DEFAULT_PAGE_SIZE)
     offset = kwargs.get('page', 1) * page_size
 
     if user.type == PARENT_KEY_WORD:
@@ -81,7 +82,7 @@ def resolve_kelaases(root, info, **kwargs):
         raise myGraphQLError('user not authenticated', status=401)
     user = info.context.user.person
 
-    page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+    page_size = kwargs.get('page_size', services.DEFAULT_PAGE_SIZE)
     offset = kwargs.get('page', 1) * page_size
 
     if user.type == TEACHER_KEY_WORD:
@@ -131,7 +132,7 @@ def resolve_badge_types(root, info, **kwargs):
         id = kwargs['id']
         return Badge.objects.get(pk=id)
 
-    page_size = kwargs.get('page_size', DEFAULT_PAGE_SIZE)
+    page_size = kwargs.get('page_size', services.DEFAULT_PAGE_SIZE)
     offset = kwargs.get('page', 1) * page_size
 
     return Badge.objects.all()[offset:offset + page_size]
