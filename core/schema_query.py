@@ -111,13 +111,20 @@ def resolve_teacher(root, info):
     raise myGraphQLError('Permission denied', status=403)
 
 
-def resolve_parent(root, info):
+def resolve_parent(root, info, **kwargs):
     if not info.context.user.is_authenticated:
         raise myGraphQLError('user not authenticated', status=401)
     user = info.context.user.person
 
     if user.type == PARENT_KEY_WORD:
         return user.parent
+
+    if user.type == TEACHER_KEY_WORD:
+        try:
+            return Parent.objects.get(pk=kwargs['id'])
+        except Parent.DoesNotExist:
+            raise myGraphQLError('Parent not found', status=404)
+
     raise myGraphQLError('Permission denied', status=403)
 
 
@@ -180,7 +187,9 @@ class Query(graphene.ObjectType):
     parent = graphene.Field(
         ParentType,
         description="Authetivation required.\n\nonly if current user is a parent.",
-        resolver=resolve_parent
+        resolver=resolve_parent,
+
+        id=graphene.Int(description="Parent id."),
     )
 
     kelaas = graphene.Field(

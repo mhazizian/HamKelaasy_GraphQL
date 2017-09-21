@@ -2,7 +2,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
-    STUDENT_KEY_WORD, Post, Person
+    STUDENT_KEY_WORD, Post, Person, Student
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -34,21 +34,41 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
     return False
 
 
-def parent__get_childes(parent, user):
-    if not parent.id == user.id:
-        raise myGraphQLError('Permission denied', status=403)
+def parent__get_childes(parent, user, **kwargs):
+    # type: (Parent, Person) -> object
+    if parent.id == user.id:
+        return parent.childes.all()
 
-    return parent.childes.all()
+    if user.type == TEACHER_KEY_WORD:
+        if 'kelaas_id' in kwargs:
+            if user.kelaases.filter(kelaas_id=kwargs['kelaas_id']).exist():
+                return parent.childes.filter(kelaases__in=[kwargs['kelaas_id']])
+            raise myGraphQLError('Permission denied', status=403)
+
+        result = []
+        # user.kelaases.filter(students__in=[child.id for child in parent.childes.all()])
+        for child in parent.childes.all():
+            if child.kelaases.filter(teachers__in=[user.id]).exists():
+                result.append(child)
+        return result
+
+    raise myGraphQLError('Permission denied', status=403)
 
 
 def parent__get_child(parent, user, childe_id):
-    if not parent.id == user.id:
-        raise myGraphQLError('Permission denied', status=403)
-
     try:
-        return parent.childes.get(pk=childe_id)
-    except Parent.DoesNotExist:
+        if parent.id == user.id:
+            return parent.childes.get(pk=childe_id)
+
+        if user.type == TEACHER_KEY_WORD:
+            child = parent.childes.get(pk=childe_id)
+            if child.kelaases.filter(teachers__in=[user.id]).exists():
+                return child
+
+    except Student.DoesNotExist:
         raise myGraphQLError('Child not found', status=404)
+
+    raise myGraphQLError('Permission denied', status=403)
 
 
 def teacher__get_kelaases(teacher, user):
@@ -230,3 +250,18 @@ def kelaas_post__get_files(kelaas_post, user):
 def conversation__get_messages(conversation, user):
     # TODO permission checking
     return conversation.messages.all().order_by('-id')
+
+
+def conversation__get_last_message(conversation, user):
+    # TODO permissopn checking
+    return conversation.messages.all().last()
+
+
+def messages__is_my_message(message, user):
+    if user.id == message.writer.id:
+        return True
+    return False
+
+
+def certificate__get_levels(certificate, user=None):
+    return certificate.levels.all()
