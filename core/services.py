@@ -3,7 +3,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
-    Conversation_message, Certificate, Certificate_link
+    Conversation_message, Certificate, Certificate_link, Certificate_level
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -492,7 +492,7 @@ def assign_certificate(user, type_id, level, owner_id, ):
         raise myGraphQLError('Owner not found', status=404)
 
 
-def create_certiicate(user, title, description):
+def create_certificate(user, title, description):
     # TODO permission check!!
     # TODO duplicate certificate?
 
@@ -506,3 +506,25 @@ def create_certiicate(user, title, description):
     )
     certificate.save()
     return certificate
+
+
+def create_certificate_level(user, certificate_id, level, level_description):
+    # TODO permission checking
+    try:
+        certificate = Certificate.objects.get(pk=certificate_id)
+    except Certificate.DoesNotExist:
+        raise myGraphQLError('Certificate not found', status=404)
+
+    if not user.id == certificate.creator.id:
+        raise myGraphQLError('Permission denied', status=403)
+
+    if certificate.levels.filter(level=level).exists():
+        raise myGraphQLError('duplicate certificate-level', status=400)
+
+    certi_level = Certificate_level(
+        level=level,
+        level_description=level_description,
+        type=certificate,
+    )
+    certi_level.save()
+    return certi_level
