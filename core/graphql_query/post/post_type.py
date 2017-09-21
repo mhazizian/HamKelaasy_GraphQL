@@ -1,5 +1,4 @@
 import graphene
-
 import core.services as services
 
 

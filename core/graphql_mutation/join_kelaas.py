@@ -35,4 +35,5 @@ class Join_kelaas(graphene.Mutation):
         if not kelaas.students.filter(pk=user.id).exists():
             kelaas.students.add(user.student)
             kelaas.save()
+
         return kelaas

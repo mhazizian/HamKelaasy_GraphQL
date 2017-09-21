@@ -24,10 +24,14 @@ class ConversationType(graphene.ObjectType):
         return services.apply_pagination(query_set, page=page, page_size=page_size)
 
     def resolve_last_message(self, info):
-        return self.messages.all().last()
+        user = info.context.user.person
+        return services.conversation__get_last_message(conversation=self, user=user)
 
     def resolve_members(self, info):
         user = info.context.user.person
 
         queryset = self.members.exclude(id=user.id)
-        return [user].extend(queryset)
+
+        result = [user]
+        result.extend(queryset)
+        return result

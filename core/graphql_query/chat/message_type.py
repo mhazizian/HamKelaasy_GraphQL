@@ -1,5 +1,5 @@
 import graphene
-
+import core.services as services
 
 class ConversationMessageType(graphene.ObjectType):
     body = graphene.String()
@@ -12,7 +12,6 @@ class ConversationMessageType(graphene.ObjectType):
 
     def resolve_is_my_message(self, info):
         user = info.context.user.person
+        return services.messages__is_my_message(message=self, user=user)
 
-        if user.id == self.writer.id:
-            return True
-        return False
+

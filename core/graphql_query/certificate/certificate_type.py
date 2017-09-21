@@ -1,4 +1,5 @@
 import graphene
+import core.services as services
 
 
 class CertificateType(graphene.ObjectType):
@@ -19,7 +20,7 @@ class CertificateType(graphene.ObjectType):
         return self.creator
 
     def resolve_levels(self, info):
-        return self.levels.all()
+        return services.certificate__get_levels(certificate=self)
 
 
 class CertificateLevelType(graphene.ObjectType):
