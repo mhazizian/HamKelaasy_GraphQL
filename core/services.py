@@ -6,9 +6,11 @@ from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAA
     Conversation_message, Certificate, Certificate_link, Certificate_level, Task
 
 DEFAULT_PAGE_SIZE = 10
+MAX_PAGE_SIZE = 34
 
 
 def apply_pagination(input_list, page=1, page_size=DEFAULT_PAGE_SIZE):
+    page_size = min(MAX_PAGE_SIZE, page_size)
     paginator = Paginator(input_list, page_size)
 
     try:
@@ -40,13 +42,12 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
 
 
 def parent__get_childes(parent, user, **kwargs):
-    # type: (Parent, Person) -> object
     if parent.id == user.id:
         return parent.childes.all()
 
     if user.type == TEACHER_KEY_WORD:
         if 'kelaas_id' in kwargs:
-            if user.kelaases.filter(kelaas_id=kwargs['kelaas_id']).exist():
+            if user.teacher.kelaases.filter(kelaas_id=kwargs['kelaas_id']).exist():
                 return parent.childes.filter(kelaases__in=[kwargs['kelaas_id']])
             raise myGraphQLError('Permission denied', status=403)
 
@@ -214,7 +215,6 @@ def kelaas__get_conversation(kelaas, user, conversation_id):
 
 
 def kelaas__get_invite_code(kelaas, user):
-    # type: (Kelaas, Person) -> string
     if user.type == TEACHER_KEY_WORD:
         if teacher_has_access_to_kelaas(kelaas, user.teacher):
             return kelaas.invite_code
@@ -361,19 +361,19 @@ def assign_badge(user, kelaas_id, student_id, badges):
 
     for badge_id in badges.split(','):
         if Badge_link.objects.filter(student=student, type_id=badge_id, kelaas=kelaas).exists():
-            t = Badge_link.objects.filter(student=student, type_id=badge_id, kelaas=kelaas).first()
-            t.count = t.count + 1
-            t.save()
+            badge_link = Badge_link.objects.filter(student=student, type_id=badge_id, kelaas=kelaas).first()
+            badge_link.count = badge_link.count + 1
+            badge_link.save()
         else:
             if not Badge.objects.filter(pk=badge_id).exists():
                 raise myGraphQLError('Badge not found', status=404)
-            t = Badge_link(
+            badge_link = Badge_link(
                 student=student,
                 kelaas=kelaas,
                 type_id=badge_id,
             )
-            t.save()
-    return t
+            badge_link.save()
+    return badge_link
 
 
 def create_kelaas_post(user, kelaas_id, title, description, files):
