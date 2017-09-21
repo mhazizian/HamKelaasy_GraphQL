@@ -2,7 +2,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
-    STUDENT_KEY_WORD, Post, Person, Student, Tag
+    STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -306,3 +306,35 @@ def add_child(user, child_code):
         raise myGraphQLError('Student not found', status=404)
 
     return student
+
+
+def add_comment(user, post_id, body):
+    try:
+        post = Post.objects.get(pk=post_id)
+    except Post.DoesNotExist:
+        raise myGraphQLError('Post not found', status=404)
+
+    if user.type == STUDENT_KEY_WORD:
+        if not user.student.kelaases.filter(pk=post.kelaas_id).exists():
+            raise myGraphQLError('Permission denied', status=403)
+
+    if user.type == TEACHER_KEY_WORD:
+        if not user.teacher.kelaases.filter(pk=post.kelaas_id).exists():
+            raise myGraphQLError('Permission denied', status=403)
+
+    if user.type == PARENT_KEY_WORD:
+        access_flag = False
+        for student in user.parent.childes.all():
+            if student.kelaases.filter(pk=post.kelaas_id).exists():
+                access_flag = True
+                break
+        if not access_flag:
+            raise myGraphQLError('Permission denied', status=403)
+
+    comment = Comment(
+        body=body,
+        post_id=post_id,
+        owner_id=user.id,
+    )
+    comment.save()
+    return comment
