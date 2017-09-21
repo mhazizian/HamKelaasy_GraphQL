@@ -1,14 +1,14 @@
 import graphene
+import core.services as services
 from core import myGraphQLError
 
 from core.graphql_query import KelaasType
-from core.models import Tag, Kelaas, TEACHER_KEY_WORD
 
 
 class Kelaas_input(graphene.InputObjectType):
     title = graphene.String(required=True)
     description = graphene.String(default_value="")
-    tags = graphene.String(description="a string of tag's id,\n\n example: '1,10,4,3,'")
+    tags = graphene.String(description="a string of tag's id,\n\n example: '1,10,4,3,'", default_value="")
 
 
 class Create_kelaas(graphene.Mutation):
@@ -26,20 +26,9 @@ class Create_kelaas(graphene.Mutation):
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
 
-        if not user.type == TEACHER_KEY_WORD:
-            raise myGraphQLError('Permission denied', status=403)
-
-        kelaas = Kelaas(
+        return services.create_kelaas(
+            user=user,
             title=data.title,
             description=data.description,
+            tags=data.tags
         )
-        kelaas.save()
-        user.teacher.kelaases.add(kelaas)
-        user.teacher.save()
-        for tag_id in data.tags.split(','):
-            if Tag.objects.filter(pk=tag_id).exists():
-                tag = Tag.objects.get(pk=tag_id)
-                kelaas.tags.add(tag)
-        kelaas.save()
-
-        return kelaas

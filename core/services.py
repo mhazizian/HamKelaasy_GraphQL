@@ -2,7 +2,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
-    STUDENT_KEY_WORD, Post, Person, Student
+    STUDENT_KEY_WORD, Post, Person, Student, Tag
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -265,3 +265,27 @@ def messages__is_my_message(message, user):
 
 def certificate__get_levels(certificate, user=None):
     return certificate.levels.all()
+
+
+# ______________________________________________________________________________________________________
+# ______________________________________________________________________________________________________
+
+def create_kelaas(user, title, description, tags):
+    if not user.type == TEACHER_KEY_WORD:
+        raise myGraphQLError('Permission denied', status=403)
+
+    kelaas = Kelaas(
+        title=title,
+        description=description,
+    )
+    kelaas.save()
+    user.teacher.kelaases.add(kelaas)
+    user.teacher.save()
+
+    for tag_id in tags.split(','):
+        if Tag.objects.filter(pk=tag_id).exists():
+            tag = Tag.objects.get(pk=tag_id)
+            kelaas.tags.add(tag)
+    kelaas.save()
+
+    return kelaas
