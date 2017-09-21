@@ -13,9 +13,9 @@ class Fard_API(object):
         self.listening_local_url = "signup_on_fard_listening_url/"
 
         self.signup_url = self.fard_domain + "oauth3/authorize.php" \
-               + "?client_id=" + self.client_id \
-               + "&redirect_url=" + self.domain\
-               + self.listening_local_url
+                          + "?client_id=" + self.client_id \
+                          + "&redirect_url=" + self.domain \
+                          + self.listening_local_url
 
     def connect(self, request):
         request_token = request.GET['request_token']
