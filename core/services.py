@@ -2,7 +2,8 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
-    STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story
+    STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
+    Conversation_message
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -440,3 +441,21 @@ def join_kelaas(user, invite_code):
         kelaas.save()
 
     return kelaas
+
+
+def send_message(user, conversation_id, message):
+    try:
+        conversation = Conversation.objects.get(pk=conversation_id)
+    except Conversation.DoesNotExist:
+        raise myGraphQLError('Convesation not found', status=404)
+
+    if not conversation.members.filter(pk=user.id).exists():
+        raise myGraphQLError('Permission denied', status=403)
+
+    msg = Conversation_message(
+        writer=user,
+        body=message,
+        conversation_id=conversation_id
+    )
+    msg.save()
+    return msg

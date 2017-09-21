@@ -1,8 +1,8 @@
 import graphene
-from core import myGraphQLError
+import core.services as services
 
+from core import myGraphQLError
 from core.graphql_query import ConversationMessageType
-from core.models import Conversation, Conversation_message
 
 
 class Send_message_input(graphene.InputObjectType):
@@ -25,18 +25,8 @@ class Send_message(graphene.Mutation):
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
 
-        try:
-            conversation = Conversation.objects.get(pk=data.conversation_id)
-        except Conversation.DoesNotExist:
-            raise myGraphQLError('Convesation not found', status=404)
-
-        if not conversation.members.filter(pk=user.id).exists():
-            raise myGraphQLError('Permission denied', status=403)
-
-        msg = Conversation_message(
-            writer=user,
-            body=data.message,
-            conversation_id=data.conversation_id
+        return services.send_message(
+            user=user,
+            conversation_id=data.conversation_id,
+            message=data.message
         )
-        msg.save()
-        return msg
