@@ -431,6 +431,9 @@ def join_kelaas(user, invite_code):
     if not user.type == STUDENT_KEY_WORD:
         raise myGraphQLError('Permission denied', status=403)
 
+    if not user.student.parents:
+        raise myGraphQLError('Parent is necessary', status=403)
+
     try:
         kelaas = Kelaas.objects.get(invite_code=invite_code)
     except Kelaas.DoesNotExist:
@@ -439,6 +442,13 @@ def join_kelaas(user, invite_code):
     if not kelaas.students.filter(pk=user.id).exists():
         kelaas.students.add(user.student)
         kelaas.save()
+
+    if user.student.parents:
+        create_conversation(
+            user=user.student.parents,
+            kelaas_id=kelaas.id,
+            members_id=str(kelaas.teachers.all()[0].id)
+        )
 
     return kelaas
 
