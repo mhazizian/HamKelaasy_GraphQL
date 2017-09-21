@@ -3,7 +3,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
-    Conversation_message
+    Conversation_message, Certificate, Certificate_link
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -459,3 +459,34 @@ def send_message(user, conversation_id, message):
     )
     msg.save()
     return msg
+
+
+def assign_certificate(user, type_id, level, owner_id, ):
+    try:
+        certificate_level = Certificate.objects.get(pk=type_id).levels.filter(level=level).first()
+        owner = Person.objects.get(pk=owner_id)
+
+        if not user.type == TEACHER_KEY_WORD:
+            raise myGraphQLError('Permission denied', status=403)
+
+        if not user.teacher.kelaases.filter(students__in=[owner.id]).exists():
+            raise myGraphQLError('Permission denied', status=403)
+
+        # TODO continuously levels checking
+        # TODO same certificate level from different persons!!!
+
+        if owner.certificates.filter(certificate_level=certificate_level, assigner_id=user.id).exists():
+            return owner.certificates.filter(certificate_level=certificate_level, assigner_id=user.id).first()
+
+        certificate_link = Certificate_link(
+            certificate_level=certificate_level,
+            owner=owner,
+            assigner=user
+        )
+        certificate_link.save()
+        return certificate_link
+
+    except Certificate.DoesNotExist:
+        raise myGraphQLError('Certificate not found', status=404)
+    except Person.DoesNotExist:
+        raise myGraphQLError('Owner not found', status=404)

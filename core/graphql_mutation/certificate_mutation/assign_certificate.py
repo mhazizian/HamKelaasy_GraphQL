@@ -1,8 +1,8 @@
 import graphene
+import core.services as services
 from core import myGraphQLError
 
 from core.graphql_query import CertificateLinkType
-from core.models import Certificate, Person, Certificate_link, TEACHER_KEY_WORD, Teacher
 
 
 class Assign_certificate_input(graphene.InputObjectType):
@@ -26,31 +26,9 @@ class Assign_certificate(graphene.Mutation):
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
 
-        try:
-            certificate_level = Certificate.objects.get(pk=data.type_id).levels.filter(level=data.level).first()
-            owner = Person.objects.get(pk=data.owner_id)
-
-            if not user.type == TEACHER_KEY_WORD:
-                raise myGraphQLError('Permission denied', status=403)
-
-            if not user.teacher.kelaases.filter(students__in=[owner.id]).exists():
-                raise myGraphQLError('Permission denied', status=403)
-
-            # TODO continuously levels checking
-            # TODO same certificate level from different persons!!!
-
-            if owner.certificates.filter(certificate_level=certificate_level, assigner_id=user.id).exists():
-                return owner.certificates.filter(certificate_level=certificate_level, assigner_id=user.id).first()
-
-            certificate_link = Certificate_link(
-                certificate_level=certificate_level,
-                owner=owner,
-                assigner=user
-            )
-            certificate_link.save()
-            return certificate_link
-
-        except Certificate.DoesNotExist:
-            raise myGraphQLError('Certificate not found', status=404)
-        except Person.DoesNotExist:
-            raise myGraphQLError('Owner not found', status=404)
+        return services.assign_certificate(
+            user=user,
+            owner_id=data.owner_id,
+            level=data.level,
+            type_id=data.type_id,
+        )
