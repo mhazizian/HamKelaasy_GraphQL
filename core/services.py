@@ -424,3 +424,19 @@ def create_story(user, kelaas_id, title, description, pic_id=None):
             story.story_pic_id = pic_id
     story.save()
     return story
+
+
+def join_kelaas(user, invite_code):
+    if not user.type == STUDENT_KEY_WORD:
+        raise myGraphQLError('Permission denied', status=403)
+
+    try:
+        kelaas = Kelaas.objects.get(invite_code=invite_code)
+    except Kelaas.DoesNotExist:
+        raise myGraphQLError('Kelaas not found', status=404)
+
+    if not kelaas.students.filter(pk=user.id).exists():
+        kelaas.students.add(user.student)
+        kelaas.save()
+
+    return kelaas

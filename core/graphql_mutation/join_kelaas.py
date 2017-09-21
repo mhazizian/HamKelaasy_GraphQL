@@ -1,8 +1,8 @@
 import graphene
+import core.services as services
 from core import myGraphQLError
 
 from core.graphql_query import KelaasType
-from core.models import STUDENT_KEY_WORD, Kelaas
 
 
 class Join_kelaas_input(graphene.InputObjectType):
@@ -24,16 +24,4 @@ class Join_kelaas(graphene.Mutation):
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
 
-        if not user.type == STUDENT_KEY_WORD:
-            raise myGraphQLError('Permission denied', status=403)
-
-        try:
-            kelaas = Kelaas.objects.get(invite_code=data.invite_code)
-        except Kelaas.DoesNotExist:
-            raise myGraphQLError('Kelaas not found', status=404)
-
-        if not kelaas.students.filter(pk=user.id).exists():
-            kelaas.students.add(user.student)
-            kelaas.save()
-
-        return kelaas
+        return services.join_kelaas(user=user, invite_code=data.invite_code)
