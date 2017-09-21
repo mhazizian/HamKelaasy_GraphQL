@@ -4,6 +4,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 
+from Hamkelaasy_graphQL import settings
+
 
 def get_upload_path(instance, filename):
     return '/'.join(['data', get_random_string(length=32), filename])
@@ -19,7 +21,7 @@ class File(models.Model):
 
     @property
     def url(self):
-        return self.data.url
+        return settings.SERVER_ADDR[:-1] + self.data.url
 
     def __unicode__(self):
         return unicode(self.title)

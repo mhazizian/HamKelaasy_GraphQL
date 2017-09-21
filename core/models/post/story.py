@@ -19,7 +19,7 @@ class Story(Post):
     @property
     def pic(self):
         if self.story_pic:
-            return settings.SERVER_ADDR[:-1] + self.story_pic.url
+            return self.story_pic.url
 
     @property
     def like_count(self):
