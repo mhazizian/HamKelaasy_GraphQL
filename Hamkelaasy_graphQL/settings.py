@@ -23,7 +23,7 @@ SECRET_KEY = 'qqce@wq!=3x=%-hv8((gh&^s81lv=bf^#as327j194igg)03qf'
 SERVER_ADDR = "http://94.182.227.193:9090/"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "0.0.0.0",
