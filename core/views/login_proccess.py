@@ -11,7 +11,10 @@ from core.views import Fard_API
 
 
 def login(request):
-    return HttpResponseRedirect(Fard_API().signup_url)  # + "&next=" + next + "&t=test")
+    redirect_url = request.GET['redirect_url']
+    redirect_url = redirect_url.replace('#', '%23')
+
+    return HttpResponseRedirect(Fard_API().signup_url + "&next=" + redirect_url)
 
 
 @csrf_exempt
@@ -90,6 +93,8 @@ def signup(request):
 
 
 def resolve_fard(request):
+    redirect_url = request.GET['next']
+
     fard_api = Fard_API()
     fard_api.connect(request)
     data = fard_api.get_data()
@@ -101,7 +106,7 @@ def resolve_fard(request):
     if User.objects.filter(username=username).exists():
         user = User.objects.get(username=username)
         return HttpResponseRedirect(
-            "http://94.182.227.193:9091/#!/fard/redirect" \
+            redirect_url \
             + "?state=" + "1" \
             + "&token=" + Token.objects.get(user=user).key \
             + "&type=" + user.person.type
@@ -128,7 +133,7 @@ def resolve_fard(request):
         user_temp.save()
 
     return HttpResponseRedirect(
-        "http://94.182.227.193:9091/#!/fard/redirect" \
+        redirect_url \
         + "?state=" + "0" \
         + "&fd_id=" + str(user_temp.id)
     )
