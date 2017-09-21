@@ -528,3 +528,30 @@ def create_certificate_level(user, certificate_id, level, level_description):
     )
     certi_level.save()
     return certi_level
+
+
+def create_conversation(user, kelaas_id, members_id):
+    # TODO permission denied!!
+    try:
+        kelaas = Kelaas.objects.get(pk=kelaas_id)
+        members_id = [int(id) for id in members_id.split(',')]
+        members_id.append(user.id)
+        members = Person.objects.filter(id__in=members_id)
+
+        for conv in kelaas.conversations.all():
+            if conv.member_count == len(members):
+                if conv.members.filter(id__in=[member.id for member in members]):
+                    return conv
+
+        convesation = Conversation(kelaas_id=kelaas.id)
+        convesation.save()
+
+        for person in members:
+            convesation.members.add(person)
+        convesation.save()
+        return convesation
+
+    except Person.DoesNotExist:
+        raise myGraphQLError('Person not found', status=404)
+    except Kelaas.DoesNotExist:
+        raise myGraphQLError('Kelaas not found', status=404)
