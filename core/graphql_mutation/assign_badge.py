@@ -1,8 +1,7 @@
 import graphene
-from core import myGraphQLError
 import core.services as services
+from core import myGraphQLError
 from core.graphql_query import BadgeLink
-
 
 
 class Assign_badge_input(graphene.InputObjectType):

@@ -3,7 +3,6 @@ import core.services as services
 from core import myGraphQLError
 
 from core.graphql_query import KelaasPostType
-from core.models import Kelaas_post, TEACHER_KEY_WORD, File, Kelaas
 
 
 class Kelaas_post_input(graphene.InputObjectType):

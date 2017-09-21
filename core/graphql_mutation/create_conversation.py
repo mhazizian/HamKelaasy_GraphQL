@@ -7,8 +7,11 @@ from core.models import Conversation, Person, Kelaas
 
 
 class Create_convesation_input(graphene.InputObjectType):
-    members_id = graphene.String(required=True, description="a string of member id.\n\nexample: '1,2,10,4'\n\n"
-                                                            "by default: current user is joined this conversation ")
+    members_id = graphene.String(
+        required=True,
+        description="a string of member id.\n\nexample: '1,2,10,4'\n\n"
+                    "by default: current user is joined this conversation "
+    )
     kelaas_id = graphene.Int(requierd=True)
 
 
