@@ -156,6 +156,21 @@ def resolve_tags(root, info):
     return Tag.objects.all()
 
 
+def resolve_conversation(root, info, id):
+    if not info.context.user.is_authenticated:
+        raise myGraphQLError('user not authenticated', status=401)
+    user = info.context.user.person
+
+    try:
+        conversation = Conversation.objects.get(pk=id)
+        if conversation.members.filter(id=user.id).exists():
+            return conversation
+    except Conversation.DoesNotExist:
+        raise myGraphQLError('Conversation not found', status=404)
+
+    raise myGraphQLError('Permission denied', status=403)
+
+
 # Query class:
 class Query(graphene.ObjectType):
     me = graphene.Field(
@@ -229,4 +244,10 @@ class Query(graphene.ObjectType):
         page_size=graphene.Int(),
         page=graphene.Int(),
         resolver=resolve_badge_types,
+    )
+    conversation = graphene.Field(
+        ConversationType,
+        id=graphene.Int(required=True),
+        description="Returns Conversation only if current user has access to it",
+        resolver=resolve_conversation,
     )
