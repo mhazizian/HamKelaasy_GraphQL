@@ -1,4 +1,5 @@
 import graphene
+import core.services as services
 from core import myGraphQLError
 
 from core.graphql_query import KelaasPostType
@@ -27,25 +28,10 @@ class Create_kelaas_post(graphene.Mutation):
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
 
-        if not user.type == TEACHER_KEY_WORD:
-            raise myGraphQLError('Permission denied', status=403)
-
-        try:
-            kelaas = user.teacher.kelaases.get(pk=data.kelaas_id)
-        except Kelaas.DoesNotExist:
-            raise myGraphQLError('Kelaas not found', status=404)
-
-        post = Kelaas_post(
+        return services.create_kelaas_post(
+            user=user,
+            kelaas_id=data.kelaas_id,
             title=data.title,
             description=data.description,
-            kelaas=kelaas,
-            owner=user.teacher,
+            files=data.files
         )
-        post.save()
-        for file_id in data.files.split(','):
-            if File.objects.filter(pk=file_id).exists():
-                input_file = File.objects.get(pk=file_id)
-                post.files.add(input_file)
-        post.save()
-
-        return post

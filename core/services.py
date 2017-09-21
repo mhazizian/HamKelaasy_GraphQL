@@ -2,7 +2,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
-    STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge
+    STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -32,6 +32,11 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
     if kelaas.teachers.filter(pk=teacher.id).exists():
         return True
     return False
+
+
+# ______________________________________________________________________________________________________
+# ______________________________________________________________________________________________________
+
 
 
 def parent__get_childes(parent, user, **kwargs):
@@ -370,3 +375,28 @@ def assign_badge(user, kelaas_id, student_id, badges):
             )
             t.save()
     return t
+
+
+def create_kelaas_post(user, kelaas_id, title, description, files):
+    if not user.type == TEACHER_KEY_WORD:
+        raise myGraphQLError('Permission denied', status=403)
+
+    try:
+        kelaas = user.teacher.kelaases.get(pk=kelaas_id)
+    except Kelaas.DoesNotExist:
+        raise myGraphQLError('Kelaas not found', status=404)
+
+    post = Kelaas_post(
+        title=title,
+        description=description,
+        kelaas=kelaas,
+        owner=user.teacher,
+    )
+    post.save()
+    for file_id in files.split(','):
+        if File.objects.filter(pk=file_id).exists():
+            input_file = File.objects.get(pk=file_id)
+            post.files.add(input_file)
+    post.save()
+
+    return post
