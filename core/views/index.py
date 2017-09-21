@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 import json
 
+from django.contrib.auth.models import update_last_login
+
 from core.graphql_utilz import get_status_code, get_pretty_response
 from Hamkelaasy_graphQL.schema import schema
 from rest_framework.decorators import api_view
@@ -13,6 +15,7 @@ def index(request):
     if not request.user.is_authenticated or not hasattr(request.user, 'person'):
         return HttpResponse('user not authenticated', status=401)
     data = json.loads(request.body)
+    update_last_login(None, request.user)
 
     print "_______________________________________________________"
     print ">>> request:"
