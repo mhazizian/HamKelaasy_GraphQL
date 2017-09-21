@@ -490,3 +490,19 @@ def assign_certificate(user, type_id, level, owner_id, ):
         raise myGraphQLError('Certificate not found', status=404)
     except Person.DoesNotExist:
         raise myGraphQLError('Owner not found', status=404)
+
+
+def create_certiicate(user, title, description):
+    # TODO permission check!!
+    # TODO duplicate certificate?
+
+    if user.created_certificates.filter(title=title).exists():
+        raise myGraphQLError('duplicate certificate', status=400)
+
+    certificate = Certificate(
+        title=title,
+        description=description,
+        creator=user
+    )
+    certificate.save()
+    return certificate
