@@ -1,8 +1,8 @@
 import graphene
+import core.services as services
 from core import myGraphQLError
 
 from core.graphql_query import TaskType
-from core.models import Task
 
 
 class perform_task_input(graphene.InputObjectType):
@@ -24,14 +24,7 @@ class Perform_task(graphene.Mutation):
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
 
-        try:
-            task = Task.objects.get(pk=data.task_id)
-            if not task.student_id == user.id:
-                raise myGraphQLError('Permission denied', status=403)
-
-            task.is_done = Task
-            task.save()
-            return task
-
-        except Task.DoesNotExist:
-            raise myGraphQLError('Task not found', status=404)
+        return services.perform_task(
+            user=user,
+            task_id=data.task_id
+        )

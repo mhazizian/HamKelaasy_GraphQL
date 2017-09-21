@@ -3,7 +3,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
-    Conversation_message, Certificate, Certificate_link, Certificate_level
+    Conversation_message, Certificate, Certificate_link, Certificate_level, Task
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -555,3 +555,17 @@ def create_conversation(user, kelaas_id, members_id):
         raise myGraphQLError('Person not found', status=404)
     except Kelaas.DoesNotExist:
         raise myGraphQLError('Kelaas not found', status=404)
+
+
+def perform_task(user, task_id):
+    try:
+        task = Task.objects.get(pk=task_id)
+        if not task.student_id == user.id:
+            raise myGraphQLError('Permission denied', status=403)
+
+        task.is_done = Task
+        task.save()
+        return task
+
+    except Task.DoesNotExist:
+        raise myGraphQLError('Task not found', status=404)
