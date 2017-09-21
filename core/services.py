@@ -393,9 +393,13 @@ def create_kelaas_post(user, kelaas_id, title, description, files):
     )
     post.save()
     for file_id in files.split(','):
-        if File.objects.filter(pk=file_id).exists():
-            input_file = File.objects.get(pk=file_id)
-            post.files.add(input_file)
+        try:
+            fid = int(file_id)
+            if File.objects.filter(pk=fid).exists():
+                input_file = File.objects.get(pk=file_id)
+                post.files.add(input_file)
+        except ValueError:
+            pass
     post.save()
 
     return post
