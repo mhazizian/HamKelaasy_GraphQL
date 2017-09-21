@@ -30,7 +30,7 @@ def parent_has_access_to_kelaas(kelaas, parent):
 
 
 def teacher_has_access_to_kelaas(kelaas, teacher):
-    if kelaas.teachers.filter(pk=teacher.id).exists():
+    if kelaas.teacher.id == teacher.id:
         return True
     return False
 
@@ -54,7 +54,7 @@ def parent__get_childes(parent, user, **kwargs):
         result = []
         # user.kelaases.filter(students__in=[child.id for child in parent.childes.all()])
         for child in parent.childes.all():
-            if child.kelaases.filter(teachers__in=[user.id]).exists():
+            if child.kelaases.filter(teacher_id=user.id).exists():
                 result.append(child)
         return result
 
@@ -68,7 +68,7 @@ def parent__get_child(parent, user, childe_id):
 
         if user.type == TEACHER_KEY_WORD:
             child = parent.childes.get(pk=childe_id)
-            if child.kelaases.filter(teachers__in=[user.id]).exists():
+            if child.kelaases.filter(teacher_id=user.id).exists():
                 return child
 
     except Student.DoesNotExist:
@@ -447,7 +447,7 @@ def join_kelaas(user, invite_code):
         create_conversation(
             user=user.student.parents,
             kelaas_id=kelaas.id,
-            members_id=str(kelaas.teachers.all()[0].id)
+            members_id=str(kelaas.teacher.id)
         )
 
     return kelaas

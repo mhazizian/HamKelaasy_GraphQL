@@ -6,7 +6,7 @@ TEACHER_KEY_WORD = "teacher"
 
 
 class Teacher(Person):
-    
+
     def save(self, *args, **kwargs):
         self.type = TEACHER_KEY_WORD
         if not self.profile_pic:
