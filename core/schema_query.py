@@ -81,8 +81,12 @@ def resolve_conversation(root, info, id):
     return services.get_conversation(user=user, id=id)
 
 
-def resolve_system_notifications(root, info, page, page_size):
-    query_set = services.get_system_notifications()
+def resolve_system_notifications(root, info, page, page_size, new):
+    if not info.context.user.is_authenticated:
+        raise myGraphQLError('user not authenticated', status=401)
+    user = info.context.user.person
+
+    query_set = services.get_system_notifications(user=user, new=new)
     return services.apply_pagination(query_set, page=page, page_size=page_size)
 
 
@@ -178,6 +182,10 @@ class Query(graphene.ObjectType):
         SystemNotificationType,
         page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
         page=graphene.Int(default_value=1),
+        new=graphene.Boolean(
+            default_value=False,
+            description="if True, only returns new system_notification(default = False)",
+        ),
         description="Returns System notification",
         resolver=resolve_system_notifications,
     )
