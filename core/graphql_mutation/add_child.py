@@ -36,12 +36,12 @@ class Add_child_by_token_input(graphene.InputObjectType):
 
 class Add_child_by_token(graphene.Mutation):
     class Arguments:
-        data = Add_child_input(required=True)
+        data = Add_child_by_token_input(required=True)
 
     Output = StudentType
 
     def mutate(self, info, data):
-        return Add_child.add(info, data)
+        return Add_child_by_token.add(info, data)
 
     @staticmethod
     def add(info, data):
