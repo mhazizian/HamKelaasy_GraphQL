@@ -15,6 +15,9 @@ class System_notification(models.Model):
     create_date = models.DateTimeField('sys_notification creation date', default=timezone.now)
     type = models.CharField('notification type', max_length=30)
 
+    class Meta:
+        ordering = ('-id', )
+
     def save(self, *args, **kwargs):
         self.type = SYSTEM_NOTIFICATION_KEY_WORD
         super(System_notification, self).save(args, kwargs)
