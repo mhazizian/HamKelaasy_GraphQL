@@ -7,7 +7,7 @@ class BadgeModelType(graphene.ObjectType):
     pic = graphene.String()
 
     def resolve_pic(self, info):
-        return self.pic.url
+        return self.pic
 
 
 class BadgeLink(graphene.ObjectType):
