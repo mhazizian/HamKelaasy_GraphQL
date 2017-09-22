@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import random
 import uuid
 
 from core.models.person import Person
@@ -20,7 +21,7 @@ class Student(Person):
             self.parent_code = Student.generate_parent_code()
             self.type = STUDENT_KEY_WORD
         if not self.profile_pic:
-            self.profile_pic.name = 'student.svg'
+            self.profile_pic.name = 'student/student' + str(random.randint(1, 18)) + '.png'
         super(Student, self).save(args, kwargs)
 
     def __unicode__(self):
