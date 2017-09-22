@@ -1,12 +1,13 @@
 import json
-
+import core.services as services
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 
-from core.models import User_temp, STUDENT_KEY_WORD, Student, TEACHER_KEY_WORD, Teacher, PARENT_KEY_WORD, Parent
+from core import myGraphQLError
+from core.models import User_temp, STUDENT_KEY_WORD, Student, TEACHER_KEY_WORD, Teacher, PARENT_KEY_WORD, Parent, Kelaas
 from core.views import Fard_API
 
 
@@ -155,4 +156,28 @@ def temp_user_handler(request):
                 'gender': temp.gender,
             }
             return HttpResponse(json.dumps(data), status=200)
-    return HttpResponse('bad data input', status=400)
+    return HttpResponse('bad request', status=405)
+
+
+@csrf_exempt
+def get_kelaas_basic_info_handler(request):
+    # TODO security problem: on brute force ...
+    if request.method == 'POST':
+        try:
+            kelaas_code = request.POST.get('kelaas_code', '')
+            kelaas = services.get_kelaas_by_invite_code(invite_code=kelaas_code)
+
+            return HttpResponse(
+                json.dumps({
+                    'title': kelaas.title,
+                    'description': kelaas.description,
+                    'shamsi_date': kelaas.shamsi_date,
+                    'teacher_first_name': kelaas.teacher.first_name,
+                    'teacher_last_name': kelaas.teacher.last_name,
+                    'teacher_gender': kelaas.teacher.gender,
+                }),
+                status=200
+            )
+        except myGraphQLError as e:
+            return HttpResponse(e.message, status=e.status)
+    return HttpResponse('Bad request', status=405)

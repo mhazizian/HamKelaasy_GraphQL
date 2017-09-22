@@ -40,6 +40,12 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
 # ______________________________________________________________________________________________________
 # ______________________________________________________________________________________________________
 
+def get_kelaas_by_invite_code(invite_code):
+    try:
+        return Kelaas.objects.get(invite_code=invite_code)
+    except Kelaas.DoesNotExist:
+        raise myGraphQLError('Kelaas not found', status=404)
+
 
 def parent__get_childes(parent, user, **kwargs):
     if parent.id == user.id:
