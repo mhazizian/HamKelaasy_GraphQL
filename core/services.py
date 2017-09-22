@@ -171,7 +171,9 @@ def get_conversation(user, id):
     raise myGraphQLError('Permission denied', status=403)
 
 
-def get_system_notifications():
+def get_system_notifications(user, new=False):
+    if new:
+        return System_notification.objects.filter(create_date__gte=user.user.last_login)
     return System_notification.objects.all()
 
 # ______________________________________________________________________________________________________
