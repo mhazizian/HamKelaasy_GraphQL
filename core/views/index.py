@@ -15,7 +15,6 @@ def index(request):
     if not request.user.is_authenticated or not hasattr(request.user, 'person'):
         return HttpResponse('user not authenticated', status=401)
     data = json.loads(request.body)
-    update_last_login(None, request.user)
 
     print "_______________________________________________________"
     print ">>> request:"
@@ -35,6 +34,7 @@ def index(request):
 
     print json.dumps(response, indent=4, sort_keys=True)
 
+    update_last_login(None, request.user)
     return HttpResponse(
         json.dumps(response),
         status=status_code,
