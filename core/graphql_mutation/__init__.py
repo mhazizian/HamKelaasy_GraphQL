@@ -5,7 +5,7 @@ from .file_input import Upload_file
 from .assign_badge import Assign_badge
 from .add_commnet import Add_comment
 from .join_kelaas import Join_kelaas
-from .add_child import Add_child
+from .add_child import Add_child, Add_child_by_token
 from .send_message import Send_message
 from .create_conversation import Create_convesation
 

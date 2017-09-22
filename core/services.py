@@ -1,6 +1,7 @@
 import exceptions
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils import timezone
+from rest_framework.authtoken.models import Token
 
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
@@ -458,6 +459,24 @@ def add_child(user, child_code):
         student.parents = user.parent
         student.save()
     except Student.DoesNotExist:
+        raise myGraphQLError('Student not found', status=404)
+
+    return student
+
+
+def add_child_by_token(user, child_token):
+    if not user.type == PARENT_KEY_WORD:
+        raise myGraphQLError('Permission denied', status=403)
+
+    try:
+        temp = Token.objects.get(key=child_token)
+        student = temp.user.person.student
+        if student.parents:
+            raise myGraphQLError('Permission denied', status=403)
+
+        student.parents = user.parent
+        student.save()
+    except AttributeError:
         raise myGraphQLError('Student not found', status=404)
 
     return student

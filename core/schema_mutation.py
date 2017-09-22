@@ -2,7 +2,7 @@ import graphene
 
 from graphql_mutation import Create_kelaas, Create_kelaas_post, Create_story, Upload_file, Assign_badge, Add_comment, \
     Join_kelaas, Add_child, Send_message, Create_convesation, Assign_certificate, Create_certificate, \
-    Create_certificate_level, Perform_task
+    Create_certificate_level, Perform_task, Add_child_by_token
 
 
 class Mutation(graphene.ObjectType):
@@ -18,6 +18,8 @@ class Mutation(graphene.ObjectType):
     send_message = Send_message.Field()
 
     add_child = Add_child.Field()
+    add_child_by_token = Add_child_by_token.Field()
+
     assign_badge = Assign_badge.Field()
     assign_certificate = Assign_certificate.Field()
     create_certificate = Create_certificate.Field()
