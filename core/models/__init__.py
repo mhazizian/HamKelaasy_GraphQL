@@ -1,5 +1,5 @@
 from .chat_model import Conversation, Conversation_message
-
+from .sys_notification import System_notification
 
 from .person import Person
 from .person import Parent, PARENT_KEY_WORD
