@@ -44,6 +44,7 @@ def signup(request):
         type = data['type']
         temp.delete()
 
+
         if User.objects.filter(username=username).exists():
             res['type'] = "error"
             res['message'] = "username is not available"
@@ -174,6 +175,7 @@ def get_kelaas_basic_info_handler(request):
         try:
             data = json.loads(request.body)
             kelaas_code = data.get('kelaas_code', '')
+            kelaas_code = kelaas_code.upper()
             kelaas = services.get_kelaas_by_invite_code(invite_code=kelaas_code)
 
             res = {
