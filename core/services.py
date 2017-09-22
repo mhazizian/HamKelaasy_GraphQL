@@ -1,4 +1,4 @@
-import exceptions
+import exceptions as exceptions
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
@@ -606,6 +606,7 @@ def join_kelaas(user, invite_code):
     if not user.student.parents:
         raise myGraphQLError('Parent is necessary', status=403)
 
+    invite_code = invite_code.upper()
     try:
         kelaas = Kelaas.objects.get(invite_code=invite_code)
     except Kelaas.DoesNotExist:
