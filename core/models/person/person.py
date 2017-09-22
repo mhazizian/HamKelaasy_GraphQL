@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
 
@@ -21,6 +22,7 @@ class Person(models.Model):
 
     signup_completed = models.BooleanField('signup progress completed(bool)', default=False)
     type = models.CharField('user type', max_length=7, default='')
+    last_sys_notofication_seen = models.DateTimeField('class creation date', default=None, null=True)
 
     @property
     def pic(self):

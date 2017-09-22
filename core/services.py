@@ -1,5 +1,6 @@
 import exceptions
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.utils import timezone
 
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
@@ -36,6 +37,7 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
     if kelaas.teacher.id == teacher.id:
         return True
     return False
+
 
 # ______________________________________________________________________________________________________
 # ______________________________________________________________________________________________________
@@ -172,9 +174,12 @@ def get_conversation(user, id):
 
 
 def get_system_notifications(user, new=False):
-    if new:
-        return System_notification.objects.filter(create_date__gte=user.user.last_login)
+    if new and not user.last_sys_notofication_seen:
+        user.last_sys_notofication_seen = timezone.now()
+        user.save()
+        return System_notification.objects.filter(create_date__gte=user.last_sys_notofication_seen)
     return System_notification.objects.all()
+
 
 # ______________________________________________________________________________________________________
 # ______________________________________________________________________________________________________
@@ -326,7 +331,10 @@ def kelaas__get_student(kelaas, user):
 
 
 def kelaas__get_kelaas_post(kelaas, user):
-    if teacher_has_access_to_kelaas(kelaas, user.teacher) or kelaas.students.filter(pk=user.id).exists():
+    if user.type == PARENT_KEY_WORD:
+        raise myGraphQLError('Permission denied', status=403)
+
+    if kelaas.students.filter(pk=user.id).exists() or teacher_has_access_to_kelaas(kelaas, user.teacher):
         return kelaas.posts.filter(type=KELAAS_POST_KEY_WORD).order_by('-id')
 
     raise myGraphQLError('Permission denied', status=403)
@@ -426,9 +434,13 @@ def create_kelaas(user, title, description, tags):
     kelaas.save()
 
     for tag_id in tags.split(','):
-        if Tag.objects.filter(pk=tag_id).exists():
-            tag = Tag.objects.get(pk=tag_id)
-            kelaas.tags.add(tag)
+        try:
+            tagid = int(tag_id)
+            if Tag.objects.filter(pk=tagid).exists():
+                tag = Tag.objects.get(pk=tagid)
+                kelaas.tags.add(tag)
+        except ValueError:
+            pass
     kelaas.save()
 
     return kelaas
