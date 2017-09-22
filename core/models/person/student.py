@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 import random
 import uuid
 
+from django.utils.crypto import get_random_string
+
 from core.models.person import Person
 from django.db import models
 
@@ -14,7 +16,7 @@ class Student(Person):
     nickname = models.CharField('nick name', max_length=50, null=True)
     parent_code = models.CharField('invite link for parent', max_length=10)
 
-    parents = models.ForeignKey('Parent',related_name="childes", on_delete=models.CASCADE, null=True, default=None)
+    parents = models.ForeignKey('Parent', related_name="childes", on_delete=models.CASCADE, null=True, default=None)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -29,8 +31,8 @@ class Student(Person):
 
     @staticmethod
     def generate_parent_code():
-        parent_code = str(uuid.uuid4())[:7].upper()
+        parent_code = get_random_string(length=5, allowed_chars='123456789QWERTYUIOPASDFGHJKLZXCVBNM')
 
         while Student.objects.filter(parent_code=parent_code).exists():
-            parent_code = str(uuid.uuid4())[:7].upper()
+            parent_code = get_random_string(length=5, allowed_chars='123456789QWERTYUIOPASDFGHJKLZXCVBNM')
         return parent_code

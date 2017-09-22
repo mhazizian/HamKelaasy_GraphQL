@@ -4,6 +4,8 @@ import uuid
 
 from django.db import models
 from django.utils import timezone
+from django.utils.crypto import get_random_string
+
 from khayyam import *
 
 
@@ -33,8 +35,8 @@ class Kelaas(models.Model):
 
     @staticmethod
     def generate_invite_code():
-        invite_code = str(uuid.uuid4())[:7].upper()
+        invite_code = get_random_string(length=5, allowed_chars='123456789QWERTYUIOPASDFGHJKLZXCVBNM')
 
         while Kelaas.objects.filter(invite_code=invite_code).exists():
-            invite_code = str(uuid.uuid4())[:7].upper()
+            invite_code = get_random_string(length=5, allowed_chars='123456789QWERTYUIOPASDFGHJKLZXCVBNM')
         return invite_code
