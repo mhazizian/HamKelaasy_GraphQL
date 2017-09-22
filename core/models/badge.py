@@ -7,10 +7,14 @@ from Hamkelaasy_graphQL import settings
 
 class Badge(models.Model):
     title = models.CharField('badge names', max_length=200)
-    pic = models.FileField('badge pic', upload_to='badges/', null=True)
+    badge_pic = models.FileField('badge pic', upload_to='badges/', null=True)
 
     def __unicode__(self):
         return self.title
+
+    @property
+    def pic(self):
+        return settings.SERVER_ADDR[:-1] + self.badge_pic.url
 
 
 class Badge_link(models.Model):
@@ -22,7 +26,7 @@ class Badge_link(models.Model):
 
     @property
     def pic(self):
-        return settings.SERVER_ADDR[:-1] + self.type.pic.url
+        return settings.SERVER_ADDR[:-1] + self.type.badge_pic.url
 
     @property
     def title(self):
