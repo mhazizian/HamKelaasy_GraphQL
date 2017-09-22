@@ -163,19 +163,22 @@ def temp_user_handler(request):
 def get_kelaas_basic_info_handler(request):
     # TODO security problem: on brute force ...
     if request.method == 'POST':
+
         try:
-            kelaas_code = request.POST.get('kelaas_code', '')
+            data = json.loads(request.body)
+            kelaas_code = data.get('kelaas_code', '')
             kelaas = services.get_kelaas_by_invite_code(invite_code=kelaas_code)
 
+            res = {
+                'title': kelaas.title,
+                'description': kelaas.description,
+                'shamsi_date': kelaas.shamsi_date,
+                'teacher_first_name': kelaas.teacher.first_name,
+                'teacher_last_name': kelaas.teacher.last_name,
+                'teacher_gender': kelaas.teacher.gender,
+            }
             return HttpResponse(
-                json.dumps({
-                    'title': kelaas.title,
-                    'description': kelaas.description,
-                    'shamsi_date': kelaas.shamsi_date,
-                    'teacher_first_name': kelaas.teacher.first_name,
-                    'teacher_last_name': kelaas.teacher.last_name,
-                    'teacher_gender': kelaas.teacher.gender,
-                }),
+                json.dumps(res),
                 status=200
             )
         except myGraphQLError as e:
