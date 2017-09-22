@@ -95,6 +95,7 @@ class Query(graphene.ObjectType):
         id=graphene.Int(description="Parent and Teacher: 'id' is necessary. 'id' refers to student_id"),
         resolver=resolve_student,
     )
+
     students = graphene.List(
         StudentType,
         description="Authentication required.\n\nParent: return all childrens.\n\n"
@@ -109,12 +110,14 @@ class Query(graphene.ObjectType):
         description="Authentication required.\n\nonly if current user is a teacher.",
         resolver=resolve_teacher
     )
+
     parent = graphene.Field(
         ParentType,
-        description="Authentication required.\n\nonly if current user is a parent.",
+        description="Authentication required.\n\n"
+                    "if registered as parent, returns current user.\n\n"
+                    "if registered as teacher, parent_id is necessary and return parent only if has access to him.",
         resolver=resolve_parent,
-
-        id=graphene.Int(description="Parent id."),
+        id=graphene.Int(description="Parent id.(required if current user is teacher)"),
     )
 
     kelaas = graphene.Field(
@@ -123,6 +126,7 @@ class Query(graphene.ObjectType):
         id=graphene.Int(required=True, description="kelaas id."),
         resolver=resolve_kelaas,
     )
+
     kelaases = graphene.List(
         KelaasType,
         description="Authentication required.\n\nTeacher: return all teacher's kelaases.\n\n"
@@ -155,9 +159,13 @@ class Query(graphene.ObjectType):
         page=graphene.Int(default_value=1),
         resolver=resolve_badge_types,
     )
+
     conversation = graphene.Field(
         ConversationType,
-        id=graphene.Int(required=True),
+        id=graphene.Int(
+            required=True,
+            description="conversation id"
+        ),
         description="Returns Conversation only if current user has access to it",
         resolver=resolve_conversation,
     )
