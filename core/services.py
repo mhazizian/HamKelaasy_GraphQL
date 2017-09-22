@@ -1,3 +1,4 @@
+import exceptions
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from core import myGraphQLError
@@ -45,6 +46,134 @@ def get_kelaas_by_invite_code(invite_code):
         return Kelaas.objects.get(invite_code=invite_code)
     except Kelaas.DoesNotExist:
         raise myGraphQLError('Kelaas not found', status=404)
+
+
+def get_student(user, **kwargs):
+    if user.type == STUDENT_KEY_WORD:
+        return user.student
+
+    if not 'id' in kwargs:
+        raise myGraphQLError('"id" is necessary', status=400)
+    id = kwargs['id']
+
+    if user.type == PARENT_KEY_WORD:
+        try:
+            return user.parent.childes.get(pk=id)
+        except Student.DoesNotExist:
+            raise myGraphQLError('Student not found', status=404)
+
+    if user.type == TEACHER_KEY_WORD:
+        for teacher_kelaas in user.teacher.kelaases.all():
+            if teacher_kelaas.students.filter(pk=id).exists():
+                return teacher_kelaas.students.get(pk=id)
+        raise myGraphQLError('Student not found', status=404)
+
+
+def get_students(user, **kwargs):
+    if user.type == PARENT_KEY_WORD:
+        return user.parent.childes.all()
+
+    if user.type == TEACHER_KEY_WORD:
+        if 'kelaas_id' in kwargs:
+            try:
+                return Kelaas.objects.get(pk=kwargs['kelaas_id']).students.all()
+            except Kelaas.DoesNotExist:
+                raise myGraphQLError('Kelaas not found', status=404)
+
+    raise myGraphQLError('Permission denied', status=403)
+
+
+def get_kelaas(user, kelaas_id):
+    if user.type == TEACHER_KEY_WORD:
+        try:
+            return user.teacher.kelaases.get(pk=kelaas_id)
+        except Kelaas.DoesNotExist:
+            raise myGraphQLError('Kelaas not found', status=404)
+
+    if user.type == PARENT_KEY_WORD:
+        for student in user.parent.childes.all():
+            if student.kelaases.filter(pk=kelaas_id).exists():
+                return student.kelaases.get(pk=kelaas_id)
+        raise myGraphQLError('Kelaas not found', status=404)
+
+    if user.type == STUDENT_KEY_WORD:
+        try:
+            return user.student.kelaases.get(pk=kelaas_id)
+        except Kelaas.DoesNotExist:
+            raise myGraphQLError('Kelaas not found', status=404)
+
+
+def get_kelaases(user, **kwargs):
+    if user.type == TEACHER_KEY_WORD:
+        return user.teacher.kelaases.all()
+
+    if user.type == PARENT_KEY_WORD:
+        try:
+            return user.parent.childes.get(pk=kwargs['student_id']).kelaases.all()
+        except exceptions.KeyError:
+            raise myGraphQLError('"student_id" is necessary', status=400)
+        except Student.DoesNotExist:
+            raise myGraphQLError('Student not found', status=404)
+
+    if user.type == STUDENT_KEY_WORD:
+        return user.student.kelaases.all()
+
+
+def get_teacher(user):
+    if user.type == TEACHER_KEY_WORD:
+        return user.teacher
+
+    raise myGraphQLError('Permission denied', status=403)
+
+
+def get_parent(user, **kwargs):
+    if user.type == PARENT_KEY_WORD:
+        return user.parent
+
+    if user.type == TEACHER_KEY_WORD:
+        try:
+            # TODO access deny
+            return Parent.objects.get(pk=kwargs['id'])
+        except Parent.DoesNotExist:
+            raise myGraphQLError('Parent not found', status=404)
+        except exceptions.KeyError:
+            raise myGraphQLError('"id" is necessary', status=400)
+
+    raise myGraphQLError('Permission denied', status=403)
+
+
+def get_badge_types(**kwargs):
+    if 'id' in kwargs:
+        id = kwargs['id']
+        return Badge.objects.get(pk=id)
+
+    return Badge.objects.all()
+
+
+def get_certificate(id):
+    try:
+        return Certificate.objects.get(pk=id)
+    except Certificate.DoesNotExist:
+        raise myGraphQLError('Certificate not found', status=404)
+
+
+def get_tags():
+    return Tag.objects.all()
+
+
+def get_conversation(user, id):
+    try:
+        conversation = Conversation.objects.get(pk=id)
+        if conversation.members.filter(id=user.id).exists():
+            return conversation
+    except Conversation.DoesNotExist:
+        raise myGraphQLError('Conversation not found', status=404)
+
+    raise myGraphQLError('Permission denied', status=403)
+
+
+# ______________________________________________________________________________________________________
+# ______________________________________________________________________________________________________
 
 
 def parent__get_childes(parent, user, **kwargs):
