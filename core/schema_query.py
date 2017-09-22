@@ -81,6 +81,11 @@ def resolve_conversation(root, info, id):
     return services.get_conversation(user=user, id=id)
 
 
+def resolve_system_notifications(root, info, page, page_size):
+    query_set = services.get_system_notifications()
+    return services.apply_pagination(query_set, page=page, page_size=page_size)
+
+
 # Query class:
 class Query(graphene.ObjectType):
     me = graphene.Field(
@@ -168,4 +173,11 @@ class Query(graphene.ObjectType):
         ),
         description="Returns Conversation only if current user has access to it",
         resolver=resolve_conversation,
+    )
+    system_notifications = graphene.List(
+        SystemNotificationType,
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
+        description="Returns System notification",
+        resolver=resolve_system_notifications,
     )

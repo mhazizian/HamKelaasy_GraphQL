@@ -4,7 +4,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
-    Conversation_message, Certificate, Certificate_link, Certificate_level, Task
+    Conversation_message, Certificate, Certificate_link, Certificate_level, Task, System_notification
 
 DEFAULT_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 34
@@ -36,7 +36,6 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
     if kelaas.teacher.id == teacher.id:
         return True
     return False
-
 
 # ______________________________________________________________________________________________________
 # ______________________________________________________________________________________________________
@@ -171,6 +170,9 @@ def get_conversation(user, id):
 
     raise myGraphQLError('Permission denied', status=403)
 
+
+def get_system_notifications():
+    return System_notification.objects.all()
 
 # ______________________________________________________________________________________________________
 # ______________________________________________________________________________________________________

@@ -1,6 +1,6 @@
 from .certificate import CertificateLevelType, CertificateType
 from .certificate import PersonCertificateType, CertificateLinkType
-
+from .system_notification_type import SystemNotificationType
 from .chat import ConversationType
 from .chat import ConversationMessageType
 
