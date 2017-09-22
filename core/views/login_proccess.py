@@ -1,5 +1,6 @@
 import json
 import core.services as services
+
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -7,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 
 from core import myGraphQLError
-from core.models import User_temp, STUDENT_KEY_WORD, Student, TEACHER_KEY_WORD, Teacher, PARENT_KEY_WORD, Parent, Kelaas
+from core.models import User_temp, STUDENT_KEY_WORD, Student, TEACHER_KEY_WORD, Teacher, PARENT_KEY_WORD, Parent
 from core.views import Fard_API
 
 
