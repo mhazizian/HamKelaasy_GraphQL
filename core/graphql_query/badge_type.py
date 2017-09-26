@@ -3,6 +3,8 @@ import graphene
 
 class BadgeModelType(graphene.ObjectType):
     # a Badge_type model should be passed
+
+    id = graphene.Int()
     title = graphene.String()
     pic = graphene.String()
 
