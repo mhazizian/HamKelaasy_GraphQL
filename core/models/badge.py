@@ -1,13 +1,18 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils.crypto import get_random_string
 
 from Hamkelaasy_graphQL import settings
 
 
+def get_upload_path(instance, filename):
+    return '/'.join(['badges', get_random_string(length=32), filename])
+
+
 class Badge(models.Model):
     title = models.CharField('badge names', max_length=200)
-    badge_pic = models.FileField('badge pic', upload_to='badges/', null=True)
+    badge_pic = models.FileField('badge pic', upload_to=get_upload_path, null=True)
 
     def __unicode__(self):
         return self.title
