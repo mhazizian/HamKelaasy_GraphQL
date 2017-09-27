@@ -725,7 +725,7 @@ def create_dialog(user, kelaas_id, interlocutor_id):
         print partner
 
         for conv in kelaas.conversations.filter(type=DIALOG_KEY_WORD):
-            if conv.Conversation_dialog.has_same_users(user1=user, user2=partner):
+            if conv.conversation_dialog.has_same_users(user1=user, user2=partner):
                 return conv
 
         print "creating"
