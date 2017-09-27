@@ -26,6 +26,7 @@ def signup(request):
         data = json.loads(request.body)
 
         temp = get_object_or_404(User_temp, pk=int(data['fd_id']))
+
         username = temp.username
         fard_access_token = temp.fard_access_token
 
@@ -43,7 +44,6 @@ def signup(request):
 
         type = data['type']
         temp.delete()
-
 
         if User.objects.filter(username=username).exists():
             res['type'] = "error"
@@ -164,6 +164,7 @@ def temp_user_handler(request):
                 'gender': temp.gender,
             }
             return HttpResponse(json.dumps(data), status=200)
+
     return HttpResponse('bad request', status=405)
 
 
