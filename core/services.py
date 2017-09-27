@@ -6,7 +6,8 @@ from rest_framework.authtoken.models import Token
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
-    Conversation_message, Certificate, Certificate_link, Certificate_level, Task, System_notification
+    Conversation_message, Certificate, Certificate_link, Certificate_level, Task, System_notification, DIALOG_KEY_WORD, \
+    Conversation_dialog
 
 DEFAULT_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 34
@@ -163,9 +164,9 @@ def get_tags():
     return Tag.objects.all()
 
 
-def get_conversation(user, id):
+def get_conversation(user, conversation_id):
     try:
-        conversation = Conversation.objects.get(pk=id)
+        conversation = Conversation.objects.get(pk=conversation_id)
         if conversation.members.filter(id=user.id).exists():
             return conversation
     except Conversation.DoesNotExist:
@@ -617,10 +618,10 @@ def join_kelaas(user, invite_code):
         kelaas.save()
 
     if user.student.parents:
-        create_conversation(
+        create_dialog(
             user=user.student.parents,
             kelaas_id=kelaas.id,
-            members_id=str(kelaas.teacher.id)
+            interlocutor_id=kelaas.teacher.id
         )
 
     return kelaas
@@ -713,26 +714,29 @@ def create_certificate_level(user, certificate_id, level, level_description):
     return certi_level
 
 
-def create_conversation(user, kelaas_id, members_id):
+def create_dialog(user, kelaas_id, interlocutor_id):
     # TODO permission denied!!
     try:
         kelaas = Kelaas.objects.get(pk=kelaas_id)
-        members_id = [int(id) for id in members_id.split(',')]
-        members_id.append(user.id)
-        members = Person.objects.filter(id__in=members_id)
+        partner = Person.objects.get(id=interlocutor_id)
 
-        for conv in kelaas.conversations.all():
-            if conv.member_count == len(members):
-                if conv.members.filter(id__in=[member.id for member in members]):
-                    return conv
+        print ">>> create conversation:"
+        print "members:"
+        print partner
 
-        convesation = Conversation(kelaas_id=kelaas.id)
-        convesation.save()
+        for conv in kelaas.conversations.filter(type=DIALOG_KEY_WORD):
+            if conv.Conversation_dialog.has_same_users(user1=user, user2=partner):
+                return conv
 
-        for person in members:
-            convesation.members.add(person)
-        convesation.save()
-        return convesation
+        print "creating"
+
+        conversation = Conversation_dialog(kelaas_id=kelaas.id)
+        conversation.save()
+
+        conversation.members.add(user)
+        conversation.members.add(partner)
+        conversation.save()
+        return conversation
 
     except Person.DoesNotExist:
         raise myGraphQLError('Person not found', status=404)

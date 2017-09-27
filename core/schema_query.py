@@ -78,7 +78,7 @@ def resolve_conversation(root, info, id):
         raise myGraphQLError('user not authenticated', status=401)
     user = info.context.user.person
 
-    return services.get_conversation(user=user, id=id)
+    return services.get_conversation(user=user, conversation_id=id)
 
 
 def resolve_system_notifications(root, info, page, page_size, new):

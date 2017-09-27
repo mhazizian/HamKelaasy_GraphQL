@@ -1,4 +1,6 @@
-from .chat_model import Conversation, Conversation_message
+from .chat_model import Conversation, Conversation_message, Conversation_group, Conversation_dialog, DIALOG_KEY_WORD, \
+    GROUP_KEY_WORD
+
 from .sys_notification import System_notification
 
 from .person import Person
@@ -8,7 +10,7 @@ from .person import Teacher, TEACHER_KEY_WORD
 from .person import User_temp
 
 from .post import Post
-from .post import Kelaas_post,KELAAS_POST_KEY_WORD
+from .post import Kelaas_post, KELAAS_POST_KEY_WORD
 from .post import Story, STORY_KEY_WORD
 
 from .tag import Tag

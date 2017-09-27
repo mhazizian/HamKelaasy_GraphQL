@@ -5,7 +5,9 @@ from core import myGraphQLError
 from core.graphql_query import ConversationType
 
 
-class Create_convesation_input(graphene.InputObjectType):
+# This mutation is disabled.
+
+class Create_conversation_input(graphene.InputObjectType):
     members_id = graphene.String(
         required=True,
         description="a string of member id.\n\nexample: '1,2,10,4'\n\n"
@@ -16,7 +18,7 @@ class Create_convesation_input(graphene.InputObjectType):
 
 class Create_convesation(graphene.Mutation):
     class Arguments:
-        data = Create_convesation_input(required=True)
+        data = Create_conversation_input(required=True)
 
     Output = ConversationType
 
@@ -29,8 +31,8 @@ class Create_convesation(graphene.Mutation):
             raise myGraphQLError('user not authenticated', status=401)
         user = info.context.user.person
 
-        return services.create_conversation(
+        return services.create_dialog(
             user=user,
             kelaas_id=data.kelaas_id,
-            members_id=data.members_id
+            interlocutor_id=data.members_id
         )

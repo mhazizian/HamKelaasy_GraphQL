@@ -2,11 +2,16 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 
+DIALOG_KEY_WORD = "dialog"
+GROUP_KEY_WORD = "group"
+
 
 class Conversation(models.Model):
-    members = models.ManyToManyField('Person')
+    members = models.ManyToManyField('Person', related_name="conversations")
     kelaas = models.ForeignKey('Kelaas', related_name="conversations", on_delete=models.CASCADE)
+
     last_message_time = models.DateTimeField('post creation date', default=timezone.now)
+    type = models.CharField('conversation type', max_length=10, default='')
 
     @property
     def message_count(self):
@@ -14,7 +19,30 @@ class Conversation(models.Model):
 
     @property
     def member_count(self):
-        return self.members.count()
+        return self.messages.count()
 
     def __unicode__(self):
-        return "id=" + str(self.id) + " members_count =" + str(self.member_count)
+        return "id=" + str(self.id)
+
+
+class Conversation_dialog(Conversation):
+    def save(self, *args, **kwargs):
+        if self.pk:
+            if not self.members.count() == 2:
+                raise Exception('invalid member count')
+        self.type = DIALOG_KEY_WORD
+        super(Conversation_dialog, self).save(args, kwargs)
+
+    def has_same_users(self, user1, user2):
+        if self.members[0].id == user1.id and self.members[1].id == user2.id:
+            return True
+
+        if self.members[1].id == user1.id and self.members[0].id == user2.id:
+            return True
+        return False
+
+
+class Conversation_group(Conversation):
+    def save(self, *args, **kwargs):
+        self.type = GROUP_KEY_WORD
+        super(Conversation_group, self).save(args, kwargs)
