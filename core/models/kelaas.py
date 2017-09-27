@@ -19,6 +19,7 @@ class Kelaas(models.Model):
     teacher = models.ForeignKey('Teacher', related_name='kelaases')
 
     invite_code = models.CharField('invite link for kelaas', max_length=10)
+    is_public = models.BooleanField(default=False)
 
     @property
     def shamsi_date(self):
