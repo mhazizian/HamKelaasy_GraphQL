@@ -516,6 +516,23 @@ def add_comment(user, post_id, body):
     return comment
 
 
+def delete_comment(user, comment_id):
+    try:
+        comment = Comment.objects.get(id=comment_id)
+        if comment.owner_id == user.id:
+            comment.delete()
+            return
+
+        if user.type == TEACHER_KEY_WORD:
+            if teacher_has_access_to_kelaas(kelaas=comment.post.kelaas, teacher=user.teacher):
+                comment.delete()
+                return
+
+        raise myGraphQLError('Permission denied', status=403)
+    except Comment.DoesNotExist:
+        raise myGraphQLError('Comment not found', status=404)
+
+
 def assign_badge(user, kelaas_id, student_id, badges):
     if not user.type == TEACHER_KEY_WORD:
         raise myGraphQLError('Permission denied', status=403)
@@ -564,6 +581,7 @@ def create_kelaas_post(user, kelaas_id, title, description, files):
         owner=user.teacher,
     )
     post.save()
+
     for file_id in files.split(','):
         try:
             fid = int(file_id)
