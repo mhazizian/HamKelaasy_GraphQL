@@ -10,10 +10,10 @@ from khayyam import *
 
 
 class Post(models.Model):
-    title = models.CharField('post title', max_length=200, null=True)
-    description = models.CharField('post body', max_length=1000)
+    title = models.CharField('post title', max_length=1000, null=True)
+    description = models.CharField('post body', max_length=2000)
     create_date = models.DateTimeField('post creation date', default=timezone.now)
-    type = models.CharField('post type', max_length=7, default='')
+    type = models.CharField('post type', max_length=17, default='')
 
     kelaas = models.ForeignKey('Kelaas', related_name="posts", on_delete=models.CASCADE)
     owner = models.ForeignKey('Teacher', related_name="posts", on_delete=models.CASCADE)
@@ -30,7 +30,7 @@ class Post(models.Model):
 
     @property
     def comment_count(self):
-        return self.comme.count()
+        return self.comments.count()
 
     def __unicode__(self):
         return unicode(self.title)
