@@ -7,9 +7,9 @@ from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
     Conversation_message, Certificate, Certificate_link, Certificate_level, Task, System_notification, DIALOG_KEY_WORD, \
-    Conversation_dialog
+    Conversation_dialog, Teacher
 
-DEFAULT_PAGE_SIZE = 10
+DEFAULT_PAGE_SIZE = 4
 MAX_PAGE_SIZE = 34
 
 
@@ -22,8 +22,8 @@ def apply_pagination(input_list, page=1, page_size=DEFAULT_PAGE_SIZE):
     except PageNotAnInteger:
         res = paginator.page(1)
     except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        res = paginator.page(paginator.num_pages)
+        # If page is out of range (e.g. 9999), deliver nothing.
+        res = []
 
     return res
 
@@ -135,8 +135,12 @@ def get_parent(user, **kwargs):
 
     if user.type == TEACHER_KEY_WORD:
         try:
-            # TODO access deny
-            return Parent.objects.get(pk=kwargs['id'])
+            # TODO check later
+            parent = Parent.objects.get(pk=kwargs['id'])
+            for student in parent.childes.all():
+                if user.teacher.kelaases.filter(students__in=[student.id]).exists():
+                    return parent
+
         except Parent.DoesNotExist:
             raise myGraphQLError('Parent not found', status=404)
         except exceptions.KeyError:
@@ -181,6 +185,9 @@ def get_system_notifications(user, new=False):
         user.last_sys_notification_seen = timezone.now()
         user.save()
         return response
+
+    user.last_sys_notification_seen = timezone.now()
+    user.save()
     return System_notification.objects.all()
 
 
@@ -360,8 +367,10 @@ def kelaas__get_conversations(kelaas, user):
 
 
 def kelaas__get_conversation(kelaas, user, conversation_id):
-    # TODO: exception handling(in case of invalid id)
-    return kelaas.conversations.filter(members__id=user.id, id=conversation_id).first()
+    if kelaas.conversations.filter(members__id=user.id, id=conversation_id).exists():
+        return kelaas.conversations.filter(members__id=user.id, id=conversation_id).first()
+
+    raise myGraphQLError('Conversation not found', status=404)
 
 
 def kelaas__get_invite_code(kelaas, user):
