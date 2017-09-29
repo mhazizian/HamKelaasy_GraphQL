@@ -13,6 +13,9 @@ from core.views import Fard_API
 
 
 def login(request):
+    if not 'redirect_url' in request.GET:
+        return HttpResponse('bad request', status=400)
+
     redirect_url = request.GET['redirect_url']
     redirect_url = redirect_url.replace('#', '%23')
 
