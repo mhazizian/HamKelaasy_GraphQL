@@ -9,7 +9,7 @@ class Mutation(graphene.ObjectType):
     create_kelaas = Create_kelaas.Field()
     join_kelaas = Join_kelaas.Field()
 
-    upload_file = Upload_file.Field()
+    # upload_file = Upload_file.Field()
     create_kelaas_post = Create_kelaas_post.Field()
     create_story = Create_story.Field()
     add_comment = Add_comment.Field()
