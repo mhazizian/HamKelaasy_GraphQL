@@ -177,9 +177,10 @@ def get_conversation(user, conversation_id):
 
 def get_system_notifications(user, new=False):
     if new and not user.last_sys_notofication_seen:
+        response = System_notification.objects.filter(create_date__gte=user.last_sys_notofication_seen)
         user.last_sys_notofication_seen = timezone.now()
         user.save()
-        return System_notification.objects.filter(create_date__gte=user.last_sys_notofication_seen)
+        return response
     return System_notification.objects.all()
 
 
@@ -359,7 +360,7 @@ def kelaas__get_conversations(kelaas, user):
 
 
 def kelaas__get_conversation(kelaas, user, conversation_id):
-    # TODO exception handling(in case of invalid id)
+    # TODO: exception handling(in case of invalid id)
     return kelaas.conversations.filter(members__id=user.id, id=conversation_id).first()
 
 
@@ -720,15 +721,9 @@ def create_dialog(user, kelaas_id, interlocutor_id):
         kelaas = Kelaas.objects.get(pk=kelaas_id)
         partner = Person.objects.get(id=interlocutor_id)
 
-        print ">>> create conversation:"
-        print "members:"
-        print partner
-
         for conv in kelaas.conversations.filter(type=DIALOG_KEY_WORD):
             if conv.conversation_dialog.has_same_users(user1=user, user2=partner):
                 return conv
-
-        print "creating"
 
         conversation = Conversation_dialog(kelaas_id=kelaas.id)
         conversation.save()
