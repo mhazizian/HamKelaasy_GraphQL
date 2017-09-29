@@ -1,4 +1,5 @@
 from .delete_comment import Delete_comment
+from .delete_post import Delete_post
 
 from .create_kelaas import Create_kelaas
 from .create_kelaas_post import Create_kelaas_post

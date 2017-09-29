@@ -595,6 +595,21 @@ def create_kelaas_post(user, kelaas_id, title, description, files):
     return post
 
 
+def delete_post(user, post_id):
+    if not user.type == TEACHER_KEY_WORD:
+        raise myGraphQLError('Permission denied', status=403)
+
+    try:
+        post = Post.objects.get(id=post_id)
+        if not teacher_has_access_to_kelaas(kelaas=post.kelaas, teacher=user.teacher):
+            raise myGraphQLError('Permission denied', status=403)
+
+        post.delete()
+
+    except Post.DoesNotExist:
+        raise myGraphQLError('Post not found', status=404)
+
+
 def create_story(user, kelaas_id, title, description, pic_id=None):
     if not user.type == TEACHER_KEY_WORD:
         raise myGraphQLError('Permission denied', status=403)
