@@ -14,6 +14,9 @@ class Badge(models.Model):
     title = models.CharField('badge names', max_length=200)
     badge_pic = models.FileField('badge pic', upload_to=get_upload_path, null=True)
 
+    class Meta:
+        ordering = ['-id']
+
     def __unicode__(self):
         return self.title
 
@@ -28,6 +31,9 @@ class Badge_link(models.Model):
     count = models.IntegerField('number of achiving this badge', default=1)
 
     student = models.ForeignKey('Student', related_name="badges", on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['-id']
 
     @property
     def pic(self):

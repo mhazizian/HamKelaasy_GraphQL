@@ -18,6 +18,9 @@ class Student(Person):
 
     parents = models.ForeignKey('Parent', related_name="childes", on_delete=models.CASCADE, null=True, default=None)
 
+    class Meta:
+        ordering = ['-id']
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.parent_code = Student.generate_parent_code()
