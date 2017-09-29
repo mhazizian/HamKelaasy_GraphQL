@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import os
 from django.db import models
 from django.utils.crypto import get_random_string
 
@@ -19,6 +20,10 @@ class Badge(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    def delete(self, *args, **kwargs):
+        os.remove(os.path.join(settings.MEDIA_ROOT, self.badge_pic.name))
+        super(Badge, self).delete(*args, **kwargs)
 
     @property
     def pic(self):

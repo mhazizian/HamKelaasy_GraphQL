@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import os
 from django.db import models
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -19,6 +20,10 @@ class File(models.Model):
 
     data = models.FileField('file', upload_to=get_upload_path)
 
+    def delete(self, *args, **kwargs):
+        os.remove(os.path.join(settings.MEDIA_ROOT, self.data.name))
+        super(File, self).delete(*args, **kwargs)
+
     @property
     def url(self):
         return settings.SERVER_ADDR[:-1] + self.data.url
@@ -36,6 +41,9 @@ class Sys_file(models.Model):
     >certificate : pic for each certificate model pic
     >certificate <level num> : pic for all certificates_level with same level_num 
     '''
+    def delete(self, *args, **kwargs):
+        os.remove(os.path.join(settings.MEDIA_ROOT, self.data.name))
+        super(Sys_file, self).delete(*args, **kwargs)
 
     def __unicode__(self):
         return unicode(self.title)
