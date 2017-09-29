@@ -1,9 +1,11 @@
 import graphene
 import core.services as services
 
+
 class CommentType(graphene.ObjectType):
     name = "comment"
 
+    id = graphene.Int()
     body = graphene.String()
     time_passed = graphene.String()
     owner = graphene.Field('core.graphql_query.PersonType')
@@ -16,4 +18,3 @@ class CommentType(graphene.ObjectType):
         user = info.context.user.person
 
         return services.is_my_comment(user=user, comment=self)
-
