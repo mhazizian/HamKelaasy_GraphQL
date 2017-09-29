@@ -176,9 +176,9 @@ def get_conversation(user, conversation_id):
 
 
 def get_system_notifications(user, new=False):
-    if new and not user.last_sys_notofication_seen:
+    if new and not user.last_sys_notification_seen:
         response = System_notification.objects.filter(create_date__gte=user.last_sys_notofication_seen)
-        user.last_sys_notofication_seen = timezone.now()
+        user.last_sys_notification_seen = timezone.now()
         user.save()
         return response
     return System_notification.objects.all()

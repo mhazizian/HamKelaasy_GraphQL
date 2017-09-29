@@ -27,7 +27,7 @@ class Person(models.Model):
 
     signup_completed = models.BooleanField('signup progress completed(bool)', default=False)
     type = models.CharField('user type', max_length=7, default='')
-    last_sys_notofication_seen = models.DateTimeField('class creation date', default=None, null=True)
+    last_sys_notification_seen = models.DateTimeField('class creation date', default=None, null=True)
 
     @property
     def pic(self):
