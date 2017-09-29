@@ -16,7 +16,7 @@ class StudentType(PersonType):
 
     age = graphene.Int()
     parent_code = graphene.String()
-    nickname = graphene.String()
+    # nickname = graphene.String()
 
     kelaases = graphene.List(
         'core.graphql_query.KelaasType',

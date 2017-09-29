@@ -56,7 +56,7 @@ def signup(request):
 
         if type == STUDENT_KEY_WORD:
             age = int(data['age'])
-            nickname = data['nickName']
+            # nickname = data['nickName']
             gender = int(data.get('gender', temp.gender))
 
             user.save()
@@ -67,7 +67,7 @@ def signup(request):
                 email=email, gender=gender,
                 fard_access_token=fard_access_token,
                 age=age,
-                nickname=nickname
+                # nickname=nickname
             )
             student.save()
         if type == TEACHER_KEY_WORD:

@@ -13,7 +13,7 @@ STUDENT_KEY_WORD = "student"
 
 class Student(Person):
     age = models.IntegerField('student age', default=None, null=True)
-    nickname = models.CharField('nick name', max_length=50, null=True)
+    # nickname = models.CharField('nick name', max_length=50, null=True)
     parent_code = models.CharField('invite link for parent', max_length=10)
 
     parents = models.ForeignKey('Parent', related_name="childes", on_delete=models.CASCADE, null=True, default=None)
