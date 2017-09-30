@@ -619,17 +619,7 @@ def delete_post(user, post_id):
         if not teacher_has_access_to_kelaas(kelaas=post.kelaas, teacher=user.teacher):
             raise myGraphQLError('Permission denied', status=403)
 
-        # delete post:
-        if post.type == STORY_KEY_WORD:
-            if post.story.story_pic:
-                post.story.story_pic.delete()
-
-        if post.type == KELAAS_POST_KEY_WORD:
-            for post_file in post.kelaas_post.files.all():
-                post_file.delete()
-
         post.delete()
-
     except Post.DoesNotExist:
         raise myGraphQLError('Post not found', status=404)
 

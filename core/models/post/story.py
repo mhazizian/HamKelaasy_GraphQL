@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from Hamkelaasy_graphQL import settings
-from core.models.post import Post
+from core.models.post import Post, STORY_KEY_WORD
 from django.db import models
-
-STORY_KEY_WORD = 'Story'
 
 
 class Story(Post):
@@ -13,8 +10,13 @@ class Story(Post):
     likes = models.ManyToManyField('Person')
 
     def save(self, *args, **kwargs):
-        self.type = 'Story'
+        self.type = STORY_KEY_WORD
         super(Story, self).save(args, kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.story_pic:
+            self.story_pic.delete()
+        super(Story, self).delete(*args, **kwargs)
 
     @property
     def pic(self):
@@ -24,3 +26,6 @@ class Story(Post):
     @property
     def like_count(self):
         return self.likes.count()
+
+    def __unicode__(self):
+        return unicode(self.title) + unicode(self.description)

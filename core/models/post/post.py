@@ -3,7 +3,9 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils import timezone
-import pytz
+
+KELAAS_POST_KEY_WORD = 'Kelaas_post'
+STORY_KEY_WORD = 'Story'
 
 from core.models.utilz import pretty_past_time
 from khayyam import *
@@ -33,7 +35,15 @@ class Post(models.Model):
         return self.comments.count()
 
     def __unicode__(self):
-        return unicode(self.title)
+        return unicode(self.title) + unicode(self.description)
 
+    def delete(self, *args, **kwargs):
+        for comment in self.comments.all():
+            comment.delete()
 
+        if self.type == STORY_KEY_WORD:
+            self.story.delete()
+
+        if self.type == KELAAS_POST_KEY_WORD:
+            self.kelaas_post.delete()
 
