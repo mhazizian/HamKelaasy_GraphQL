@@ -16,7 +16,7 @@ class Student(Person):
     # nickname = models.CharField('nick name', max_length=50, null=True)
     parent_code = models.CharField('invite link for parent', max_length=10)
 
-    parents = models.ForeignKey('Parent', related_name="childes", on_delete=models.CASCADE, null=True, default=None)
+    parents = models.ForeignKey('Parent', related_name="childes", on_delete=models.SET_NULL, null=True, default=None)
 
     class Meta:
         ordering = ['-id']
