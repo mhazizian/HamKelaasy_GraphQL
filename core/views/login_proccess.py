@@ -166,7 +166,10 @@ def temp_user_handler(request):
                 'email': temp.email,
                 'gender': temp.gender,
             }
-            return HttpResponse(json.dumps(data), status=200)
+            return HttpResponse(
+                unicode(json.dumps(data)),
+                status=200
+            )
 
     return HttpResponse('bad request', status=405)
 
@@ -191,7 +194,7 @@ def get_kelaas_basic_info_handler(request):
                 'teacher_gender': kelaas.teacher.gender,
             }
             return HttpResponse(
-                json.dumps(res),
+                unicode(json.dumps(res)),
                 status=200
             )
         except myGraphQLError as e:

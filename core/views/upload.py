@@ -24,18 +24,26 @@ def upload_file(request):
         f.owner = request.user.person
         f.save()
 
-        return HttpResponse(json.dumps({
-            'data': {
-                'id': f.id,
-                'url': f.url,
-                'title': f.title
-            }
-        }), content_type='application/json', status=202)
+        return HttpResponse(
+            unicode(json.dumps({
+                'data': {
+                    'id': f.id,
+                    'url': f.url,
+                    'title': f.title
+                }
+            })),
+            content_type='application/json',
+            status=202
+        )
 
-    return HttpResponse(json.dumps({
-        'errors': [
-            {
-                'message': 'bad_file_input'
-            }
-        ]
-    }), content_type='application/json', status=400)
+    return HttpResponse(
+        unicode(json.dumps({
+            'errors': [
+                {
+                    'message': 'bad_file_input'
+                }
+            ]
+        })),
+        content_type='application/json',
+        status=400
+    )
