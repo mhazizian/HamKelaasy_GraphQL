@@ -12,10 +12,9 @@ class Kelaas_post(Post):
         self.type = KELAAS_POST_KEY_WORD
         super(Kelaas_post, self).save(args, kwargs)
 
-    def delete(self, *args, **kwargs):
+    def on_delete_kelaas_post(self):
         for post_file in self.files.all():
             post_file.delete()
-        super(Kelaas_post, self).delete(*args, **kwargs)
 
 
     def __unicode__(self):

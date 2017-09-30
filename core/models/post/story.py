@@ -13,10 +13,9 @@ class Story(Post):
         self.type = STORY_KEY_WORD
         super(Story, self).save(args, kwargs)
 
-    def delete(self, *args, **kwargs):
+    def on_delete_story(self):
         if self.story_pic:
             self.story_pic.delete()
-        super(Story, self).delete(*args, **kwargs)
 
     @property
     def pic(self):
