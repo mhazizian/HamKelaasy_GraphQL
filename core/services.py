@@ -657,7 +657,7 @@ def join_kelaas_for_parent(user, invite_code, student_id):
         if not student.parents.id == user.id:
             raise myGraphQLError('Permission denied', status=403)
 
-        join_kelaas(user=student, invite_code=invite_code)
+        return join_kelaas(user=student, invite_code=invite_code)
 
     except Student.DoesNotExist:
         raise myGraphQLError('Kelaas not found', status=404)
