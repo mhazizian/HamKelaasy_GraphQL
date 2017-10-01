@@ -648,6 +648,21 @@ def create_story(user, kelaas_id, title, description, pic_id=None):
     return story
 
 
+def join_kelaas_for_parent(user, invite_code, student_id):
+    if not user.type == PARENT_KEY_WORD:
+        raise myGraphQLError('Permission denied', status=403)
+
+    try:
+        student = Student.objects.get(id=student_id)
+        if not student.parents.id == user.id:
+            raise myGraphQLError('Permission denied', status=403)
+
+        join_kelaas(user=student, invite_code=invite_code)
+
+    except Student.DoesNotExist:
+        raise myGraphQLError('Kelaas not found', status=404)
+
+
 def join_kelaas(user, invite_code):
     if not user.type == STUDENT_KEY_WORD:
         raise myGraphQLError('Permission denied', status=403)

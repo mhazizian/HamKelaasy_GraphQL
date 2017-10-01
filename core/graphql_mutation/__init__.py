@@ -7,6 +7,7 @@ from .create_story import Create_story
 from .file_input import Upload_file
 from .assign_badge import Assign_badge
 from .add_commnet import Add_comment
+from .join_kelaas_for_parent import Join_kelaas_for_parent
 from .join_kelaas import Join_kelaas
 from .add_child import Add_child, Add_child_by_token
 from .send_message import Send_message
