@@ -34,11 +34,15 @@ class Conversation_dialog(Conversation):
         super(Conversation_dialog, self).save(args, kwargs)
 
     def has_same_users(self, user1, user2):
-        if self.members.all()[0].id == user1.id and self.members.all()[1].id == user2.id:
-            return True
+        try:
+            if self.members.all()[0].id == user1.id and self.members.all()[1].id == user2.id:
+                return True
 
-        if self.members.all()[1].id == user1.id and self.members.all()[0].id == user2.id:
-            return True
+            if self.members.all()[1].id == user1.id and self.members.all()[0].id == user2.id:
+                return True
+        except IndexError:
+            return False
+
         return False
 
 
