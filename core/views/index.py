@@ -11,7 +11,7 @@ from django.contrib.auth.models import update_last_login
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
 
-logger = logging.getLogger('input_output')
+logger = logging.getLogger('core')
 
 
 @api_view(['POST'])
@@ -19,12 +19,6 @@ def index(request):
     if not request.user.is_authenticated or not hasattr(request.user, 'person'):
         return HttpResponse('user not authenticated', status=401)
     data = json.loads(request.body)
-
-    # print "_______________________________________________________"
-    # print ">>> request:"
-    # print data.get('query', '')
-    # print data.get('variables', None)
-    # print ">>> response:"
 
     res = schema.execute(
         data.get('query', ''),
@@ -36,16 +30,21 @@ def index(request):
     response = get_pretty_response(res)
     status_code = get_status_code(res)
 
-    # print json.dumps(response, indent=4, sort_keys=True)
-
-    logger.info(
-        '>>> request:\n'
-        + unicode(data.get('query', ''))
-        + '_____var_____\n'
-        + unicode(data.get('variables', None))
-        + '>>> response:\n'
-        + unicode(json.dumps(response, indent=4, sort_keys=True))
-    )
+    if status_code != 200:
+        logger.info(
+            '\nbegin >=============================================\n'
+            + 'user:\n'
+            + unicode(request.user.username)
+            + ' | type: '
+            + unicode(request.user.person.type)
+            + '\n>>> request:\n'
+            + unicode(data.get('query', ''))
+            + '\n_____var_____\n'
+            + unicode(data.get('variables', None))
+            + '\n>>> response:\n'
+            + unicode(json.dumps(response, indent=4, sort_keys=True))
+            + '\nend >=============================================\n'
+        )
 
     update_last_login(None, request.user)
     return HttpResponse(
