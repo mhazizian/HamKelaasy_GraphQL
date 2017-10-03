@@ -23,7 +23,7 @@ SECRET_KEY = 'qqce@wq!=3x=%-hv8((gh&^s81lv=bf^#as327j194igg)03qf'
 SERVER_ADDR = "http://94.182.227.193:9090/"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     "0.0.0.0",
@@ -125,6 +125,47 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
+        },
+    },
+    'handlers': {
+        'error_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': './log' + "/logfile",
+            'formatter': 'standard',
+        },
+        'internal_error_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': './log' + "/server_error_logfile",
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['internal_error_file'],
+            'propagate': True,
+            'level': 'WARN',
+        },
+        'django.db.backends': {
+            'handlers': ['internal_error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'core': {
+            'handlers': ['internal_error_file', 'error_file'],
+            'level': 'INFO',
+        },
+    }
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
