@@ -31,7 +31,7 @@ urlpatterns = [
     # for getting besic kelaas information using kelaas invite code
     url(r'^kelaas/basic_info$', views.get_kelaas_basic_info_handler, name='kelaas-basic-information'),
 
-    url(r'^test123456789$', views.my_view, name='test'),
+    url(r'^apply', views.my_view, name='test'),
 
 
 ]

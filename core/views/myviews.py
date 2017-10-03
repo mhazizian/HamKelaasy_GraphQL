@@ -16,8 +16,11 @@ logger = logging.getLogger('core')
 
 
 def my_view(request):
-    for student in Student.objects.all():
-        student.profile_pic.name = 'student/people' + str(random.randint(1, 11)) + '.png'
-        student.save()
+    if not request.user.is_authenticated or request.user.username != 'admin':
+        return HttpResponse('')
+
+    # for student in Student.objects.all():
+    #     student.profile_pic.name = 'student/people' + str(random.randint(1, 11)) + '.png'
+    #     student.save()
 
     return HttpResponse('done')
