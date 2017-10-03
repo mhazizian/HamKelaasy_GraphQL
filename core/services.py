@@ -9,7 +9,7 @@ from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAA
     Conversation_message, Certificate, Certificate_link, Certificate_level, Task, System_notification, DIALOG_KEY_WORD, \
     Conversation_dialog, Teacher
 
-DEFAULT_PAGE_SIZE = 4
+DEFAULT_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 34
 
 
