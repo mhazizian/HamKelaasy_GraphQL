@@ -16,7 +16,7 @@ logger = logging.getLogger('core')
 
 
 def my_view(request):
-    if not request.user.is_authenticated or request.user.username != 'admin':
+    if (not request.user.is_authenticated) or request.user.username != 'admin':
         return HttpResponse('')
 
     # for student in Student.objects.all():

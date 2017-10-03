@@ -34,15 +34,15 @@ def signup(request):
         fard_access_token = temp.fard_access_token
 
         first_name = temp.first_name
-        if not temp.first_name or temp.first_name == '':
+        if (not temp.first_name) or temp.first_name == '':
             first_name = data.get('firstName', temp.first_name)
 
         last_name = temp.last_name
-        if not temp.last_name or temp.last_name == '':
+        if (not temp.last_name) or temp.last_name == '':
             last_name = data.get('lastName', temp.last_name)
 
         email = temp.email
-        if not temp.email or temp.email == '':
+        if (not email) or email == '':
             email = data.get('email', temp.email)
 
         type = data['type']
