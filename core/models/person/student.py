@@ -24,9 +24,10 @@ class Student(Person):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.parent_code = Student.generate_parent_code()
-            self.type = STUDENT_KEY_WORD
-        if not self.profile_pic:
-            self.profile_pic.name = 'student/student' + str(random.randint(1, 18)) + '.png'
+            if not self.profile_pic:
+                self.profile_pic.name = 'student/people' + str(random.randint(1, 13)) + '.png'
+
+        self.type = STUDENT_KEY_WORD
         super(Student, self).save(args, kwargs)
 
     def __unicode__(self):
