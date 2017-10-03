@@ -25,7 +25,7 @@ class Student(Person):
         if not self.pk:
             self.parent_code = Student.generate_parent_code()
             if not self.profile_pic:
-                self.profile_pic.name = 'student/people' + str(random.randint(1, 13)) + '.png'
+                self.profile_pic.name = 'student/people' + str(random.randint(1, 11)) + '.png'
 
         self.type = STUDENT_KEY_WORD
         super(Student, self).save(args, kwargs)

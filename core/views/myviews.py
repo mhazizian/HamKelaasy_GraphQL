@@ -17,7 +17,7 @@ logger = logging.getLogger('core')
 
 def my_view(request):
     for student in Student.objects.all():
-        student.profile_pic.name = 'student/people' + str(random.randint(1, 13)) + '.png'
+        student.profile_pic.name = 'student/people' + str(random.randint(1, 11)) + '.png'
         student.save()
 
     return HttpResponse('done')
