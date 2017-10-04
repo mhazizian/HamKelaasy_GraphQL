@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import json
 import logging
+import core.services as services
 
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
@@ -41,11 +42,14 @@ def get_phone_number(request):
     data = json.loads(request.body)
     try:
         phone_number = data.get('phone', '')
-        phone_number = int(phone_number)
 
-        # send sms to given phone number
+        services.init_phone_number(phone_number)
+        return HttpResponse('')
+
     except ValueError:
         pass
+
+    return HttpResponse('')
 
 @csrf_exempt
 def validate_phone_number(request):

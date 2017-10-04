@@ -6,4 +6,4 @@ from .upload import upload_file
 from .myviews import my_view
 
 
-from .login import *
+from .new_login import *

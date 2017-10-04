@@ -7,7 +7,7 @@ from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
     Conversation_message, Certificate, Certificate_link, Certificate_level, Task, System_notification, DIALOG_KEY_WORD, \
-    Conversation_dialog, Teacher
+    Conversation_dialog, Teacher, Temp_phone_number
 
 DEFAULT_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 34
@@ -44,7 +44,14 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
 def send_sms(phone_number, code):
     pass
 
+
 def init_phone_number(phone_number):
+    # check if convertable to int and valid phone number
+
+    phone = Temp_phone_number(phone_number=phone_number)
+    phone.save()
+    send_sms(phone_number=phone.phone_number, code=phone.code)
+
 
 # ______________________________________________________________________________________________________
 # ______________________________________________________________________________________________________
