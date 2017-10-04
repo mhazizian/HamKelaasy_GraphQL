@@ -470,6 +470,8 @@ def add_child(user, child_code):
 
     try:
         student = Student.objects.get(parent_code=child_code)
+        if student.parents and student.parents.id == user.id:
+            return student
         if student.parents:
             raise myGraphQLError('Permission denied', status=403)
 
