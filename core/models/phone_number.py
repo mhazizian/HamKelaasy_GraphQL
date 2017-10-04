@@ -11,7 +11,7 @@ class Temp_phone_number(models.Model):
     code = models.CharField('security code', max_length=6)
 
     # will be sent to client when validating phone number
-    validator = models.CharField('phone number validator')
+    validator = models.CharField('phone number validator', max_length=12)
 
     is_validated = models.BooleanField(default=False)
 
