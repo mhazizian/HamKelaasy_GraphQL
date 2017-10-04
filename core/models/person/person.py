@@ -16,18 +16,22 @@ def get_upload_path(instance, filename):
 
 class Person(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    type = models.CharField('user type', max_length=7, default='')
 
     first_name = models.CharField('first name', max_length=200, null=True, blank=True)
     last_name = models.CharField('last name', max_length=200, null=True, blank=True)
     email = models.CharField('email address', max_length=200, null=True, blank=True)
-    gender = models.IntegerField('gender type(1 for men, 0 for women)', default=None, null=True, blank=True)
+
+    phone_number = models.CharField('phone number', max_length=12, default='')
+    phone_number_verified = models.BooleanField('determine whether phone is verified or not', default=False)
+
+    create_date = models.DateTimeField('creation date', default=timezone.now)
     profile_pic = models.FileField('profile pic', upload_to=get_upload_path, blank=True)
 
-    fard_access_token = models.CharField('access_token for getting data from fard.ir', max_length=100)
-
     signup_completed = models.BooleanField('signup progress completed(bool)', default=False)
-    type = models.CharField('user type', max_length=7, default='')
     last_sys_notification_seen = models.DateTimeField('class creation date', default=None, null=True)
+
+    fard_access_token = models.CharField('access_token for getting data from fard.ir', max_length=100)
 
     @property
     def pic(self):

@@ -1,11 +1,13 @@
 from __future__ import unicode_literals
 
 from .person import Person
+from django.db import models
 
 TEACHER_KEY_WORD = "teacher"
 
 
 class Teacher(Person):
+    gender = models.IntegerField('gender type(1 for men, 0 for women)', default=None, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.type = TEACHER_KEY_WORD
