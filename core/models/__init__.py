@@ -1,6 +1,7 @@
 from .chat_model import Conversation, Conversation_message, Conversation_group, Conversation_dialog, DIALOG_KEY_WORD, \
     GROUP_KEY_WORD
 
+from .phone_number import Temp_phone_number
 from .sys_notification import System_notification
 
 from .person import Person

@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 import random
-import uuid
 
 from django.utils.crypto import get_random_string
 

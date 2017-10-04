@@ -16,8 +16,9 @@ def get_upload_path(instance, filename):
 
 class Person(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
     type = models.CharField('user type', max_length=7, default='')
-    password = models.CharField('password', max_length=40, default='')
+    password = models.CharField('password', max_length=40, default=None, null=True)
 
     first_name = models.CharField('first name', max_length=200, null=True, blank=True)
     last_name = models.CharField('last name', max_length=200, null=True, blank=True)
