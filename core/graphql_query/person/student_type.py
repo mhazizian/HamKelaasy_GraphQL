@@ -15,7 +15,7 @@ class StudentType(PersonType):
     name = "student"
 
     age = graphene.Int()
-    parent_code = graphene.String()
+    code = graphene.String()
     # nickname = graphene.String()
 
     kelaases = graphene.List(
@@ -44,7 +44,7 @@ class StudentType(PersonType):
         page=graphene.Int(default_value=1),
     )
 
-    def resolve_parent_code(self, info):
+    def resolve_code(self, info):
         user = info.context.user.person
         return services.student__get_invite_code(student=self, user=user)
 

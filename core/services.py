@@ -250,7 +250,7 @@ def teacher__get_kelaas(teacher, user, kelaas_id):
 
 def student__get_invite_code(student, user):
     if student.id == user.id:
-        return student.parent_code
+        return student.code
     raise myGraphQLError('Permission denied', status=403)
 
 
@@ -469,7 +469,7 @@ def add_child(user, child_code):
         raise myGraphQLError('Permission denied', status=403)
 
     try:
-        student = Student.objects.get(parent_code=child_code)
+        student = Student.objects.get(code=child_code)
         if student.parents and student.parents.id == user.id:
             return student
         if student.parents:
