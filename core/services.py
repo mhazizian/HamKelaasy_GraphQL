@@ -41,6 +41,11 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
     return False
 
 
+def send_sms(phone_number, code):
+    pass
+
+def init_phone_number(phone_number):
+
 # ______________________________________________________________________________________________________
 # ______________________________________________________________________________________________________
 

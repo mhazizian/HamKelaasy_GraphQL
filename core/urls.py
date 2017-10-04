@@ -38,8 +38,11 @@ urlpatterns = [
     url(r'^kelaas/basic_info$', views.get_kelaas_basic_info_handler, name='kelaas-basic-information'),
     url(r'^kelaas/basic_info/$', views.get_kelaas_basic_info_handler),
 
-    url(r'^apply', views.my_view, name='test'),
-    url(r'^apply/', views.my_view),
+    url(r'^apply$', views.my_view, name='test'),
+    url(r'^apply/$', views.my_view),
 
+
+    url(r'^register/phone/sendvalidation$', views.get_phone_number, name='get-phone-number'),
+    url(r'^register/phone/sendvalidation/$', views.get_phone_number),
 
 ]
