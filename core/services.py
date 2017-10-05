@@ -177,6 +177,7 @@ def create_user_PT(phone, validator, first_name, last_name, pass_md5, type, gend
             raise Exception('invalid validator')
 
         temp_phone.delete()
+
         if type == TEACHER_KEY_WORD:
             return create_teacher(
                 phone=phone,

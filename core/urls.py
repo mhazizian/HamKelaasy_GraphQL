@@ -50,4 +50,7 @@ urlpatterns = [
 
     url(r'^register/parent$', views.new_signup_parent, name='signup-parent'),
     url(r'^register/parent/$', views.new_signup_parent, name='signup-parent'),
+
+    url(r'^register/teacher$', views.new_signup_teacher, name='signup-teacher'),
+    url(r'^register/teacher/$', views.new_signup_teacher),
 ]

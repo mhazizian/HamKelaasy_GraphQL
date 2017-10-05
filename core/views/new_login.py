@@ -83,10 +83,8 @@ def new_signup_parent(request):
 
     phone_number = data.get('phone', '')
     phone_validator = data.get('validator', '')
-
     first_name = data.get('firstName', '')
     last_name = data.get('lastName', '')
-
     password = data.get('password', '')
     try:
         parent = services.create_user_PT(
@@ -96,6 +94,42 @@ def new_signup_parent(request):
             last_name=last_name,
             pass_md5=password,
             type=PARENT_KEY_WORD
+        )
+        return HttpResponse(json.dumps(
+            {
+                'status': 1,
+                'token': Token.objects.get(user=parent.user).key
+            })
+        )
+    except Exception as e:
+        return HttpResponse(json.dumps(
+            {
+                'status': 0
+            }),
+            status=400
+        )
+
+
+
+@csrf_exempt
+def new_signup_teacher(request):
+    data = json.loads(request.body)
+
+    phone_number = data.get('phone', '')
+    phone_validator = data.get('validator', '')
+    first_name = data.get('firstName', '')
+    last_name = data.get('lastName', '')
+    password = data.get('password', '')
+    gender = data.get('gender', '')
+    try:
+        parent = services.create_user_PT(
+            phone=phone_number,
+            validator=phone_validator,
+            first_name=first_name,
+            last_name=last_name,
+            pass_md5=password,
+            type=TEACHER_KEY_WORD,
+            gender=gender
         )
         return HttpResponse(json.dumps(
             {
