@@ -45,4 +45,6 @@ urlpatterns = [
     url(r'^register/phone/sendvalidation$', views.get_phone_number, name='get-phone-number'),
     url(r'^register/phone/sendvalidation/$', views.get_phone_number),
 
+    url(r'^register/phone/validate$', views.validate_phone_number, name='validate-phone-number'),
+    url(r'^register/phone/validate/$', views.validate_phone_number,),
 ]
