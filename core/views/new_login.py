@@ -110,13 +110,3 @@ def new_signup_parent(request):
             }),
             status=400
         )
-
-
-@api_view(['POST'])
-def new_signup_student_without_acc(request):
-    if not request.user.is_authenticated or not hasattr(request.user, 'person'):
-        return HttpResponse('user not authenticated', status=401)
-    if not request.user.person.type == PARENT_KEY_WORD:
-        return HttpResponse('you should be parent', status=403)
-
-    data = json.loads(request.body)
