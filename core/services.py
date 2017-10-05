@@ -176,6 +176,7 @@ def create_user_PT(phone, validator, first_name, last_name, pass_md5, type, gend
         if (not temp_phone.is_validated) or (not temp_phone.validator == validator):
             raise Exception('invalid validator')
 
+        temp_phone.delete()
         if type == TEACHER_KEY_WORD:
             return create_teacher(
                 phone=phone,
@@ -192,8 +193,6 @@ def create_user_PT(phone, validator, first_name, last_name, pass_md5, type, gend
                 last_name=last_name,
                 password=pass_md5,
             )
-
-        temp_phone.delete()
 
     except Temp_phone_number.DoesNotExist:
         pass
