@@ -1,9 +1,14 @@
 import exceptions as exceptions
+import json
+
+import requests
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db import IntegrityError
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 import logging
 
+from django.contrib.auth.models import User
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
@@ -12,7 +17,27 @@ from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAA
 
 logger = logging.getLogger('core')
 DEFAULT_PAGE_SIZE = 10
-MAX_PAGE_SIZE = 34
+MAX_PAGE_SIZE = 100
+
+
+def represents_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
+def represent_phone_number(s):
+    if not represents_int(s):
+        raise Exception("invalid phone number")
+
+    if len(s) == 11 and s[0] == '0':
+        s = '98' + s[1:]
+    if not len(s) == 12 and s[:2] == '98':
+        raise Exception("invalid phone number")
+
+    return s
 
 
 def apply_pagination(input_list, page=1, page_size=DEFAULT_PAGE_SIZE):
@@ -30,6 +55,39 @@ def apply_pagination(input_list, page=1, page_size=DEFAULT_PAGE_SIZE):
     return res
 
 
+def create_parent(phone, first_name, last_name, password):
+    user = User(username=phone)
+    user.save()
+
+    parent = Parent(
+        user=user,
+        first_name=first_name,
+        last_name=last_name,
+        password=password,
+        phone_number=phone,
+        phone_number_verified=True,
+    )
+    parent.save()
+    return parent
+
+
+def create_teacher(phone, first_name, last_name, password, gender):
+    user = User(username=phone)
+    user.save()
+
+    teacher = Teacher(
+        user=user,
+        first_name=first_name,
+        last_name=last_name,
+        password=password,
+        phone_number=phone,
+        phone_number_verified=True,
+        gender=gender,
+    )
+    teacher.save()
+    return teacher
+
+
 def parent_has_access_to_kelaas(kelaas, parent):
     for student in parent.childes.all():
         if kelaas.students.filter(pk=student.id).exists():
@@ -44,17 +102,39 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
 
 
 def send_sms(phone_number, code):
-    pass
+    r = requests.post(
+        "http://sms.3300.ir/services/wsSend.ashx",
+        {
+            'username': 'nbwa12826',
+            'password': '260916',
+            'mobile': phone_number,
+            'message': unicode(code),
+            'type': 2
+        }
+    )
+    res = json.loads(r.text)
+    if res['status'] == -1:
+        return True
+    return False
 
 
-def init_phone_number(phone_number):
+def init_phone_number(phone_number, is_for_registeration=True):
+    phone_number = represent_phone_number(phone_number)
 
-    # check if convertable to int and valid phone number
-    # check for being unique
+    if is_for_registeration:
+        if User.objects.filter(username=phone_number).exists():
+            raise Exception("phone number is in use")
+        if Student.objects.filter(phone_number=phone_number).exists():
+            raise Exception("phone number is in use")
+    if Temp_phone_number.objects.filter(phone_number=phone_number).exists():
+        raise Exception("phone number is in use")
 
     phone = Temp_phone_number(phone_number=phone_number)
     phone.save()
-    send_sms(phone_number=phone.phone_number, code=phone.code)
+
+    if not send_sms(phone_number=phone.phone_number, code=phone.code):
+        phone.delete()
+        raise Exception("invalid phone number")
 
 
 def validate_phone_number(phone_number, code):
@@ -62,12 +142,44 @@ def validate_phone_number(phone_number, code):
         phone = Temp_phone_number.objects.get(phone_number=phone_number)
 
         if code == phone.code:
+            phone.is_validated = True
+            phone.save()
             return phone.validator
 
         return False
-
-    except Exception:
+    except Exception as e:
         return False
+
+
+def create_user_PT(phone, validator, first_name, last_name, pass_md5, type, gender=1):
+    try:
+        temp_phone = Temp_phone_number.objects.get(phone_number=phone)
+        if (not temp_phone.is_validated) or (not temp_phone.validator == validator):
+            raise Exception('invalid validator')
+
+        if type == TEACHER_KEY_WORD:
+            return create_teacher(
+                phone=phone,
+                first_name=first_name,
+                last_name=last_name,
+                password=pass_md5,
+                gender=gender
+            )
+
+        if type == PARENT_KEY_WORD:
+            return create_parent(
+                phone=phone,
+                first_name=first_name,
+                last_name=last_name,
+                password=pass_md5,
+            )
+
+        temp_phone.delete()
+
+    except Temp_phone_number.DoesNotExist:
+        pass
+    except IntegrityError:
+        pass
 
 
 # ______________________________________________________________________________________________________
