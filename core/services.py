@@ -2,6 +2,7 @@ import exceptions as exceptions
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
+import logging
 
 from core import myGraphQLError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
@@ -9,6 +10,7 @@ from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAA
     Conversation_message, Certificate, Certificate_link, Certificate_level, Task, System_notification, DIALOG_KEY_WORD, \
     Conversation_dialog, Teacher, Temp_phone_number
 
+logger = logging.getLogger('core')
 DEFAULT_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 34
 
@@ -46,11 +48,26 @@ def send_sms(phone_number, code):
 
 
 def init_phone_number(phone_number):
+
     # check if convertable to int and valid phone number
+    # check for being unique
 
     phone = Temp_phone_number(phone_number=phone_number)
     phone.save()
     send_sms(phone_number=phone.phone_number, code=phone.code)
+
+
+def validate_phone_number(phone_number, code):
+    try:
+        phone = Temp_phone_number.objects.get(phone_number=phone_number)
+
+        if code == phone.code:
+            return phone.validator
+
+        return False
+
+    except Exception:
+        return False
 
 
 # ______________________________________________________________________________________________________

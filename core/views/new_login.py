@@ -37,6 +37,7 @@ def new_login(request):
         return HttpResponse('Invalid username or password', status=401)
     return HttpResponse('Invalid username or password', status=401)
 
+
 @csrf_exempt
 def get_phone_number(request):
     data = json.loads(request.body)
@@ -51,18 +52,31 @@ def get_phone_number(request):
 
     return HttpResponse('')
 
+
 @csrf_exempt
 def validate_phone_number(request):
     data = json.loads(request.body)
-    try:
-        phone_number = data.get('phone', '')
-        code = data.get('code', '')
 
-        # validate given code and phone number
+    phone_number = data.get('phone', '')
+    code = data.get('code', '')
 
+    res = services.validate_phone_number(phone_number, code)
 
-    except:
-        pass
+    logger.info(res)
+    if res:
+        return HttpResponse(json.dumps({
+            'response': True,
+            'validator': res
+            }),
+            content_type='application/json'
+        )
+
+    return HttpResponse(json.dumps({
+            'response': False
+        }),
+        content_type='application/json'
+    )
+
 
 def new_signup_user(request):
     pass
