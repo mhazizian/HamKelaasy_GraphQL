@@ -100,7 +100,7 @@ def create_parent_child(user, first_name, last_name, gender, age):
         age=age,
     )
     student.save()
-    student.parents = user.person.parent
+    student.parents = user.parent
     student.save()
     return student
 

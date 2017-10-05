@@ -4,19 +4,12 @@ from __future__ import unicode_literals
 import json
 import logging
 
-from rest_framework.decorators import api_view
-
 import core.services as services
 
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-from core.models import STORY_KEY_WORD, PARENT_KEY_WORD, TEACHER_KEY_WORD
-
-from core.graphql_utilz import get_status_code, get_pretty_response
-from Hamkelaasy_graphQL.schema import schema
-
-from django.contrib.auth.models import update_last_login
+from core.models import STUDENT_KEY_WORD, PARENT_KEY_WORD, TEACHER_KEY_WORD
 
 from django.http import HttpResponse
 
