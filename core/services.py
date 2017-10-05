@@ -88,6 +88,20 @@ def create_teacher(phone, first_name, last_name, password, gender):
     return teacher
 
 
+def create_parent_child(parent, first_name, last_name, gender, age):
+    student = Student(
+        user=None,
+        first_name=first_name,
+        last_name=last_name,
+        gender=gender,
+        age=age,
+    )
+    student.save()
+    student.parents = parent
+    student.save()
+    return student
+
+
 def parent_has_access_to_kelaas(kelaas, parent):
     for student in parent.childes.all():
         if kelaas.students.filter(pk=student.id).exists():
@@ -139,6 +153,7 @@ def init_phone_number(phone_number, is_for_registeration=True):
 
 def validate_phone_number(phone_number, code):
     try:
+        phone_number = represent_phone_number(phone_number)
         phone = Temp_phone_number.objects.get(phone_number=phone_number)
 
         if code == phone.code:
