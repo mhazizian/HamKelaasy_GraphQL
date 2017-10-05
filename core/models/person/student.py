@@ -11,7 +11,7 @@ STUDENT_KEY_WORD = "student"
 
 
 class Student(Person):
-    age = models.IntegerField('student age', default=None, null=True)
+    age = models.IntegerField('student age')
     code = models.CharField('invite link for parent', max_length=10)
     gender = models.IntegerField('gender type(1 for men, 0 for women)', default=None, null=True, blank=True)
 
@@ -25,6 +25,10 @@ class Student(Person):
             self.code = Student.generate_code()
             if not self.profile_pic:
                 self.profile_pic.name = 'student/people' + str(random.randint(1, 11)) + '.png'
+        if self.gender != 0 and self.gender != 1:
+            raise Exception('Bad gender code')
+        if self.age > 18 or self.age < 6:
+            raise Exception('Bad age')
 
         self.type = STUDENT_KEY_WORD
         super(Student, self).save(args, kwargs)
