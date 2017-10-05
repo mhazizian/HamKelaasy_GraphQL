@@ -88,7 +88,10 @@ def create_teacher(phone, first_name, last_name, password, gender):
     return teacher
 
 
-def create_parent_child(parent, first_name, last_name, gender, age):
+def create_parent_child(user, first_name, last_name, gender, age):
+    if user.type != PARENT_KEY_WORD:
+        raise myGraphQLError('Permission denied', status=403)
+
     student = Student(
         user=None,
         first_name=first_name,
@@ -97,7 +100,7 @@ def create_parent_child(parent, first_name, last_name, gender, age):
         age=age,
     )
     student.save()
-    student.parents = parent
+    student.parents = user.person.parent
     student.save()
     return student
 
