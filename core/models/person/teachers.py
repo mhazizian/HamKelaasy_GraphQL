@@ -13,6 +13,8 @@ class Teacher(Person):
         self.type = TEACHER_KEY_WORD
         if not self.profile_pic:
             self.profile_pic.name = 'teacher.svg'
+        if self.gender != 0 and self.gender != 1:
+            raise Exception('Bad gender code')
         super(Teacher, self).save(args, kwargs)
 
     def __unicode__(self):
