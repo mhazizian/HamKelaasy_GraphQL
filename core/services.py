@@ -171,6 +171,7 @@ def validate_phone_number(phone_number, code):
 
 def create_user_PT(phone, validator, first_name, last_name, pass_md5, type, gender=1):
     try:
+        phone = represent_phone_number(phone)
         temp_phone = Temp_phone_number.objects.get(phone_number=phone)
         if (not temp_phone.is_validated) or (not temp_phone.validator == validator):
             raise Exception('invalid validator')
