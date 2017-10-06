@@ -28,7 +28,7 @@ class Create_convesation(graphene.Mutation):
     @staticmethod
     def create(info, data):
         if not info.context.user.is_authenticated:
-            raise HamkelaasyError('user not authenticated', status=401)
+            raise HamkelaasyError(4011)
         user = info.context.user.person
 
         return services.create_dialog(

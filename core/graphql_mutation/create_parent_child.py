@@ -24,7 +24,7 @@ class Create_parent_child(graphene.Mutation):
     @staticmethod
     def add(info, data):
         if not info.context.user.is_authenticated:
-            raise HamkelaasyError('user not authenticated', status=401)
+            raise HamkelaasyError(4011)
         user = info.context.user.person
 
         return services.create_parent_child(

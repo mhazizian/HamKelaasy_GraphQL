@@ -17,7 +17,7 @@ logger = logging.getLogger('core')
 @api_view(['POST'])
 def index(request):
     if not request.user.is_authenticated or not hasattr(request.user, 'person'):
-        return HttpResponse('user not authenticated', status=401)
+        return HttpResponse(4011)
     data = json.loads(request.body)
 
     res = schema.execute(

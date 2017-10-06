@@ -19,7 +19,11 @@ def my_view(request):
     if (not request.user.is_authenticated) or request.user.username != 'admin':
         return HttpResponse('')
 
-    for phone in Temp_phone_number.objects.all():
-        phone.delete()
+    conv = Conversation.objects.get(id=35)
+    conv.delete()
+    # c = 0
+    # for conv in Conversation.objects.all():
+    #     if conv.member_count < 2:
+    #         c = c + 1
 
-    return HttpResponse('deleted')
+    return HttpResponse('')

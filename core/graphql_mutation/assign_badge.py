@@ -22,7 +22,7 @@ class Assign_badge(graphene.Mutation):
     @staticmethod
     def assign_badge(info, data):
         if not info.context.user.is_authenticated:
-            raise HamkelaasyError('user not authenticated', status=401)
+            raise HamkelaasyError(4011)
         user = info.context.user.person
 
         return services.assign_badge(

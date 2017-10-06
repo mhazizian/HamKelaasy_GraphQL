@@ -1,13 +1,16 @@
 import six
 from graphql import GraphQLError
+
+from core import errors
 from graphql.error import format_error as format_graphql_error
 
 
 class HamkelaasyError(Exception):
-    def __init__(self, message, status=400, detail=''):
-        self.message = message
-        self.status = status
-        self.detail = detail
+    def __init__(self, message_code):
+        self.message_code = message_code
+
+        self.message = errors[message_code].get('message', '')
+        self.status = errors[message_code].get('status', 400)
 
 
 def get_status_code(response):

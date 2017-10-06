@@ -16,7 +16,6 @@ class StudentType(PersonType):
 
     age = graphene.Int()
     code = graphene.String()
-    # nickname = graphene.String()
 
     kelaases = graphene.List(
         'core.graphql_query.KelaasType',
@@ -107,8 +106,8 @@ class StudentType(PersonType):
                 kelaas = Kelaas.objects.get(pk=kwargs['kelaas_id'])
                 return self.tasks.filter(kelaas_id=kelaas.id, is_done=kwargs['done'])[offset - page_size:offset]
             except Kelaas.DoesNotExist:
-                raise HamkelaasyError('Kelaas not found', status=404)
+                raise HamkelaasyError(4041)
             except exceptions.KeyError:
-                raise HamkelaasyError('"kelaas_id" is necessary', status=400)
+                raise HamkelaasyError(4006)
 
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)

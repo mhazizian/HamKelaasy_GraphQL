@@ -31,14 +31,14 @@ def represents_int(s):
 
 def represent_phone_number(s):
     if not represents_int(s):
-        raise Exception("invalid phone number")
+        raise HamkelaasyError(4001)
 
     if len(s) == 11 and s[0] == '0':
         s = '98' + s[1:]
     if len(s) == 10 and s[0] == '9':
         s = '98' + s[:]
     if len(s) != 12 or (not s[:2] == '98'):
-        raise Exception("invalid phone number")
+        raise HamkelaasyError(4001)
 
     return s
 
@@ -93,7 +93,7 @@ def create_teacher(phone, first_name, last_name, password, gender):
 
 def create_parent_child(user, first_name, last_name, gender, age):
     if user.type != PARENT_KEY_WORD:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4031)
 
     student = Student(
         user=None,
@@ -136,11 +136,11 @@ def send_sms(phone_number, code):
     if res['status'] < 0:
         return True
     if res['status'] == 103 or res['status'] == 1 or res['status'] == 2:
-        raise Exception("invalid phone number")
+        raise HamkelaasyError(4001)
     if res['status'] == 15:
-        raise Exception("Sms server is in development, please try agein soon")
+        raise HamkelaasyError(5031)
 
-    raise Exception("Sms server is busy, try again later.")
+    raise HamkelaasyError(5032)
 
 
 def init_phone_number(phone_number, is_for_registration=True):
@@ -150,25 +150,25 @@ def init_phone_number(phone_number, is_for_registration=True):
         phone = Temp_phone_number.objects.get(pk=phone_number)
 
         if is_for_registration and phone.is_registered:
-            raise Exception("used phone_number")
+            raise HamkelaasyError(4002)
         if (not is_for_registration) and (not phone.is_registered):
-            raise Exception("phone not registered!")
+            raise HamkelaasyError(4003)
 
         # TODO change 10 sec to 60 sec in production.
         if timezone.now() - phone.last_send_sms_time < timedelta(seconds=10):
-            raise Exception("You should at least wait for 1min to request sending new message")
+            raise HamkelaasyError(4004)
 
         phone.re_init()
     else:
         if not is_for_registration:
-            raise Exception('phone number not registerd')
+            raise HamkelaasyError(4003)
 
         phone = Temp_phone_number(phone_number=phone_number)
         phone.save()
 
     if not send_sms(phone_number=phone.phone_number, code=phone.code):
         phone.delete()
-        raise Exception("invalid phone number")
+        raise HamkelaasyError(4001)
 
 
 def validate_phone_number(phone_number, code):
@@ -184,7 +184,7 @@ def validate_phone_number(phone_number, code):
 
         return False
     except Temp_phone_number.DoesNotExist:
-        raise Exception('phone not found')
+        raise HamkelaasyError(4003)
 
 
 def create_user_PT(phone, validator, first_name, last_name, password, type, gender=1):
@@ -193,10 +193,10 @@ def create_user_PT(phone, validator, first_name, last_name, password, type, gend
     try:
         temp_phone = Temp_phone_number.objects.get(pk=phone)
         if temp_phone.is_registered:
-            raise Exception("used phone_number")
+            raise HamkelaasyError(4002)
 
         if (not temp_phone.is_validated) or (not temp_phone.validator == validator):
-            raise Exception('invalid validator')
+            raise HamkelaasyError(4005)
 
         temp_phone.is_registered = True
         temp_phone.save()
@@ -219,8 +219,9 @@ def create_user_PT(phone, validator, first_name, last_name, password, type, gend
             )
 
     except Temp_phone_number.DoesNotExist:
-        raise Exception('phone not found')
+        raise HamkelaasyError(4003)
     except IntegrityError:
+        # TODO do something
         pass
 
 
@@ -231,7 +232,7 @@ def get_kelaas_by_invite_code(invite_code):
     try:
         return Kelaas.objects.get(invite_code=invite_code)
     except Kelaas.DoesNotExist:
-        raise HamkelaasyError('Kelaas not found', status=404)
+        raise HamkelaasyError(4041)
 
 
 def get_student(user, **kwargs):
@@ -239,20 +240,20 @@ def get_student(user, **kwargs):
         return user.student
 
     if not 'id' in kwargs:
-        raise HamkelaasyError('"id" is necessary', status=400)
+        raise HamkelaasyError(4006)
     id = kwargs['id']
 
     if user.type == PARENT_KEY_WORD:
         try:
             return user.parent.childes.get(pk=id)
         except Student.DoesNotExist:
-            raise HamkelaasyError('Student not found', status=404)
+            raise HamkelaasyError(4042)
 
     if user.type == TEACHER_KEY_WORD:
         for teacher_kelaas in user.teacher.kelaases.all():
             if teacher_kelaas.students.filter(pk=id).exists():
                 return teacher_kelaas.students.get(pk=id)
-        raise HamkelaasyError('Student not found', status=404)
+        raise HamkelaasyError(4042)
 
 
 def get_students(user, **kwargs):
@@ -264,9 +265,9 @@ def get_students(user, **kwargs):
             try:
                 return Kelaas.objects.get(pk=kwargs['kelaas_id']).students.all()
             except Kelaas.DoesNotExist:
-                raise HamkelaasyError('Kelaas not found', status=404)
+                raise HamkelaasyError(4041)
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def get_kelaas(user, kelaas_id):
@@ -274,19 +275,19 @@ def get_kelaas(user, kelaas_id):
         try:
             return user.teacher.kelaases.get(pk=kelaas_id)
         except Kelaas.DoesNotExist:
-            raise HamkelaasyError('Kelaas not found', status=404)
+            raise HamkelaasyError(4041)
 
     if user.type == PARENT_KEY_WORD:
         for student in user.parent.childes.all():
             if student.kelaases.filter(pk=kelaas_id).exists():
                 return student.kelaases.get(pk=kelaas_id)
-        raise HamkelaasyError('Kelaas not found', status=404)
+        raise HamkelaasyError(4041)
 
     if user.type == STUDENT_KEY_WORD:
         try:
             return user.student.kelaases.get(pk=kelaas_id)
         except Kelaas.DoesNotExist:
-            raise HamkelaasyError('Kelaas not found', status=404)
+            raise HamkelaasyError(4041)
 
 
 def get_kelaases(user, **kwargs):
@@ -297,9 +298,9 @@ def get_kelaases(user, **kwargs):
         try:
             return user.parent.childes.get(pk=kwargs['student_id']).kelaases.all()
         except exceptions.KeyError:
-            raise HamkelaasyError('"student_id" is necessary', status=400)
+            raise HamkelaasyError(4006)
         except Student.DoesNotExist:
-            raise HamkelaasyError('Student not found', status=404)
+            raise HamkelaasyError(4042)
 
     if user.type == STUDENT_KEY_WORD:
         return user.student.kelaases.all()
@@ -309,7 +310,7 @@ def get_teacher(user):
     if user.type == TEACHER_KEY_WORD:
         return user.teacher
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def get_parent(user, **kwargs):
@@ -325,11 +326,11 @@ def get_parent(user, **kwargs):
                     return parent
 
         except Parent.DoesNotExist:
-            raise HamkelaasyError('Parent not found', status=404)
+            raise HamkelaasyError(4043)
         except exceptions.KeyError:
-            raise HamkelaasyError('"id" is necessary', status=400)
+            raise HamkelaasyError(4006)
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def get_badge_types(**kwargs):
@@ -344,7 +345,7 @@ def get_certificate(id):
     try:
         return Certificate.objects.get(pk=id)
     except Certificate.DoesNotExist:
-        raise HamkelaasyError('Certificate not found', status=404)
+        raise HamkelaasyError(4044)
 
 
 def get_tags():
@@ -357,9 +358,9 @@ def get_conversation(user, conversation_id):
         if conversation.members.filter(id=user.id).exists():
             return conversation
     except Conversation.DoesNotExist:
-        raise HamkelaasyError('Conversation not found', status=404)
+        raise HamkelaasyError(4045)
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def get_system_notifications(user, new=False):
@@ -386,7 +387,7 @@ def parent__get_childes(parent, user, **kwargs):
         if 'kelaas_id' in kwargs:
             if user.teacher.kelaases.filter(kelaas_id=kwargs['kelaas_id']).exist():
                 return parent.childes.filter(kelaases__in=[kwargs['kelaas_id']])
-            raise HamkelaasyError('Permission denied', status=403)
+            raise HamkelaasyError(4032)
 
         result = []
         # user.kelaases.filter(students__in=[child.id for child in parent.childes.all()])
@@ -395,7 +396,7 @@ def parent__get_childes(parent, user, **kwargs):
                 result.append(child)
         return result
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def parent__get_child(parent, user, childe_id):
@@ -409,32 +410,32 @@ def parent__get_child(parent, user, childe_id):
                 return child
 
     except Student.DoesNotExist:
-        raise HamkelaasyError('Child not found', status=404)
+        raise HamkelaasyError(4046)
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def teacher__get_kelaases(teacher, user):
     if not user.id == teacher.id:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     return teacher.kelaases.all().order_by('-id')
 
 
 def teacher__get_kelaas(teacher, user, kelaas_id):
     if not user.id == teacher.id:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     try:
         return teacher.kelaases.get(pk=kelaas_id)
     except Kelaas.DoesNotExist:
-        raise HamkelaasyError('Kelaas not found', status=404)
+        raise HamkelaasyError(4041)
 
 
 def student__get_invite_code(student, user):
     if student.id == user.id:
         return student.code
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def student__get_kelaases(student, user):
@@ -448,7 +449,7 @@ def student__get_kelaases(student, user):
     if user.type == PARENT_KEY_WORD and user.id == student.parents.id:
         return student.kelaases.all().order_by('-id')
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def student__get_kelaas(student, user, kelaas_id):
@@ -463,9 +464,9 @@ def student__get_kelaas(student, user, kelaas_id):
             if user.teacher.kelaases.filter(pk=kelaas_id).exists():
                 return student.kelaases.get(pk=kelaas_id)
     except Kelaas.DoesNotExist:
-        raise HamkelaasyError('Kelaas not found', status=404)
+        raise HamkelaasyError(4041)
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def student__get_badges(student, user, **kwargs):
@@ -490,7 +491,7 @@ def student__get_badges(student, user, **kwargs):
             student.badges.filter(kelaas_id=kwargs['kelaas_id'])
         return student.badges.all()
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def student__get_parent(student, user):
@@ -505,7 +506,7 @@ def student__get_parent(student, user):
     if user.type == PARENT_KEY_WORD and user.id == student.parents.id:
         return student.parents
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def kelaas__get_tags(kelaas):
@@ -520,17 +521,17 @@ def kelaas__get_student(kelaas, user):
     if user.type == PARENT_KEY_WORD:
         return kelaas.students.filter(parents_id=user.id)
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def kelaas__get_kelaas_post(kelaas, user):
     if user.type == PARENT_KEY_WORD:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     if kelaas.students.filter(pk=user.id).exists() or teacher_has_access_to_kelaas(kelaas, user.teacher):
         return kelaas.posts.filter(type=KELAAS_POST_KEY_WORD).order_by('-id')
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def kelaas_get_stories(kelaas, user):
@@ -542,7 +543,7 @@ def kelaas_get_stories(kelaas, user):
         if parent_has_access_to_kelaas(kelaas=kelaas, parent=user.parent):
             return kelaas.posts.filter(type=STORY_KEY_WORD).all().order_by('-id')
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def kelaas__get_conversations(kelaas, user):
@@ -553,7 +554,7 @@ def kelaas__get_conversation(kelaas, user, conversation_id):
     if kelaas.conversations.filter(members__id=user.id, id=conversation_id).exists():
         return kelaas.conversations.filter(members__id=user.id, id=conversation_id).first()
 
-    raise HamkelaasyError('Conversation not found', status=404)
+    raise HamkelaasyError(4045)
 
 
 def kelaas__get_invite_code(kelaas, user):
@@ -570,7 +571,7 @@ def kelaas__get_invite_code(kelaas, user):
         if parent_has_access_to_kelaas(kelaas=kelaas, parent=user.parent):
             return kelaas.invite_code
 
-    raise HamkelaasyError('Permission denied', status=403)
+    raise HamkelaasyError(4032)
 
 
 def post__get_comments(post, user):
@@ -625,7 +626,7 @@ def is_my_comment(user, comment):
 
 def create_kelaas(user, title, description, gender, tags):
     if not user.type == TEACHER_KEY_WORD:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     kelaas = Kelaas(
         title=title,
@@ -650,37 +651,37 @@ def create_kelaas(user, title, description, gender, tags):
 
 def add_child(user, child_code):
     if not user.type == PARENT_KEY_WORD:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     try:
         student = Student.objects.get(code=child_code)
         if student.parents and student.parents.id == user.id:
             return student
         if student.parents:
-            raise HamkelaasyError('Permission denied', status=403)
+            raise HamkelaasyError(4032)
 
         student.parents = user.parent
         student.save()
     except Student.DoesNotExist:
-        raise HamkelaasyError('Student not found', status=404)
+        raise HamkelaasyError(4042)
 
     return student
 
 
 def add_child_by_token(user, child_token):
     if not user.type == PARENT_KEY_WORD:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     try:
         temp = Token.objects.get(key=child_token)
         student = temp.user.person.student
         if student.parents:
-            raise HamkelaasyError('Permission denied', status=403)
+            raise HamkelaasyError(4032)
 
         student.parents = user.parent
         student.save()
     except AttributeError:
-        raise HamkelaasyError('Student not found', status=404)
+        raise HamkelaasyError(4042)
 
     return student
 
@@ -689,15 +690,15 @@ def add_comment(user, post_id, body):
     try:
         post = Post.objects.get(pk=post_id)
     except Post.DoesNotExist:
-        raise HamkelaasyError('Post not found', status=404)
+        raise HamkelaasyError(4047)
 
     if user.type == STUDENT_KEY_WORD:
         if not user.student.kelaases.filter(pk=post.kelaas_id).exists():
-            raise HamkelaasyError('Permission denied', status=403)
+            raise HamkelaasyError(4032)
 
     if user.type == TEACHER_KEY_WORD:
         if not user.teacher.kelaases.filter(pk=post.kelaas_id).exists():
-            raise HamkelaasyError('Permission denied', status=403)
+            raise HamkelaasyError(4032)
 
     if user.type == PARENT_KEY_WORD:
         access_flag = False
@@ -706,7 +707,7 @@ def add_comment(user, post_id, body):
                 access_flag = True
                 break
         if not access_flag:
-            raise HamkelaasyError('Permission denied', status=403)
+            raise HamkelaasyError(4032)
 
     comment = Comment(
         body=body,
@@ -729,14 +730,14 @@ def delete_comment(user, comment_id):
                 comment.delete()
                 return
 
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
     except Comment.DoesNotExist:
-        raise HamkelaasyError('Comment not found', status=404)
+        raise HamkelaasyError(4052)
 
 
 def assign_badge(user, kelaas_id, student_id, badges):
     if not user.type == TEACHER_KEY_WORD:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
     teacher = user.teacher
 
     if not teacher.kelaases.filter(pk=kelaas_id).exists():
@@ -745,9 +746,9 @@ def assign_badge(user, kelaas_id, student_id, badges):
         kelaas = user.teacher.kelaases.get(pk=kelaas_id)
         student = Student.objects.get(pk=student_id)
     except Kelaas.DoesNotExist:
-        raise HamkelaasyError('Kelaas not found', status=404)
+        raise HamkelaasyError(4041)
     except Student.DoesNotExist:
-        raise HamkelaasyError('Student not found', status=404)
+        raise HamkelaasyError(4042)
 
     for badge_id in badges.split(','):
         if Badge_link.objects.filter(student=student, type_id=badge_id, kelaas=kelaas).exists():
@@ -756,7 +757,7 @@ def assign_badge(user, kelaas_id, student_id, badges):
             badge_link.save()
         else:
             if not Badge.objects.filter(pk=badge_id).exists():
-                raise HamkelaasyError('Badge not found', status=404)
+                raise HamkelaasyError(4048)
             badge_link = Badge_link(
                 student=student,
                 kelaas=kelaas,
@@ -768,12 +769,12 @@ def assign_badge(user, kelaas_id, student_id, badges):
 
 def create_kelaas_post(user, kelaas_id, title, description, files):
     if not user.type == TEACHER_KEY_WORD:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     try:
         kelaas = user.teacher.kelaases.get(pk=kelaas_id)
     except Kelaas.DoesNotExist:
-        raise HamkelaasyError('Kelaas not found', status=404)
+        raise HamkelaasyError(4041)
 
     post = Kelaas_post(
         title=title,
@@ -798,26 +799,26 @@ def create_kelaas_post(user, kelaas_id, title, description, files):
 
 def delete_post(user, post_id):
     if not user.type == TEACHER_KEY_WORD:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     try:
         post = Post.objects.get(id=post_id)
         if not teacher_has_access_to_kelaas(kelaas=post.kelaas, teacher=user.teacher):
-            raise HamkelaasyError('Permission denied', status=403)
+            raise HamkelaasyError(4032)
 
         post.delete()
     except Post.DoesNotExist:
-        raise HamkelaasyError('Post not found', status=404)
+        raise HamkelaasyError(4047)
 
 
 def create_story(user, kelaas_id, title, description, pic_id=None):
     if not user.type == TEACHER_KEY_WORD:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     try:
         kelaas = user.teacher.kelaases.get(pk=kelaas_id)
     except Kelaas.DoesNotExist:
-        raise HamkelaasyError('Kelaas not found', status=404)
+        raise HamkelaasyError(4041)
 
     story = Story(
         title=title,
@@ -836,34 +837,34 @@ def create_story(user, kelaas_id, title, description, pic_id=None):
 
 def join_kelaas_for_parent(user, invite_code, student_id):
     if not user.type == PARENT_KEY_WORD:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     try:
         student = Student.objects.get(id=student_id)
         if not student.parents.id == user.id:
-            raise HamkelaasyError('Permission denied', status=403)
+            raise HamkelaasyError(4032)
 
         return join_kelaas(user=student, invite_code=invite_code)
 
     except Student.DoesNotExist:
-        raise HamkelaasyError('Kelaas not found', status=404)
+        raise HamkelaasyError(4041)
 
 
 def join_kelaas(user, invite_code):
     if not user.type == STUDENT_KEY_WORD:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     if not user.student.parents:
-        raise HamkelaasyError('Parent is necessary', status=403)
+        raise HamkelaasyError(4033)
 
     invite_code = invite_code.upper()
     try:
         kelaas = Kelaas.objects.get(invite_code=invite_code)
     except Kelaas.DoesNotExist:
-        raise HamkelaasyError('Kelaas not found', status=404)
+        raise HamkelaasyError(4041)
 
     if kelaas.gender != 2 and kelaas.gender != user.student.gender:
-        raise HamkelaasyError("gender doesn't match", status=400)
+        raise HamkelaasyError(4007)
 
     if not kelaas.students.filter(pk=user.id).exists():
         kelaas.students.add(user.student)
@@ -883,10 +884,10 @@ def send_message(user, conversation_id, message):
     try:
         conversation = Conversation.objects.get(pk=conversation_id)
     except Conversation.DoesNotExist:
-        raise HamkelaasyError('Convesation not found', status=404)
+        raise HamkelaasyError(4045)
 
     if not conversation.members.filter(pk=user.id).exists():
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     msg = Conversation_message(
         writer=user,
@@ -903,10 +904,10 @@ def assign_certificate(user, type_id, level, owner_id, ):
         owner = Person.objects.get(pk=owner_id)
 
         if not user.type == TEACHER_KEY_WORD:
-            raise HamkelaasyError('Permission denied', status=403)
+            raise HamkelaasyError(4032)
 
         if not user.teacher.kelaases.filter(students__in=[owner.id]).exists():
-            raise HamkelaasyError('Permission denied', status=403)
+            raise HamkelaasyError(4032)
 
         # TODO continuously levels checking
         # TODO same certificate level from different persons!!!
@@ -923,9 +924,9 @@ def assign_certificate(user, type_id, level, owner_id, ):
         return certificate_link
 
     except Certificate.DoesNotExist:
-        raise HamkelaasyError('Certificate not found', status=404)
+        raise HamkelaasyError(4044)
     except Person.DoesNotExist:
-        raise HamkelaasyError('Owner not found', status=404)
+        raise HamkelaasyError(4049)
 
 
 def create_certificate(user, title, description):
@@ -933,7 +934,7 @@ def create_certificate(user, title, description):
     # TODO duplicate certificate?
 
     if user.created_certificates.filter(title=title).exists():
-        raise HamkelaasyError('duplicate certificate', status=400)
+        raise HamkelaasyError(4008)
 
     certificate = Certificate(
         title=title,
@@ -949,13 +950,13 @@ def create_certificate_level(user, certificate_id, level, level_description):
     try:
         certificate = Certificate.objects.get(pk=certificate_id)
     except Certificate.DoesNotExist:
-        raise HamkelaasyError('Certificate not found', status=404)
+        raise HamkelaasyError(4044)
 
     if not user.id == certificate.creator.id:
-        raise HamkelaasyError('Permission denied', status=403)
+        raise HamkelaasyError(4032)
 
     if certificate.levels.filter(level=level).exists():
-        raise HamkelaasyError('duplicate certificate-level', status=400)
+        raise HamkelaasyError(4009)
 
     certi_level = Certificate_level(
         level=level,
@@ -985,20 +986,20 @@ def create_dialog(user, kelaas_id, interlocutor_id):
         return conversation
 
     except Person.DoesNotExist:
-        raise HamkelaasyError('Person not found', status=404)
+        raise HamkelaasyError(4050)
     except Kelaas.DoesNotExist:
-        raise HamkelaasyError('Kelaas not found', status=404)
+        raise HamkelaasyError(4041)
 
 
 def perform_task(user, task_id):
     try:
         task = Task.objects.get(pk=task_id)
         if not task.student_id == user.id:
-            raise HamkelaasyError('Permission denied', status=403)
+            raise HamkelaasyError(4032)
 
         task.is_done = Task
         task.save()
         return task
 
     except Task.DoesNotExist:
-        raise HamkelaasyError('Task not found', status=404)
+        raise HamkelaasyError(5051)

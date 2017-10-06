@@ -23,7 +23,7 @@ class Upload_file(graphene.Mutation):
     @staticmethod
     def upload(info, data):
         if not info.context.user.is_authenticated:
-            raise HamkelaasyError('user not authenticated', status=401)
+            raise HamkelaasyError(4011)
         user = info.context.user.person
 
         if not user.type == TEACHER_KEY_WORD:

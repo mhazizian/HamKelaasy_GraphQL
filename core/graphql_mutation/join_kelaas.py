@@ -21,7 +21,7 @@ class Join_kelaas(graphene.Mutation):
     @staticmethod
     def join(info, data):
         if not info.context.user.is_authenticated:
-            raise HamkelaasyError('user not authenticated', status=401)
+            raise HamkelaasyError(4011)
         user = info.context.user.person
 
         return services.join_kelaas(user=user, invite_code=data.invite_code)

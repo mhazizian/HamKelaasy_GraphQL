@@ -21,7 +21,7 @@ class Delete_post(graphene.Mutation):
     @staticmethod
     def delete(info, data):
         if not info.context.user.is_authenticated:
-            raise HamkelaasyError('user not authenticated', status=401)
+            raise HamkelaasyError(4011)
         user = info.context.user.person
 
         services.delete_post(

@@ -23,7 +23,7 @@ class Assign_certificate(graphene.Mutation):
     @staticmethod
     def assign(info, data):
         if not info.context.user.is_authenticated:
-            raise HamkelaasyError('user not authenticated', status=401)
+            raise HamkelaasyError(4011)
         user = info.context.user.person
 
         return services.assign_certificate(
