@@ -5,6 +5,7 @@ import json
 import logging
 
 import core.services as services
+# from core import HamkelaasyError
 
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
@@ -24,13 +25,20 @@ def new_login(request):
     password = data.get('password', '')
 
     try:
+        if not User.objects.filter(username=username).exists():
+            username = services.represent_phone_number(username)
+
         user = User.objects.get(username=username)
         if user.person.password == password:
             return HttpResponse(json.dumps({
                 'token': Token.objects.get(user=user).key,
                 'type': user.person.type
             }))
+
+
     except User.DoesNotExist:
+        return HttpResponse('Invalid username or password', status=401)
+    except Exception:
         return HttpResponse('Invalid username or password', status=401)
     return HttpResponse('Invalid username or password', status=401)
 
@@ -104,7 +112,6 @@ def new_signup_parent(request):
         )
 
 
-
 @csrf_exempt
 def new_signup_teacher(request):
     data = json.loads(request.body)
@@ -135,7 +142,7 @@ def new_signup_teacher(request):
         return HttpResponse(json.dumps(
             {
                 'status': 0,
-                'message' : e.message
+                'message': e.message
             }),
             status=400
         )
