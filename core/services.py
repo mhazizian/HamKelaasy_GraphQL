@@ -600,14 +600,15 @@ def is_my_comment(user, comment):
 # ______________________________________________________________________________________________________
 # ______________________________________________________________________________________________________
 
-def create_kelaas(user, title, description, tags):
+def create_kelaas(user, title, description, gender, tags):
     if not user.type == TEACHER_KEY_WORD:
         raise myGraphQLError('Permission denied', status=403)
 
     kelaas = Kelaas(
         title=title,
         description=description,
-        teacher=user.teacher
+        teacher=user.teacher,
+        gender=gender
     )
     kelaas.save()
 

@@ -10,6 +10,7 @@ class KelaasType(graphene.ObjectType):
     shamsi_date = graphene.String()
     description = graphene.String()
     invite_code = graphene.String()
+    gender = graphene.Int(description='1 for men, 0 for women, 2 for both!')
     teacher = graphene.Field('core.graphql_query.TeacherType')
 
     conversations = graphene.List(

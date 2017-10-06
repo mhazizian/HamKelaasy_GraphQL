@@ -8,6 +8,7 @@ from core.graphql_query import KelaasType
 class Kelaas_input(graphene.InputObjectType):
     title = graphene.String(required=True)
     description = graphene.String(default_value="")
+    gender = graphene.Int(required=True, description='1 for men, 0 for women, 2 for both')
     tags = graphene.String(description="a string of tag's id,\n\n example: '1,10,4,3,'", default_value="")
 
 
@@ -30,5 +31,6 @@ class Create_kelaas(graphene.Mutation):
             user=user,
             title=data.title,
             description=data.description,
+            gender=data.gender,
             tags=data.tags
         )
