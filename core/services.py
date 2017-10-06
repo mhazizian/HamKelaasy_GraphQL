@@ -154,14 +154,15 @@ def init_phone_number(phone_number, is_for_registration=True):
         if (not is_for_registration) and (not phone.is_registered):
             raise Exception("phone not registered!")
 
-        if timezone.now() - phone.last_send_sms_time < timedelta(seconds=60):
+        # TODO change 10 sec to 60 sec in production.
+        if timezone.now() - phone.last_send_sms_time < timedelta(seconds=10):
             raise Exception("You should at least wait for 1min to request sending new message")
 
         phone.re_init()
     else:
         if not is_for_registration:
             raise Exception('phone number not registerd')
-        
+
         phone = Temp_phone_number(phone_number=phone_number)
         phone.save()
 

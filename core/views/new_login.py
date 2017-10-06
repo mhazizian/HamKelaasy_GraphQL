@@ -97,7 +97,8 @@ def new_signup_parent(request):
     except Exception as e:
         return HttpResponse(json.dumps(
             {
-                'status': 0
+                'status': 0,
+                'message': e.message
             }),
             status=400
         )
@@ -133,7 +134,8 @@ def new_signup_teacher(request):
     except Exception as e:
         return HttpResponse(json.dumps(
             {
-                'status': 0
+                'status': 0,
+                'message' : e.message
             }),
             status=400
         )
