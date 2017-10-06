@@ -91,10 +91,7 @@ def create_teacher(phone, first_name, last_name, password, gender):
     return teacher
 
 
-def create_parent_child(user, first_name, last_name, gender, age):
-    if user.type != PARENT_KEY_WORD:
-        raise HamkelaasyError(4031)
-
+def create_incomplete_student(first_name, last_name, gender, age):
     student = Student(
         user=None,
         first_name=first_name,
@@ -103,9 +100,35 @@ def create_parent_child(user, first_name, last_name, gender, age):
         age=age,
     )
     student.save()
+    return student
+
+
+def create_parent_child(user, first_name, last_name, gender, age):
+    if user.type != PARENT_KEY_WORD:
+        raise HamkelaasyError(4031)
+
+    student = create_incomplete_student(first_name, last_name, gender, age)
+
     student.parents = user.parent
     student.save()
     return student
+
+
+def create_student_for_kelaas(user, first_name, last_name, gender, age, kelaas_id):
+    if user.type != TEACHER_KEY_WORD:
+        raise HamkelaasyError(4031)
+    try:
+        kelaas = Kelaas.objects.get(id=kelaas_id)
+        student = create_incomplete_student(first_name, last_name, gender, age)
+
+        if kelaas.gender != 2 and kelaas.gender != student.gender:
+            raise HamkelaasyError(4007)
+
+        kelaas.students.add(student)
+        kelaas.save()
+        return student
+    except Kelaas.DoesNotExist:
+        raise HamkelaasyError(4041)
 
 
 def parent_has_access_to_kelaas(kelaas, parent):
@@ -440,7 +463,8 @@ def student__get_invite_code(student, user):
 
 def student__get_kelaases(student, user):
     if user.id == student.id:
-        return student.kelaases.all().order_by('-id')
+        if student.parents:
+            return student.kelaases.all().order_by('-id')
 
     if user.type == TEACHER_KEY_WORD:
         return [kelaas for kelaas in student.kelaases.all() if
@@ -455,7 +479,8 @@ def student__get_kelaases(student, user):
 def student__get_kelaas(student, user, kelaas_id):
     try:
         if user.id == student.id:
-            return student.kelaases.get(pk=kelaas_id)
+            if student.parents:
+                return student.kelaases.get(pk=kelaas_id)
 
         if user.type == PARENT_KEY_WORD and user.id == student.parents.id:
             return student.kelaases.get(pk=kelaas_id)
@@ -665,6 +690,12 @@ def add_child(user, child_code):
     except Student.DoesNotExist:
         raise HamkelaasyError(4042)
 
+    for kelaas in student.kelaases.all():
+        create_dialog(
+            user=user.parents,
+            kelaas_id=kelaas.id,
+            interlocutor_id=kelaas.teacher.id
+        )
     return student
 
 
@@ -853,9 +884,6 @@ def join_kelaas_for_parent(user, invite_code, student_id):
 def join_kelaas(user, invite_code):
     if not user.type == STUDENT_KEY_WORD:
         raise HamkelaasyError(4032)
-
-    if not user.student.parents:
-        raise HamkelaasyError(4033)
 
     invite_code = invite_code.upper()
     try:

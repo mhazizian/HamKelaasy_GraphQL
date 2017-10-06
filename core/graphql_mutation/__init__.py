@@ -11,6 +11,7 @@ from .join_kelaas_for_parent import Join_kelaas_for_parent
 from .join_kelaas import Join_kelaas
 from .add_child import Add_child, Add_child_by_token
 from .create_parent_child import Create_parent_child
+from .create_student_for_kelaas import Create_student_for_kelaas
 from .send_message import Send_message
 from .create_conversation import Create_convesation
 
