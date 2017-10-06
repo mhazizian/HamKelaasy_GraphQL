@@ -85,7 +85,7 @@ def new_signup_parent(request):
             validator=phone_validator,
             first_name=first_name,
             last_name=last_name,
-            pass_md5=password,
+            password=password,
             type=PARENT_KEY_WORD
         )
         return HttpResponse(json.dumps(
@@ -121,7 +121,7 @@ def new_signup_teacher(request):
             validator=phone_validator,
             first_name=first_name,
             last_name=last_name,
-            pass_md5=password,
+            password=password,
             type=TEACHER_KEY_WORD,
             gender=gender
         )

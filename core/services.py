@@ -187,7 +187,7 @@ def validate_phone_number(phone_number, code):
         raise Exception('phone not found')
 
 
-def create_user_PT(phone, validator, first_name, last_name, pass_md5, type, gender=1):
+def create_user_PT(phone, validator, first_name, last_name, password, type, gender=1):
     phone = represent_phone_number(phone)
 
     try:
@@ -206,7 +206,7 @@ def create_user_PT(phone, validator, first_name, last_name, pass_md5, type, gend
                 phone=phone,
                 first_name=first_name,
                 last_name=last_name,
-                password=pass_md5,
+                password=password,
                 gender=gender
             )
 
@@ -215,7 +215,7 @@ def create_user_PT(phone, validator, first_name, last_name, pass_md5, type, gend
                 phone=phone,
                 first_name=first_name,
                 last_name=last_name,
-                password=pass_md5,
+                password=password,
             )
 
     except Temp_phone_number.DoesNotExist:
