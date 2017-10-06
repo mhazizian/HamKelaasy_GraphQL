@@ -19,8 +19,7 @@ def my_view(request):
     if (not request.user.is_authenticated) or request.user.username != 'admin':
         return HttpResponse('')
 
-    # for student in Student.objects.all():
-    #     student.profile_pic.name = 'student/people' + str(random.randint(1, 11)) + '.png'
-    #     student.save()
+    for phone in Temp_phone_number.objects.all():
+        phone.delete()
 
-    return HttpResponse('done')
+    return HttpResponse('deleted')

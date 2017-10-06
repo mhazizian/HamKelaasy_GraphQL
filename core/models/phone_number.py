@@ -19,7 +19,7 @@ class Temp_phone_number(models.Model):
     is_registered = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        if not self.code:
             self.code = str(random.randint(10000, 99999))
             self.validator = get_random_string(length=29)
         super(Temp_phone_number, self).save(args, kwargs)

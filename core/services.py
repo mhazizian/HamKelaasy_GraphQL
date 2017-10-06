@@ -146,8 +146,8 @@ def send_sms(phone_number, code):
 def init_phone_number(phone_number, is_for_registration=True):
     phone_number = represent_phone_number(phone_number)
 
-    if Temp_phone_number.objects.get(phone_number=phone_number).exists():
-        phone = Temp_phone_number.objects.get(phone_number=phone_number)
+    if Temp_phone_number.objects.filter(pk=phone_number).exists():
+        phone = Temp_phone_number.objects.get(pk=phone_number)
 
         if is_for_registration and phone.is_registered:
             raise Exception("used phone_number")
@@ -171,7 +171,7 @@ def validate_phone_number(phone_number, code):
     phone_number = represent_phone_number(phone_number)
 
     try:
-        phone = Temp_phone_number.objects.get(phone_number=phone_number)
+        phone = Temp_phone_number.objects.get(pk=phone_number)
 
         if code == phone.code:
             phone.is_validated = True
@@ -187,7 +187,7 @@ def create_user_PT(phone, validator, first_name, last_name, pass_md5, type, gend
     phone = represent_phone_number(phone)
 
     try:
-        temp_phone = Temp_phone_number.objects.get(phone_number=phone)
+        temp_phone = Temp_phone_number.objects.get(pk=phone)
         if temp_phone.is_registered:
             raise Exception("used phone_number")
 
