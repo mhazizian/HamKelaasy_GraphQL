@@ -2,6 +2,7 @@ import exceptions as exceptions
 import json
 
 import requests
+from datetime import timedelta
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
 from django.utils import timezone
@@ -34,7 +35,9 @@ def represent_phone_number(s):
 
     if len(s) == 11 and s[0] == '0':
         s = '98' + s[1:]
-    if not len(s) == 12 and s[:2] == '98':
+    if len(s) == 10 and s[0] == '9':
+        s = '98' + s[:]
+    if len(s) != 12 or (not s[:2] == '98'):
         raise Exception("invalid phone number")
 
     return s
@@ -130,24 +133,34 @@ def send_sms(phone_number, code):
         }
     )
     res = json.loads(r.text)
-    if res['status'] == -1:
+    if res['status'] < 0:
         return True
-    return False
+    if res['status'] == 103 or res['status'] == 1 or res['status'] == 2:
+        raise Exception("invalid phone number")
+    if res['status'] == 15:
+        raise Exception("Sms server is in development, please try agein soon")
+
+    raise Exception("Sms server is busy, try again later.")
 
 
-def init_phone_number(phone_number, is_for_registeration=True):
+def init_phone_number(phone_number, is_for_registration=True):
     phone_number = represent_phone_number(phone_number)
 
-    if is_for_registeration:
-        if User.objects.filter(username=phone_number).exists():
-            raise Exception("phone number is in use")
-        if Student.objects.filter(phone_number=phone_number).exists():
-            raise Exception("phone number is in use")
-    if Temp_phone_number.objects.filter(phone_number=phone_number).exists():
-        raise Exception("phone number is in use")
+    if Temp_phone_number.objects.get(phone_number=phone_number).exists():
+        phone = Temp_phone_number.objects.get(phone_number=phone_number)
 
-    phone = Temp_phone_number(phone_number=phone_number)
-    phone.save()
+        if is_for_registration and phone.is_registered:
+            raise Exception("used phone_number")
+        if (not is_for_registration) and (not phone.is_registered):
+            raise Exception("phone not registered!")
+
+        if timezone.now() - phone.last_send_sms_time < timedelta(seconds=60):
+            raise Exception("You should at least wait for 1min to request sending new message")
+
+        phone.re_init()
+    else:
+        phone = Temp_phone_number(phone_number=phone_number)
+        phone.save()
 
     if not send_sms(phone_number=phone.phone_number, code=phone.code):
         phone.delete()
@@ -155,8 +168,9 @@ def init_phone_number(phone_number, is_for_registeration=True):
 
 
 def validate_phone_number(phone_number, code):
+    phone_number = represent_phone_number(phone_number)
+
     try:
-        phone_number = represent_phone_number(phone_number)
         phone = Temp_phone_number.objects.get(phone_number=phone_number)
 
         if code == phone.code:
@@ -165,18 +179,23 @@ def validate_phone_number(phone_number, code):
             return phone.validator
 
         return False
-    except Exception as e:
-        return False
+    except Temp_phone_number.DoesNotExist:
+        raise Exception('phone not found')
 
 
 def create_user_PT(phone, validator, first_name, last_name, pass_md5, type, gender=1):
+    phone = represent_phone_number(phone)
+
     try:
-        phone = represent_phone_number(phone)
         temp_phone = Temp_phone_number.objects.get(phone_number=phone)
+        if temp_phone.is_registered:
+            raise Exception("used phone_number")
+
         if (not temp_phone.is_validated) or (not temp_phone.validator == validator):
             raise Exception('invalid validator')
 
-        temp_phone.delete()
+        temp_phone.is_registered = True
+        temp_phone.save()
 
         if type == TEACHER_KEY_WORD:
             return create_teacher(
@@ -196,7 +215,7 @@ def create_user_PT(phone, validator, first_name, last_name, pass_md5, type, gend
             )
 
     except Temp_phone_number.DoesNotExist:
-        pass
+        raise Exception('phone not found')
     except IntegrityError:
         pass
 
