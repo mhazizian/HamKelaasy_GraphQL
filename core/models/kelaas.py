@@ -11,7 +11,7 @@ class Kelaas(models.Model):
     title = models.CharField('class name', max_length=200)
     create_date = models.DateTimeField('class creation date', default=timezone.now)
     description = models.CharField('class description', max_length=500)
-    genedr = models.IntegerField('gender type(1 for men, 0 for women, 2 for both)', default=1)
+    gender = models.IntegerField('gender type(1 for men, 0 for women, 2 for both)')
 
     tags = models.ManyToManyField('Tag', related_name="kelaases", blank=True)
     students = models.ManyToManyField('Student', related_name="kelaases", blank=True)
