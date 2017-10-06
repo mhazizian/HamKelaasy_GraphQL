@@ -159,6 +159,9 @@ def init_phone_number(phone_number, is_for_registration=True):
 
         phone.re_init()
     else:
+        if not is_for_registration:
+            raise Exception('phone number not registerd')
+        
         phone = Temp_phone_number(phone_number=phone_number)
         phone.save()
 
