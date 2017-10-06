@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
 
-from core import myGraphQLError
+from core import HamkelaasyError
 from .person import Person
 
 PARENT_KEY_WORD = "parent"

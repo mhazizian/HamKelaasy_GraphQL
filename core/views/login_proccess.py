@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 
-from core import myGraphQLError
+from core import HamkelaasyError
 from core.models import User_temp, STUDENT_KEY_WORD, Student, TEACHER_KEY_WORD, Teacher, PARENT_KEY_WORD, Parent
 from core.views import Fard_API
 
@@ -197,6 +197,6 @@ def get_kelaas_basic_info_handler(request):
                 unicode(json.dumps(res)),
                 status=200
             )
-        except myGraphQLError as e:
+        except HamkelaasyError as e:
             return HttpResponse(e.message, status=e.status)
     return HttpResponse('Bad request', status=405)

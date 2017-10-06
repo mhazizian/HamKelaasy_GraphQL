@@ -1,6 +1,6 @@
 import graphene
 import core.services as services
-from core import myGraphQLError
+from core import HamkelaasyError
 
 from core.graphql_query import MessageType
 
@@ -21,7 +21,7 @@ class Delete_comment(graphene.Mutation):
     @staticmethod
     def delete(info, data):
         if not info.context.user.is_authenticated:
-            raise myGraphQLError('user not authenticated', status=401)
+            raise HamkelaasyError('user not authenticated', status=401)
         user = info.context.user.person
 
         services.delete_comment(

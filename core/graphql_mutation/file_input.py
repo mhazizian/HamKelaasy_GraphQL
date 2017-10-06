@@ -1,5 +1,5 @@
 import graphene
-from core import myGraphQLError
+from core import HamkelaasyError
 
 from core.graphql_query import MessageType
 from core.models import TEACHER_KEY_WORD, File
@@ -23,11 +23,11 @@ class Upload_file(graphene.Mutation):
     @staticmethod
     def upload(info, data):
         if not info.context.user.is_authenticated:
-            raise myGraphQLError('user not authenticated', status=401)
+            raise HamkelaasyError('user not authenticated', status=401)
         user = info.context.user.person
 
         if not user.type == TEACHER_KEY_WORD:
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
         uploaded_file = []
         for f in info.context.FILES.getlist('post-files'):

@@ -1,7 +1,7 @@
 import exceptions
 import graphene
 
-from core import myGraphQLError
+from core import HamkelaasyError
 
 from core.models import TEACHER_KEY_WORD, Kelaas
 from core.graphql_query.utilz import it_is_him
@@ -107,8 +107,8 @@ class StudentType(PersonType):
                 kelaas = Kelaas.objects.get(pk=kwargs['kelaas_id'])
                 return self.tasks.filter(kelaas_id=kelaas.id, is_done=kwargs['done'])[offset - page_size:offset]
             except Kelaas.DoesNotExist:
-                raise myGraphQLError('Kelaas not found', status=404)
+                raise HamkelaasyError('Kelaas not found', status=404)
             except exceptions.KeyError:
-                raise myGraphQLError('"kelaas_id" is necessary', status=400)
+                raise HamkelaasyError('"kelaas_id" is necessary', status=400)
 
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)

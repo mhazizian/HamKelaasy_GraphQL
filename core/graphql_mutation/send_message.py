@@ -1,7 +1,7 @@
 import graphene
 import core.services as services
 
-from core import myGraphQLError
+from core import HamkelaasyError
 from core.graphql_query import ConversationMessageType
 
 
@@ -22,7 +22,7 @@ class Send_message(graphene.Mutation):
     @staticmethod
     def send_message(info, data):
         if not info.context.user.is_authenticated:
-            raise myGraphQLError('user not authenticated', status=401)
+            raise HamkelaasyError('user not authenticated', status=401)
         user = info.context.user.person
 
         return services.send_message(

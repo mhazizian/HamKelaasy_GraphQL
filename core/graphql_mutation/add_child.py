@@ -1,5 +1,5 @@
 import graphene
-from core import myGraphQLError
+from core import HamkelaasyError
 import core.services as services
 
 from core.graphql_query import StudentType
@@ -21,7 +21,7 @@ class Add_child(graphene.Mutation):
     @staticmethod
     def add(info, data):
         if not info.context.user.is_authenticated:
-            raise myGraphQLError('user not authenticated', status=401)
+            raise HamkelaasyError('user not authenticated', status=401)
         user = info.context.user.person
 
         return services.add_child(user=user, child_code=data.child_code)
@@ -46,7 +46,7 @@ class Add_child_by_token(graphene.Mutation):
     @staticmethod
     def add(info, data):
         if not info.context.user.is_authenticated:
-            raise myGraphQLError('user not authenticated', status=401)
+            raise HamkelaasyError('user not authenticated', status=401)
         user = info.context.user.person
 
         return services.add_child_by_token(user=user, child_token=data.child_token)

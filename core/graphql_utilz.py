@@ -3,9 +3,8 @@ from graphql import GraphQLError
 from graphql.error import format_error as format_graphql_error
 
 
-class myGraphQLError(GraphQLError):
+class HamkelaasyError(Exception):
     def __init__(self, message, status=400, detail=''):
-        super(myGraphQLError, self).__init__(message)
         self.message = message
         self.status = status
         self.detail = detail
@@ -15,7 +14,7 @@ def get_status_code(response):
     if response.errors:
         status_code = 400
         if hasattr(response.errors[0], 'original_error'):
-            if isinstance(response.errors[0].original_error, myGraphQLError):
+            if isinstance(response.errors[0].original_error, HamkelaasyError):
                 status_code = response.errors[0].original_error.status
         return status_code
     else:

@@ -10,7 +10,7 @@ from rest_framework.authtoken.models import Token
 import logging
 
 from django.contrib.auth.models import User
-from core import myGraphQLError
+from core import HamkelaasyError
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
     Conversation_message, Certificate, Certificate_link, Certificate_level, Task, System_notification, DIALOG_KEY_WORD, \
@@ -93,7 +93,7 @@ def create_teacher(phone, first_name, last_name, password, gender):
 
 def create_parent_child(user, first_name, last_name, gender, age):
     if user.type != PARENT_KEY_WORD:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     student = Student(
         user=None,
@@ -231,7 +231,7 @@ def get_kelaas_by_invite_code(invite_code):
     try:
         return Kelaas.objects.get(invite_code=invite_code)
     except Kelaas.DoesNotExist:
-        raise myGraphQLError('Kelaas not found', status=404)
+        raise HamkelaasyError('Kelaas not found', status=404)
 
 
 def get_student(user, **kwargs):
@@ -239,20 +239,20 @@ def get_student(user, **kwargs):
         return user.student
 
     if not 'id' in kwargs:
-        raise myGraphQLError('"id" is necessary', status=400)
+        raise HamkelaasyError('"id" is necessary', status=400)
     id = kwargs['id']
 
     if user.type == PARENT_KEY_WORD:
         try:
             return user.parent.childes.get(pk=id)
         except Student.DoesNotExist:
-            raise myGraphQLError('Student not found', status=404)
+            raise HamkelaasyError('Student not found', status=404)
 
     if user.type == TEACHER_KEY_WORD:
         for teacher_kelaas in user.teacher.kelaases.all():
             if teacher_kelaas.students.filter(pk=id).exists():
                 return teacher_kelaas.students.get(pk=id)
-        raise myGraphQLError('Student not found', status=404)
+        raise HamkelaasyError('Student not found', status=404)
 
 
 def get_students(user, **kwargs):
@@ -264,9 +264,9 @@ def get_students(user, **kwargs):
             try:
                 return Kelaas.objects.get(pk=kwargs['kelaas_id']).students.all()
             except Kelaas.DoesNotExist:
-                raise myGraphQLError('Kelaas not found', status=404)
+                raise HamkelaasyError('Kelaas not found', status=404)
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def get_kelaas(user, kelaas_id):
@@ -274,19 +274,19 @@ def get_kelaas(user, kelaas_id):
         try:
             return user.teacher.kelaases.get(pk=kelaas_id)
         except Kelaas.DoesNotExist:
-            raise myGraphQLError('Kelaas not found', status=404)
+            raise HamkelaasyError('Kelaas not found', status=404)
 
     if user.type == PARENT_KEY_WORD:
         for student in user.parent.childes.all():
             if student.kelaases.filter(pk=kelaas_id).exists():
                 return student.kelaases.get(pk=kelaas_id)
-        raise myGraphQLError('Kelaas not found', status=404)
+        raise HamkelaasyError('Kelaas not found', status=404)
 
     if user.type == STUDENT_KEY_WORD:
         try:
             return user.student.kelaases.get(pk=kelaas_id)
         except Kelaas.DoesNotExist:
-            raise myGraphQLError('Kelaas not found', status=404)
+            raise HamkelaasyError('Kelaas not found', status=404)
 
 
 def get_kelaases(user, **kwargs):
@@ -297,9 +297,9 @@ def get_kelaases(user, **kwargs):
         try:
             return user.parent.childes.get(pk=kwargs['student_id']).kelaases.all()
         except exceptions.KeyError:
-            raise myGraphQLError('"student_id" is necessary', status=400)
+            raise HamkelaasyError('"student_id" is necessary', status=400)
         except Student.DoesNotExist:
-            raise myGraphQLError('Student not found', status=404)
+            raise HamkelaasyError('Student not found', status=404)
 
     if user.type == STUDENT_KEY_WORD:
         return user.student.kelaases.all()
@@ -309,7 +309,7 @@ def get_teacher(user):
     if user.type == TEACHER_KEY_WORD:
         return user.teacher
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def get_parent(user, **kwargs):
@@ -325,11 +325,11 @@ def get_parent(user, **kwargs):
                     return parent
 
         except Parent.DoesNotExist:
-            raise myGraphQLError('Parent not found', status=404)
+            raise HamkelaasyError('Parent not found', status=404)
         except exceptions.KeyError:
-            raise myGraphQLError('"id" is necessary', status=400)
+            raise HamkelaasyError('"id" is necessary', status=400)
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def get_badge_types(**kwargs):
@@ -344,7 +344,7 @@ def get_certificate(id):
     try:
         return Certificate.objects.get(pk=id)
     except Certificate.DoesNotExist:
-        raise myGraphQLError('Certificate not found', status=404)
+        raise HamkelaasyError('Certificate not found', status=404)
 
 
 def get_tags():
@@ -357,9 +357,9 @@ def get_conversation(user, conversation_id):
         if conversation.members.filter(id=user.id).exists():
             return conversation
     except Conversation.DoesNotExist:
-        raise myGraphQLError('Conversation not found', status=404)
+        raise HamkelaasyError('Conversation not found', status=404)
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def get_system_notifications(user, new=False):
@@ -386,7 +386,7 @@ def parent__get_childes(parent, user, **kwargs):
         if 'kelaas_id' in kwargs:
             if user.teacher.kelaases.filter(kelaas_id=kwargs['kelaas_id']).exist():
                 return parent.childes.filter(kelaases__in=[kwargs['kelaas_id']])
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
         result = []
         # user.kelaases.filter(students__in=[child.id for child in parent.childes.all()])
@@ -395,7 +395,7 @@ def parent__get_childes(parent, user, **kwargs):
                 result.append(child)
         return result
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def parent__get_child(parent, user, childe_id):
@@ -409,32 +409,32 @@ def parent__get_child(parent, user, childe_id):
                 return child
 
     except Student.DoesNotExist:
-        raise myGraphQLError('Child not found', status=404)
+        raise HamkelaasyError('Child not found', status=404)
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def teacher__get_kelaases(teacher, user):
     if not user.id == teacher.id:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     return teacher.kelaases.all().order_by('-id')
 
 
 def teacher__get_kelaas(teacher, user, kelaas_id):
     if not user.id == teacher.id:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     try:
         return teacher.kelaases.get(pk=kelaas_id)
     except Kelaas.DoesNotExist:
-        raise myGraphQLError('Kelaas not found', status=404)
+        raise HamkelaasyError('Kelaas not found', status=404)
 
 
 def student__get_invite_code(student, user):
     if student.id == user.id:
         return student.code
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def student__get_kelaases(student, user):
@@ -448,7 +448,7 @@ def student__get_kelaases(student, user):
     if user.type == PARENT_KEY_WORD and user.id == student.parents.id:
         return student.kelaases.all().order_by('-id')
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def student__get_kelaas(student, user, kelaas_id):
@@ -463,9 +463,9 @@ def student__get_kelaas(student, user, kelaas_id):
             if user.teacher.kelaases.filter(pk=kelaas_id).exists():
                 return student.kelaases.get(pk=kelaas_id)
     except Kelaas.DoesNotExist:
-        raise myGraphQLError('Kelaas not found', status=404)
+        raise HamkelaasyError('Kelaas not found', status=404)
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def student__get_badges(student, user, **kwargs):
@@ -490,7 +490,7 @@ def student__get_badges(student, user, **kwargs):
             student.badges.filter(kelaas_id=kwargs['kelaas_id'])
         return student.badges.all()
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def student__get_parent(student, user):
@@ -505,7 +505,7 @@ def student__get_parent(student, user):
     if user.type == PARENT_KEY_WORD and user.id == student.parents.id:
         return student.parents
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def kelaas__get_tags(kelaas):
@@ -520,17 +520,17 @@ def kelaas__get_student(kelaas, user):
     if user.type == PARENT_KEY_WORD:
         return kelaas.students.filter(parents_id=user.id)
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def kelaas__get_kelaas_post(kelaas, user):
     if user.type == PARENT_KEY_WORD:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     if kelaas.students.filter(pk=user.id).exists() or teacher_has_access_to_kelaas(kelaas, user.teacher):
         return kelaas.posts.filter(type=KELAAS_POST_KEY_WORD).order_by('-id')
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def kelaas_get_stories(kelaas, user):
@@ -542,7 +542,7 @@ def kelaas_get_stories(kelaas, user):
         if parent_has_access_to_kelaas(kelaas=kelaas, parent=user.parent):
             return kelaas.posts.filter(type=STORY_KEY_WORD).all().order_by('-id')
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def kelaas__get_conversations(kelaas, user):
@@ -553,7 +553,7 @@ def kelaas__get_conversation(kelaas, user, conversation_id):
     if kelaas.conversations.filter(members__id=user.id, id=conversation_id).exists():
         return kelaas.conversations.filter(members__id=user.id, id=conversation_id).first()
 
-    raise myGraphQLError('Conversation not found', status=404)
+    raise HamkelaasyError('Conversation not found', status=404)
 
 
 def kelaas__get_invite_code(kelaas, user):
@@ -570,7 +570,7 @@ def kelaas__get_invite_code(kelaas, user):
         if parent_has_access_to_kelaas(kelaas=kelaas, parent=user.parent):
             return kelaas.invite_code
 
-    raise myGraphQLError('Permission denied', status=403)
+    raise HamkelaasyError('Permission denied', status=403)
 
 
 def post__get_comments(post, user):
@@ -625,7 +625,7 @@ def is_my_comment(user, comment):
 
 def create_kelaas(user, title, description, gender, tags):
     if not user.type == TEACHER_KEY_WORD:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     kelaas = Kelaas(
         title=title,
@@ -650,37 +650,37 @@ def create_kelaas(user, title, description, gender, tags):
 
 def add_child(user, child_code):
     if not user.type == PARENT_KEY_WORD:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     try:
         student = Student.objects.get(code=child_code)
         if student.parents and student.parents.id == user.id:
             return student
         if student.parents:
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
         student.parents = user.parent
         student.save()
     except Student.DoesNotExist:
-        raise myGraphQLError('Student not found', status=404)
+        raise HamkelaasyError('Student not found', status=404)
 
     return student
 
 
 def add_child_by_token(user, child_token):
     if not user.type == PARENT_KEY_WORD:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     try:
         temp = Token.objects.get(key=child_token)
         student = temp.user.person.student
         if student.parents:
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
         student.parents = user.parent
         student.save()
     except AttributeError:
-        raise myGraphQLError('Student not found', status=404)
+        raise HamkelaasyError('Student not found', status=404)
 
     return student
 
@@ -689,15 +689,15 @@ def add_comment(user, post_id, body):
     try:
         post = Post.objects.get(pk=post_id)
     except Post.DoesNotExist:
-        raise myGraphQLError('Post not found', status=404)
+        raise HamkelaasyError('Post not found', status=404)
 
     if user.type == STUDENT_KEY_WORD:
         if not user.student.kelaases.filter(pk=post.kelaas_id).exists():
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
     if user.type == TEACHER_KEY_WORD:
         if not user.teacher.kelaases.filter(pk=post.kelaas_id).exists():
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
     if user.type == PARENT_KEY_WORD:
         access_flag = False
@@ -706,7 +706,7 @@ def add_comment(user, post_id, body):
                 access_flag = True
                 break
         if not access_flag:
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
     comment = Comment(
         body=body,
@@ -729,14 +729,14 @@ def delete_comment(user, comment_id):
                 comment.delete()
                 return
 
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
     except Comment.DoesNotExist:
-        raise myGraphQLError('Comment not found', status=404)
+        raise HamkelaasyError('Comment not found', status=404)
 
 
 def assign_badge(user, kelaas_id, student_id, badges):
     if not user.type == TEACHER_KEY_WORD:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
     teacher = user.teacher
 
     if not teacher.kelaases.filter(pk=kelaas_id).exists():
@@ -745,9 +745,9 @@ def assign_badge(user, kelaas_id, student_id, badges):
         kelaas = user.teacher.kelaases.get(pk=kelaas_id)
         student = Student.objects.get(pk=student_id)
     except Kelaas.DoesNotExist:
-        raise myGraphQLError('Kelaas not found', status=404)
+        raise HamkelaasyError('Kelaas not found', status=404)
     except Student.DoesNotExist:
-        raise myGraphQLError('Student not found', status=404)
+        raise HamkelaasyError('Student not found', status=404)
 
     for badge_id in badges.split(','):
         if Badge_link.objects.filter(student=student, type_id=badge_id, kelaas=kelaas).exists():
@@ -756,7 +756,7 @@ def assign_badge(user, kelaas_id, student_id, badges):
             badge_link.save()
         else:
             if not Badge.objects.filter(pk=badge_id).exists():
-                raise myGraphQLError('Badge not found', status=404)
+                raise HamkelaasyError('Badge not found', status=404)
             badge_link = Badge_link(
                 student=student,
                 kelaas=kelaas,
@@ -768,12 +768,12 @@ def assign_badge(user, kelaas_id, student_id, badges):
 
 def create_kelaas_post(user, kelaas_id, title, description, files):
     if not user.type == TEACHER_KEY_WORD:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     try:
         kelaas = user.teacher.kelaases.get(pk=kelaas_id)
     except Kelaas.DoesNotExist:
-        raise myGraphQLError('Kelaas not found', status=404)
+        raise HamkelaasyError('Kelaas not found', status=404)
 
     post = Kelaas_post(
         title=title,
@@ -798,26 +798,26 @@ def create_kelaas_post(user, kelaas_id, title, description, files):
 
 def delete_post(user, post_id):
     if not user.type == TEACHER_KEY_WORD:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     try:
         post = Post.objects.get(id=post_id)
         if not teacher_has_access_to_kelaas(kelaas=post.kelaas, teacher=user.teacher):
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
         post.delete()
     except Post.DoesNotExist:
-        raise myGraphQLError('Post not found', status=404)
+        raise HamkelaasyError('Post not found', status=404)
 
 
 def create_story(user, kelaas_id, title, description, pic_id=None):
     if not user.type == TEACHER_KEY_WORD:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     try:
         kelaas = user.teacher.kelaases.get(pk=kelaas_id)
     except Kelaas.DoesNotExist:
-        raise myGraphQLError('Kelaas not found', status=404)
+        raise HamkelaasyError('Kelaas not found', status=404)
 
     story = Story(
         title=title,
@@ -836,34 +836,34 @@ def create_story(user, kelaas_id, title, description, pic_id=None):
 
 def join_kelaas_for_parent(user, invite_code, student_id):
     if not user.type == PARENT_KEY_WORD:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     try:
         student = Student.objects.get(id=student_id)
         if not student.parents.id == user.id:
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
         return join_kelaas(user=student, invite_code=invite_code)
 
     except Student.DoesNotExist:
-        raise myGraphQLError('Kelaas not found', status=404)
+        raise HamkelaasyError('Kelaas not found', status=404)
 
 
 def join_kelaas(user, invite_code):
     if not user.type == STUDENT_KEY_WORD:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     if not user.student.parents:
-        raise myGraphQLError('Parent is necessary', status=403)
+        raise HamkelaasyError('Parent is necessary', status=403)
 
     invite_code = invite_code.upper()
     try:
         kelaas = Kelaas.objects.get(invite_code=invite_code)
     except Kelaas.DoesNotExist:
-        raise myGraphQLError('Kelaas not found', status=404)
+        raise HamkelaasyError('Kelaas not found', status=404)
 
     if kelaas.gender != 2 and kelaas.gender != user.student.gender:
-        raise myGraphQLError("gender doesn't match", status=400)
+        raise HamkelaasyError("gender doesn't match", status=400)
 
     if not kelaas.students.filter(pk=user.id).exists():
         kelaas.students.add(user.student)
@@ -883,10 +883,10 @@ def send_message(user, conversation_id, message):
     try:
         conversation = Conversation.objects.get(pk=conversation_id)
     except Conversation.DoesNotExist:
-        raise myGraphQLError('Convesation not found', status=404)
+        raise HamkelaasyError('Convesation not found', status=404)
 
     if not conversation.members.filter(pk=user.id).exists():
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     msg = Conversation_message(
         writer=user,
@@ -903,10 +903,10 @@ def assign_certificate(user, type_id, level, owner_id, ):
         owner = Person.objects.get(pk=owner_id)
 
         if not user.type == TEACHER_KEY_WORD:
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
         if not user.teacher.kelaases.filter(students__in=[owner.id]).exists():
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
         # TODO continuously levels checking
         # TODO same certificate level from different persons!!!
@@ -923,9 +923,9 @@ def assign_certificate(user, type_id, level, owner_id, ):
         return certificate_link
 
     except Certificate.DoesNotExist:
-        raise myGraphQLError('Certificate not found', status=404)
+        raise HamkelaasyError('Certificate not found', status=404)
     except Person.DoesNotExist:
-        raise myGraphQLError('Owner not found', status=404)
+        raise HamkelaasyError('Owner not found', status=404)
 
 
 def create_certificate(user, title, description):
@@ -933,7 +933,7 @@ def create_certificate(user, title, description):
     # TODO duplicate certificate?
 
     if user.created_certificates.filter(title=title).exists():
-        raise myGraphQLError('duplicate certificate', status=400)
+        raise HamkelaasyError('duplicate certificate', status=400)
 
     certificate = Certificate(
         title=title,
@@ -949,13 +949,13 @@ def create_certificate_level(user, certificate_id, level, level_description):
     try:
         certificate = Certificate.objects.get(pk=certificate_id)
     except Certificate.DoesNotExist:
-        raise myGraphQLError('Certificate not found', status=404)
+        raise HamkelaasyError('Certificate not found', status=404)
 
     if not user.id == certificate.creator.id:
-        raise myGraphQLError('Permission denied', status=403)
+        raise HamkelaasyError('Permission denied', status=403)
 
     if certificate.levels.filter(level=level).exists():
-        raise myGraphQLError('duplicate certificate-level', status=400)
+        raise HamkelaasyError('duplicate certificate-level', status=400)
 
     certi_level = Certificate_level(
         level=level,
@@ -985,20 +985,20 @@ def create_dialog(user, kelaas_id, interlocutor_id):
         return conversation
 
     except Person.DoesNotExist:
-        raise myGraphQLError('Person not found', status=404)
+        raise HamkelaasyError('Person not found', status=404)
     except Kelaas.DoesNotExist:
-        raise myGraphQLError('Kelaas not found', status=404)
+        raise HamkelaasyError('Kelaas not found', status=404)
 
 
 def perform_task(user, task_id):
     try:
         task = Task.objects.get(pk=task_id)
         if not task.student_id == user.id:
-            raise myGraphQLError('Permission denied', status=403)
+            raise HamkelaasyError('Permission denied', status=403)
 
         task.is_done = Task
         task.save()
         return task
 
     except Task.DoesNotExist:
-        raise myGraphQLError('Task not found', status=404)
+        raise HamkelaasyError('Task not found', status=404)

@@ -1,1 +1,1 @@
-from .graphql_utilz import myGraphQLError
+from .graphql_utilz import HamkelaasyError
