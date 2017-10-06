@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^file/upload/$', views.upload_file),
 
     # endpoint for redirecting to fard.ir with provided redirect_url
-    url(r'^fard/login$', views.login, name='login'),
+    url(r'^fard/login$', views.login),
     url(r'^fard/login/$', views.login),
 
     # endpoint for sending user_data for registration and getting login token
@@ -53,4 +53,7 @@ urlpatterns = [
 
     url(r'^register/teacher$', views.new_signup_teacher, name='signup-teacher'),
     url(r'^register/teacher/$', views.new_signup_teacher),
+
+    url(r'^login$', views.new_login, name='login'),
+    url(r'^login/$', views.new_login),
 ]
