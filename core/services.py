@@ -455,7 +455,7 @@ def teacher__get_kelaas(teacher, user, kelaas_id):
         raise HamkelaasyError(4041)
 
 
-def student__get_invite_code(student, user):
+def student__get_code(student, user):
     if student.id == user.id:
         return student.code
     raise HamkelaasyError(4032)
@@ -496,9 +496,10 @@ def student__get_kelaas(student, user, kelaas_id):
 
 def student__get_badges(student, user, **kwargs):
     if user.id == student.id:
-        if 'kelaas_id' in kwargs:
-            return student.badges.filter(kelaas_id=kwargs['kelaas_id'])
-        return student.badges.all()
+        if student.parents:
+            if 'kelaas_id' in kwargs:
+                return student.badges.filter(kelaas_id=kwargs['kelaas_id'])
+            return student.badges.all()
 
     if user.type == TEACHER_KEY_WORD:
         if 'kelaas_id' in kwargs:
@@ -714,6 +715,12 @@ def add_child_by_token(user, child_token):
     except AttributeError:
         raise HamkelaasyError(4042)
 
+    for kelaas in student.kelaases.all():
+        create_dialog(
+            user=user.parents,
+            kelaas_id=kelaas.id,
+            interlocutor_id=kelaas.teacher.id
+        )
     return student
 
 

@@ -45,7 +45,7 @@ class StudentType(PersonType):
 
     def resolve_code(self, info):
         user = info.context.user.person
-        return services.student__get_invite_code(student=self, user=user)
+        return services.student__get_code(student=self, user=user)
 
     def resolve_kelaases(self, info, page, page_size):
         user = info.context.user.person
