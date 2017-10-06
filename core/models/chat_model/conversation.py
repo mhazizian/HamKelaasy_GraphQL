@@ -19,7 +19,7 @@ class Conversation(models.Model):
 
     @property
     def member_count(self):
-        return self.messages.count()
+        return self.members.count()
 
     def __unicode__(self):
         return "id=" + str(self.id)
