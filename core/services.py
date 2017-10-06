@@ -839,6 +839,9 @@ def join_kelaas(user, invite_code):
     except Kelaas.DoesNotExist:
         raise myGraphQLError('Kelaas not found', status=404)
 
+    if kelaas.gender != 2 and kelaas.gender != user.student.gender:
+        raise myGraphQLError("gender doesn't match", status=400)
+
     if not kelaas.students.filter(pk=user.id).exists():
         kelaas.students.add(user.student)
         kelaas.save()
