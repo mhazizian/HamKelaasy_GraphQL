@@ -210,6 +210,29 @@ def validate_phone_number(phone_number, code):
         raise HamkelaasyError(4003)
 
 
+def reset_password_by_phone_number(phone_number, validator, new_password):
+    phone = represent_phone_number(phone_number)
+
+    try:
+        temp_phone = Temp_phone_number.objects.get(pk=phone)
+        if not temp_phone.is_registered:
+            raise HamkelaasyError(4003)
+
+        if (not temp_phone.is_validated) or (not temp_phone.validator == validator):
+            raise HamkelaasyError(4005)
+
+        user = User.objects.get(username=temp_phone.phone)
+        user.person.password = new_password
+        # TODO apply hashing
+        user.person.save()
+
+    except Temp_phone_number.DoesNotExist:
+        raise HamkelaasyError(4003)
+    except User.DoesNotExist:
+        # TODO raise exception
+        pass
+
+
 def create_user_PT(phone, validator, first_name, last_name, password, type, gender=1):
     phone = represent_phone_number(phone)
 
