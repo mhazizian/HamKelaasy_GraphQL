@@ -54,6 +54,9 @@ urlpatterns = [
     url(r'^register/teacher$', views.new_signup_teacher, name='signup-teacher'),
     url(r'^register/teacher/$', views.new_signup_teacher),
 
+    url(r'^register/student/basicInfo$', views.get_student_basic_info, name='signup-student-basic-info'),
+    url(r'^register/student/basicInfo/$', views.get_student_basic_info),
+
     url(r'^login$', views.new_login, name='login'),
     url(r'^login/$', views.new_login),
 

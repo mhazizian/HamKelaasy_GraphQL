@@ -10,7 +10,7 @@ import core.services as services
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-from core.models import STUDENT_KEY_WORD, PARENT_KEY_WORD, TEACHER_KEY_WORD
+from core.models import STUDENT_KEY_WORD, PARENT_KEY_WORD, TEACHER_KEY_WORD, Student
 
 from django.http import HttpResponse
 
@@ -78,6 +78,7 @@ def validate_phone_number(request):
     }),
         content_type='application/json'
     )
+
 
 @csrf_exempt
 def reset_password(request):
@@ -162,9 +163,22 @@ def new_signup_teacher(request):
             status=400
         )
 
-#
-# @csrf_exempt
-# def get_student_basic_info(request):
-#     data = json.loads(request.body)
-#
-#     # student_code =
+
+@csrf_exempt
+def get_student_basic_info(request):
+    data = json.loads(request.body)
+
+    code = data.get('code', '')
+    try:
+        student = Student.objects.get(code=code)
+        return HttpResponse(json.dumps(
+            {
+                'firstName': student.first_name,
+                'lastName': student.last_name,
+                'age': student.age,
+                'gender': student.gender
+            }),
+            content_type='application/json'
+        )
+    except Student.DoesNotExist:
+        pass
