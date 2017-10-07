@@ -56,4 +56,7 @@ urlpatterns = [
 
     url(r'^login$', views.new_login, name='login'),
     url(r'^login/$', views.new_login),
+
+    url(r'^reset/password$', views.reset_password, name='reset-password'),
+    url(r'^reset/password/$', views.reset_password),
 ]
