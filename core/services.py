@@ -693,7 +693,7 @@ def add_child(user, child_code):
 
     for kelaas in student.kelaases.all():
         create_dialog(
-            user=user.parents,
+            user=user.parent,
             kelaas_id=kelaas.id,
             interlocutor_id=kelaas.teacher.id
         )
@@ -717,7 +717,7 @@ def add_child_by_token(user, child_token):
 
     for kelaas in student.kelaases.all():
         create_dialog(
-            user=user.parents,
+            user=user.parent,
             kelaas_id=kelaas.id,
             interlocutor_id=kelaas.teacher.id
         )
