@@ -10,7 +10,7 @@ class Create_student_for_kelaas_input(graphene.InputObjectType):
     last_name = graphene.String(required=True)
     gender = graphene.Int(required=True)
     age = graphene.Int(required=True)
-    kelaas_id = graphene.String(required=True)
+    kelaas_id = graphene.Int(required=True)
 
 
 class Create_student_for_kelaas(graphene.Mutation):
