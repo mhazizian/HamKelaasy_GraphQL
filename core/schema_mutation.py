@@ -33,4 +33,4 @@ class Mutation(graphene.ObjectType):
 
     perform_task = Perform_task.Field()
 
-    craete_student_for_kelaas = Create_student_for_kelaas.Field()
+    create_student_for_kelaas = Create_student_for_kelaas.Field()
