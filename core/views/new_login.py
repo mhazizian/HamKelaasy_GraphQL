@@ -48,7 +48,9 @@ def get_phone_number(request):
     data = json.loads(request.body)
     try:
         phone_number = data.get('phone', '')
-        services.init_phone_number(phone_number)
+        is_for_registration = data.get('is_for_registration', True)
+
+        services.init_phone_number(phone_number, is_for_registration=is_for_registration)
         return HttpResponse('')
     except Exception as e:
         return HttpResponse(e.message, status=400)
@@ -76,6 +78,19 @@ def validate_phone_number(request):
     }),
         content_type='application/json'
     )
+
+@csrf_exempt
+def reset_password(request):
+    data = json.loads(request.body)
+
+    try:
+        phone_number = data.get('phone', '')
+        phone_validator = data.get('validator', '')
+        new_password = data['password']
+
+        services.reset_password_by_phone_number()
+    except KeyError:
+        pass
 
 
 @csrf_exempt
@@ -146,3 +161,10 @@ def new_signup_teacher(request):
             }),
             status=400
         )
+
+#
+# @csrf_exempt
+# def get_student_basic_info(request):
+#     data = json.loads(request.body)
+#
+#     # student_code =
