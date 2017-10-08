@@ -1,19 +1,20 @@
 import graphene
 import core.services as services
+from core import Error_code
 from core import HamkelaasyError
 from graphql_query import *
 
 
 def resolve_student(root, info, **kwargs):
     if not info.context.user.is_authenticated:
-        raise HamkelaasyError(4011)
+        raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
     user = info.context.user.person
     return services.get_student(user=user, **kwargs)
 
 
 def resolve_students(root, info, page, page_size, **kwargs):
     if not info.context.user.is_authenticated:
-        raise HamkelaasyError(4011)
+        raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
     user = info.context.user.person
 
     query_set = services.get_students(user=user, **kwargs)
@@ -22,7 +23,7 @@ def resolve_students(root, info, page, page_size, **kwargs):
 
 def resolve_kelaas(root, info, id):
     if not info.context.user.is_authenticated:
-        raise HamkelaasyError(4011)
+        raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
     user = info.context.user.person
 
     return services.get_kelaas(user=user, kelaas_id=id)
@@ -30,7 +31,7 @@ def resolve_kelaas(root, info, id):
 
 def resolve_kelaases(root, info, page, page_size, **kwargs):
     if not info.context.user.is_authenticated:
-        raise HamkelaasyError(4011)
+        raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
     user = info.context.user.person
 
     query_set = services.get_kelaases(user=user, **kwargs)
@@ -39,7 +40,7 @@ def resolve_kelaases(root, info, page, page_size, **kwargs):
 
 def resolve_teacher(root, info):
     if not info.context.user.is_authenticated:
-        raise HamkelaasyError(4011)
+        raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
     user = info.context.user.person
 
     return services.get_teacher(user)
@@ -47,7 +48,7 @@ def resolve_teacher(root, info):
 
 def resolve_parent(root, info, **kwargs):
     if not info.context.user.is_authenticated:
-        raise HamkelaasyError(4011)
+        raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
     user = info.context.user.person
 
     return services.get_parent(user, **kwargs)
@@ -55,7 +56,7 @@ def resolve_parent(root, info, **kwargs):
 
 def resolve_me(root, info):
     if not info.context.user.is_authenticated:
-        raise HamkelaasyError(4011)
+        raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
     # TODO: move this func to business logic
     return info.context.user.person
 
@@ -75,7 +76,7 @@ def resolve_tags(root, info):
 
 def resolve_conversation(root, info, id):
     if not info.context.user.is_authenticated:
-        raise HamkelaasyError(4011)
+        raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
     user = info.context.user.person
 
     return services.get_conversation(user=user, conversation_id=id)
@@ -83,7 +84,7 @@ def resolve_conversation(root, info, id):
 
 def resolve_system_notifications(root, info, page, page_size, new):
     if not info.context.user.is_authenticated:
-        raise HamkelaasyError(4011)
+        raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
     user = info.context.user.person
 
     query_set = services.get_system_notifications(user=user, new=new)

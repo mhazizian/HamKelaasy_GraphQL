@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import json
 import logging
 
-from core.graphql_utilz import get_status_code, get_pretty_response
+from core.utilz import get_status_code, get_pretty_response
 from Hamkelaasy_graphQL.schema import schema
 
 from django.contrib.auth.models import update_last_login

@@ -1,6 +1,7 @@
 import graphene
 import core.services as services
 from core import HamkelaasyError
+from core import Error_code
 
 from core.graphql_query import CommentType
 
@@ -22,7 +23,7 @@ class Add_comment(graphene.Mutation):
     @staticmethod
     def add_comment(info, data):
         if not info.context.user.is_authenticated:
-            raise HamkelaasyError(4011)
+            raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
         user = info.context.user.person
 
         return services.add_comment(

@@ -6,6 +6,7 @@ from django.utils.crypto import get_random_string
 
 from core.models.person import Person
 from django.db import models
+from core import HamkelaasyError, Error_code
 
 STUDENT_KEY_WORD = "student"
 
@@ -26,9 +27,9 @@ class Student(Person):
             if not self.profile_pic:
                 self.profile_pic.name = 'student/people' + str(random.randint(1, 11)) + '.png'
         if self.gender != 0 and self.gender != 1:
-            raise Exception('Bad gender code')
+            raise HamkelaasyError(Error_code.Student.Bad_gender)
         if self.age > 18 or self.age < 6:
-            raise Exception('Bad age')
+            raise HamkelaasyError(Error_code.Student.Bad_age)
 
         self.type = STUDENT_KEY_WORD
         super(Student, self).save(args, kwargs)

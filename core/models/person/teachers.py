@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from .person import Person
 from django.db import models
+from core import HamkelaasyError, Error_code
 
 TEACHER_KEY_WORD = "teacher"
 
@@ -14,7 +15,7 @@ class Teacher(Person):
         if not self.profile_pic:
             self.profile_pic.name = 'teacher.svg'
         if self.gender != 0 and self.gender != 1:
-            raise Exception('Bad gender code')
+            raise HamkelaasyError(Error_code.Teacher.Bad_gender)
         super(Teacher, self).save(args, kwargs)
 
     def __unicode__(self):

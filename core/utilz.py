@@ -1,16 +1,38 @@
+import json
+
 import six
 from graphql import GraphQLError
 
-from core import errors
+from core.errors_code import errors
 from graphql.error import format_error as format_graphql_error
+from django.http import HttpResponse
 
 
 class HamkelaasyError(Exception):
-    def __init__(self, message_code):
-        self.message_code = message_code
+    def __init__(self, error_code):
+        self.error_code = error_code.value
+        self.message = errors[error_code.value].get('message', '')
+        self.status = errors[error_code.value].get('status', 400)
 
-        self.message = errors[message_code].get('message', '')
-        self.status = errors[message_code].get('status', 400)
+    def set_message(self, message):
+        self.message = message
+
+    def set_status_code(self, status_code):
+        self.status = status_code
+
+    def to_dictionary(self):
+        return {
+            'message': self.message,
+            'code': self.error_code
+        }
+
+    def get_http_response(self):
+        res = {'errors': [self.to_dictionary()]}
+        return HttpResponse(
+            unicode(json.dumps(res)),
+            status=self.status,
+            content_type='application/json',
+        )
 
 
 def get_status_code(response):
@@ -36,5 +58,8 @@ def get_pretty_response(response):
 def format_error(error):
     if isinstance(error, GraphQLError):
         return format_graphql_error(error)
+
+    if isinstance(error, HamkelaasyError):
+        return error.to_dictionary()
 
     return {'message': six.text_type(error)}

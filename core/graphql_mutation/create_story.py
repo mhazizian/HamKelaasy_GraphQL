@@ -1,6 +1,7 @@
 import graphene
 import core.services as services
 from core import HamkelaasyError
+from core import Error_code
 
 from core.graphql_query import StoryType
 
@@ -24,7 +25,7 @@ class Create_story(graphene.Mutation):
     @staticmethod
     def make_story(info, data):
         if not info.context.user.is_authenticated:
-            raise HamkelaasyError(4011)
+            raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
         user = info.context.user.person
         input_data = {
             'user': user,

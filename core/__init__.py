@@ -1,2 +1,2 @@
-from .errors_code import errors
-from .graphql_utilz import HamkelaasyError
+from .utilz import HamkelaasyError
+from .errors_code import Error_code

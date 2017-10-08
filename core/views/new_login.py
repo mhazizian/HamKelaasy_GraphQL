@@ -5,10 +5,9 @@ import json
 import logging
 
 import core.services as services
-# from core import HamkelaasyError
+from core.utilz import HamkelaasyError
 
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from core.models import STUDENT_KEY_WORD, PARENT_KEY_WORD, TEACHER_KEY_WORD, Student
 
@@ -25,22 +24,16 @@ def new_login(request):
     password = data.get('password', '')
 
     try:
-        if not User.objects.filter(username=username).exists():
-            username = services.represent_phone_number(username)
+        token, user_type = services.login_user(username=username, password=password)
+        return HttpResponse(json.dumps(
+            {
+                'token': token,
+                'type': user_type
+            }
+        ))
 
-        user = User.objects.get(username=username)
-        if user.person.password == password:
-            return HttpResponse(json.dumps({
-                'token': Token.objects.get(user=user).key,
-                'type': user.person.type
-            }))
-
-
-    except User.DoesNotExist:
-        return HttpResponse('Invalid username or password', status=401)
-    except Exception:
-        return HttpResponse('Invalid username or password', status=401)
-    return HttpResponse('Invalid username or password', status=401)
+    except HamkelaasyError as e:
+        return e.get_http_response()
 
 
 @csrf_exempt
@@ -52,8 +45,8 @@ def get_phone_number(request):
 
         services.init_phone_number(phone_number, is_for_registration=is_for_registration)
         return HttpResponse('')
-    except Exception as e:
-        return HttpResponse(e.message, status=400)
+    except HamkelaasyError as e:
+        return e.get_http_response()
 
 
 @csrf_exempt
@@ -62,22 +55,18 @@ def validate_phone_number(request):
 
     phone_number = data.get('phone', '')
     code = data.get('code', '')
+    try:
+        res = services.validate_phone_number(phone_number, code)
 
-    res = services.validate_phone_number(phone_number, code)
-
-    if res:
-        return HttpResponse(json.dumps({
-            'response': True,
-            'validator': res
-        }),
-            content_type='application/json'
+        return HttpResponse(json.dumps(
+            {
+                'response': True,
+                'validator': res
+            }),
+            content_type='application/json',
         )
-
-    return HttpResponse(json.dumps({
-        'response': False
-    }),
-        content_type='application/json'
-    )
+    except HamkelaasyError as e:
+        return e.get_http_response()
 
 
 @csrf_exempt
@@ -87,11 +76,13 @@ def reset_password(request):
     try:
         phone_number = data.get('phone', '')
         phone_validator = data.get('validator', '')
-        new_password = data['password']
+        new_password = data.get('password', '')
 
-        services.reset_password_by_phone_number()
-    except KeyError:
-        pass
+        services.reset_password_by_phone_number(phone_number, phone_validator, new_password)
+        return HttpResponse('')
+
+    except HamkelaasyError as e:
+        return e.get_http_response()
 
 
 @csrf_exempt
@@ -118,14 +109,8 @@ def new_signup_parent(request):
                 'token': Token.objects.get(user=parent.user).key
             })
         )
-    except Exception as e:
-        return HttpResponse(json.dumps(
-            {
-                'status': 0,
-                'message': e.message
-            }),
-            status=400
-        )
+    except HamkelaasyError as e:
+        return e.get_http_response()
 
 
 @csrf_exempt
@@ -154,18 +139,13 @@ def new_signup_teacher(request):
                 'token': Token.objects.get(user=parent.user).key
             })
         )
-    except Exception as e:
-        return HttpResponse(json.dumps(
-            {
-                'status': 0,
-                'message': e.message
-            }),
-            status=400
-        )
+    except HamkelaasyError as e:
+        return e.get_http_response()
 
 
 @csrf_exempt
 def get_student_basic_info(request):
+    # TODO fix signature of this func
     data = json.loads(request.body)
 
     code = data.get('code', '')
