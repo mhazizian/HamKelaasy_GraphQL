@@ -9,7 +9,8 @@ from django.utils import timezone
 
 
 from django.contrib.auth.models import User
-from core import HamkelaasyError, Error_code
+from core import HamkelaasyError
+from core.errors_code import Error_code
 from rest_framework.authtoken.models import Token
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
