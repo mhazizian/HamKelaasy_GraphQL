@@ -45,12 +45,12 @@ class KelaasType(graphene.ObjectType):
         return services.kelaas__get_invite_code(kelaas=self, user=user)
 
     def resolve_tags(self, info):
-        return services.kelaas__get_tags(self)
+        return services.get_kelaas_tags(self)
 
     def resolve_students(self, info, page, page_size):
         user = info.context.user.person
 
-        query_set = services.kelaas__get_student(kelaas=self, user=user)
+        query_set = services.get_kelaas_students(kelaas=self, user=user)
         return services.apply_pagination(query_set, page_size=page_size, page=page)
 
     def resolve_kelaas_posts(self, info, page, page_size):

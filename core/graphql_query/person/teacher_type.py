@@ -20,10 +20,10 @@ class TeacherType(PersonType):
     def resolve_kelaas(self, info, id):
         user = info.context.user.person
 
-        return services.teacher__get_kelaas(self, user, id)
+        return services.get_teacher_kelaas(self, user, id)
 
     def resolve_kelaases(self, info, page_size, page):
         user = info.context.user.person
 
-        query_set = services.teacher__get_kelaases(self, user)
+        query_set = services.get_teacher_kelaases(self, user)
         return services.apply_pagination(query_set, page_size=page_size, page=page)

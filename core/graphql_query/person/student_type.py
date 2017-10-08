@@ -45,27 +45,27 @@ class StudentType(PersonType):
 
     def resolve_code(self, info):
         user = info.context.user.person
-        return services.student__get_code(student=self, user=user)
+        return services.get_student_code(student=self, user=user)
 
     def resolve_kelaases(self, info, page, page_size):
         user = info.context.user.person
 
-        query_set = services.student__get_kelaases(student=self, user=user)
+        query_set = services.get_student_kelaases(student=self, user=user)
         return services.apply_pagination(query_set, page_size=page_size, page=page)
 
     def resolve_kelaas(self, info, id):
         user = info.context.user.person
 
-        return services.student__get_kelaas(student=self, user=user, kelaas_id=id)
+        return services.get_student_kelaas(student=self, user=user, kelaas_id=id)
 
     def resolve_parent(self, info):
         user = info.context.user.person
-        return services.student__get_parent(student=self, user=user)
+        return services.get_student_parent(student=self, user=user)
 
     def resolve_badges(self, info, page, page_size, **kwargs):
         user = info.context.user.person
 
-        query_set = services.student__get_badges(student=self, user=user, **kwargs)
+        query_set = services.get_student_badges(student=self, user=user, **kwargs)
         return services.apply_pagination(query_set, page_size=page_size, page=page)
 
     def resolve_certificates(self, info):

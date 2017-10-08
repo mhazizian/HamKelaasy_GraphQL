@@ -22,9 +22,9 @@ class ParentType(PersonType):
     def resolve_childes(self, info, page, page_size, **kwargs):
         user = info.context.user.person
 
-        query_set = services.parent__get_childes(self, user, **kwargs)
+        query_set = services.get_parent_childes(self, user, **kwargs)
         return services.apply_pagination(query_set, page=page, page_size=page_size)
 
     def resolve_child(self, info, id):
         user = info.context.user.person
-        return services.parent__get_child(self, user, id)
+        return services.get_parent_child(self, user, id)
