@@ -57,7 +57,7 @@ class Error_code(object):
 
     class Certificate(Enum):
         # TODO complete from here
-        Permisson_denied = 8001
+        Permisson_denied = 4032
         Duplicate_title = 8002
         Duplicate_level = 8003
 
@@ -76,117 +76,161 @@ class Error_code(object):
 
 
 errors = {
-    '4011': {
-        'message': 'User not authenticated.',
-        'status': 401,
-        'code': 4011
-    },
-
-    '4041': {
+    Error_code.Object_not_found.Kelaas.value: {
         'message': 'Kelaas not found.',
-        'status': 400
+        'status': 404
     },
-    '4042': {
+    Error_code.Object_not_found.Post.value: {
+        'message': 'Kelaas-Post not found',
+        'status': 404
+    },
+    Error_code.Object_not_found.Story.value: {
+        'message': 'Story not found',
+        'status': 404
+    },
+    Error_code.Object_not_found.Student.value: {
         'message': 'Student not found',
-        'status': 400
+        'status': 404
     },
-    '4043': {
+    Error_code.Object_not_found.Parent.value: {
         'message': 'Parent not found',
-        'status': 400
+        'status': 404
     },
-    '4044': {
-        'message': 'Certificate not found',
-        'status': 400
+    Error_code.Object_not_found.Teacher.value: {
+        'message': 'Teacher not found',
+        'status': 404
     },
-    '4045': {
+    Error_code.Object_not_found.Conversation.value: {
         'message': 'Conversation not found',
-        'status': 400
+        'status': 404
     },
-    '4046': {
-        'message': 'Child not found',
-        'status': 400
+    Error_code.Object_not_found.Message.value: {
+        'message': 'Message not found',
+        'status': 404
     },
-    '4047': {
-        'message': 'Post not found',
-        'status': 400
-    },
-    '4048': {
-        'message': 'Badge not found',
-        'status': 400
-    },
-    '4049': {
-        'message': 'Owner not found',
-        'status': 400
-    },
-    '4050': {
-        'message': 'Person not found',
-        'status': 400
-    },
-    '4051': {
+    Error_code.Object_not_found.Task.value: {
         'message': 'Task not found',
-        'status': 400
+        'status': 404
     },
-    '4052': {
+    Error_code.Object_not_found.Comment.value: {
         'message': 'Comment not found',
-        'status': 400
+        'status': 404
     },
-
-    '4001': {
+    Error_code.Object_not_found.Person.value: {
+        'message': 'Person not found',
+        'status': 404
+    },
+    Error_code.Object_not_found.Badge.value: {
+        'message': 'Badge not found',
+        'status': 404
+    },
+    Error_code.Object_not_found.Phone_number.value: {
+        'message': 'Phone number not found, please submit it first',
+        'status': 404
+    },
+    Error_code.Object_not_found.Certificate.value: {
+        'message': 'Certificate not found',
+        'status': 404
+    },
+    Error_code.Phone_number.Invalid_number.value: {
         'message': 'Invalid phone number',
         'status': 400
     },
-    '4002': {
+
+    Error_code.Phone_number.Server_in_development.value: {
+        'message': 'Sms server is in development, please try again later',
+        'status': 503
+    },
+    Error_code.Phone_number.Server_is_busy.value: {
+        'message': 'Sms server is busy, try again later.',
+        'status': 503
+    },
+    Error_code.Phone_number.Number_is_registered.value: {
         'message': 'Phone number is already registered',
         'status': 400
     },
-    '4003': {
+    Error_code.Phone_number.Number_is_not_registered.value: {
         'message': 'Phone number is not registered',
         'status': 400
     },
-    '4004': {
+    Error_code.Phone_number.Delay_required.value: {
         'message': 'You should at least wait for 1min to request sending new message',
         'status': 400
     },
-    '4005': {
+    Error_code.Phone_number.Invalid_number_validator.value: {
         'message': 'Invalid phone number validator',
         'status': 400
     },
-    '4006': {
-        'message': '"id" is necessary',
-        'status': 400
+
+    Error_code.Authentication.User_not_authenticated.value: {
+        'message': 'User not authenticated.',
+        'status': 401,
     },
-    '4007': {
+    Error_code.Authentication.Login_failed.value: {
+        'message': 'Username or Password is wrong',
+        # TODO change status code
+        'status': 401,
+    },
+    Error_code.Authentication.Only_parent.value: {
+        'message': 'Only available for parent',
+        'status': 403
+    },
+    Error_code.Authentication.Only_student.value: {
+        'message': 'Only available for student',
+        'status': 403
+    },
+    Error_code.Authentication.Only_teacher.value: {
+        'message': 'Only available for teacher',
+        'status': 403
+    },
+    Error_code.Authentication.Permission_denied.value: {
+        'message': 'Permission denied',
+        'status': 403
+    },
+
+    Error_code.Kelaas.Gender_doesnt_match.value: {
         'message': "gender doesn't match",
         'status': 400
     },
-    '4008': {
-        'message': 'duplicate certificate',
+
+    Error_code.Student.Id_required.value: {
+        'message': '"student_id" is necessary',
         'status': 400
     },
-    '4009': {
+    Error_code.Student.Bad_gender.value: {
+        'message': 'invalid gender value',
+        'status': 400
+    },
+    Error_code.Student.Bad_age.value: {
+        'message': 'invalid age value',
+        'status': 400
+    },
+    Error_code.Student.Has_parent.value: {
+        'message': 'student already has parent, cant assign any more',
+        'status': 400
+    },
+
+    Error_code.Teacher.Bad_gender.value: {
+        'message': 'invalid gender value',
+        'status': 400
+    },
+
+    Error_code.Parent.Id_required.value: {
+        'message': '"parent_id" is necessary',
+        'status': 400
+    },
+
+    Error_code.Certificate.Duplicate_title.value: {
+        'message': 'duplicate certificate title',
+        'status': 400
+    },
+    Error_code.Certificate.Duplicate_level.value: {
         'message': 'duplicate certificate-level',
         'status': 400
     },
 
-    '5031': {
-        'message': 'Sms server is in development, please try again later',
-        'status': 503
-    },
-    '5032': {
-        'message': 'Sms server is busy, try again later.',
-        'status': 503
-    },
-    '4031': {
-        'message': 'Only available for parent',
-        'status': 403
-    },
-    '4032': {
-        'message': 'Permission denied',
-        'status': 403
-    },
     '4033': {
         'message': 'Parent is necessary',
         'status': 403
     },
-
 }
