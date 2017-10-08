@@ -1,5 +1,5 @@
 import json
-
+import logging
 import six
 from graphql import GraphQLError
 
@@ -7,12 +7,16 @@ from core.errors_code import errors
 from graphql.error import format_error as format_graphql_error
 from django.http import HttpResponse
 
+logger = logging.getLogger('core')
+
 
 class HamkelaasyError(Exception):
     def __init__(self, error_code):
         self.error_code = error_code.value
+        logger.error('hi bro :D')
         self.message = errors[error_code.value].get('message', '')
         self.status = errors[error_code.value].get('status', 400)
+        logger.error('hi agin bro :D')
 
     def set_message(self, message):
         self.message = message
@@ -56,10 +60,11 @@ def get_pretty_response(response):
 
 
 def format_error(error):
+    if hasattr(error, 'original_error'):
+        if isinstance(error.original_error, HamkelaasyError):
+            return error.original_error.to_dictionary()
+
     if isinstance(error, GraphQLError):
         return format_graphql_error(error)
-
-    if isinstance(error, HamkelaasyError):
-        return error.to_dictionary()
 
     return {'message': six.text_type(error)}
