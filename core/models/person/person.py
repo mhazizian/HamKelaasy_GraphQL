@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-import core.services as services
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -9,6 +8,8 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework.authtoken.models import Token
+
+from core.utilz import hash_password
 
 
 def get_upload_path(instance, filename):
@@ -48,7 +49,7 @@ class Person(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.create_date = timezone.now()
-            self.password = services.hash_password(self.create_date, self.password)
+            self.password = hash_password(self.create_date, self.password)
         super(Person, self).save(args, kwargs)
 
 

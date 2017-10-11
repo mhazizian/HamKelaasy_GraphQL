@@ -19,6 +19,7 @@ from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAA
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
     Conversation_message, Certificate, Certificate_link, Certificate_level, Task, System_notification, DIALOG_KEY_WORD, \
     Conversation_dialog, Teacher, Temp_phone_number
+from core.utilz import hash_password
 
 logger = logging.getLogger('core')
 
@@ -42,12 +43,6 @@ def represent_phone_number(s):
     if len(s) != 12 or (not s[:2] == '98'):
         raise HamkelaasyError(Error_code.Phone_number.Invalid_number)
     return s
-
-
-def hash_password(created_date, password):
-    salt = settings.PUB_SALT + str(time.mktime(created_date.timetuple()))[:-2]
-    res = hashlib.pbkdf2_hmac('sha256', password, salt, 100000)
-    return binascii.hexlify(res)
 
 
 def send_sms(phone_number, code):

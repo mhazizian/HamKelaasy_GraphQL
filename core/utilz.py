@@ -1,6 +1,12 @@
+import hashlib
 import json
 import logging
+
+import binascii
 import six
+import time
+
+from Hamkelaasy_graphQL import settings
 from graphql import GraphQLError
 
 from core.errors_code import errors
@@ -37,6 +43,12 @@ class HamkelaasyError(Exception):
             status=self.status,
             content_type='application/json',
         )
+
+
+def hash_password(created_date, password):
+    salt = settings.PUB_SALT + str(time.mktime(created_date.timetuple()))[:-2]
+    res = hashlib.pbkdf2_hmac('sha256', password, salt, 100000)
+    return binascii.hexlify(res)
 
 
 def get_status_code(response):
