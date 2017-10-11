@@ -20,6 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'qqce@wq!=3x=%-hv8((gh&^s81lv=bf^#as327j194igg)03qf'
+PUB_SALT = 'Bx311o8kLv9BiWkv'
 SERVER_ADDR = "http://94.182.227.193:9090/"
 
 # SECURITY WARNING: don't run with debug turned on in production!

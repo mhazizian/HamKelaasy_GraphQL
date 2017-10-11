@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+import uuid
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -17,8 +19,10 @@ def get_upload_path(instance, filename):
 class Person(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
 
+    password = models.CharField('password', max_length=128, default=None, null=True)
+    has_new_password = models.BooleanField('is on new hashing algorithm or not', default=False)
+
     type = models.CharField('user type', max_length=7, default='')
-    password = models.CharField('password', max_length=40, default=None, null=True)
 
     first_name = models.CharField('first name', max_length=200, null=True, blank=True)
     last_name = models.CharField('last name', max_length=200, null=True, blank=True)
