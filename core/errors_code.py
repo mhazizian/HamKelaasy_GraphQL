@@ -38,6 +38,7 @@ class Error_code(object):
         Only_teacher = 4033
         Only_student = 4034
         Only_parent = 4035
+        Invalid_captcha = 40306
 
     class Kelaas(Enum):
         Gender_doesnt_match = 3001
@@ -186,6 +187,10 @@ errors = {
     Error_code.Authentication.Permission_denied.value: {
         'message': 'Permission denied',
         'status': 403
+    },
+    Error_code.Authentication.Invalid_captcha.value: {
+        'message': 'Given captcha is invalid',
+        'status': 400
     },
 
     Error_code.Kelaas.Gender_doesnt_match.value: {

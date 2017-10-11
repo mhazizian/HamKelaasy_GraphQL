@@ -67,6 +67,17 @@ def send_sms(phone_number, code):
     raise HamkelaasyError(Error_code.Phone_number.Server_is_busy)
 
 
+def validated_by_google_captcha(remote_ip, response):
+    r = requests.post(
+        "https://www.google.com/recaptcha/api/siteverify",
+        {
+            'secret': '6LeUCTQUAAAAAKhwMqGNCW36QT6mWF36QusyFDyt',
+            'response': response,
+            'remoteip': remote_ip,
+        }
+    )
+    return json.loads(r.text)['success']
+
 # __________________________________________________________________________________________
 # __________________________________________________________________________________________
 
@@ -125,8 +136,11 @@ def is_password_correct(person, password):
         return False
 
 
-def login_user(username, password):
+def login_user(username, password, remote_ip, google_captcha_response):
     try:
+        if not validated_by_google_captcha(remote_ip, google_captcha_response):
+            raise HamkelaasyError(Error_code.Authentication.Invalid_captcha)
+
         if not User.objects.filter(username=username).exists():
             username = represent_phone_number(username)
 

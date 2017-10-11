@@ -5,7 +5,7 @@ import json
 import logging
 
 import core.services as services
-from core.utilz import HamkelaasyError
+from core.utilz import HamkelaasyError, get_client_ip
 
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
@@ -22,9 +22,16 @@ def new_login(request):
 
     username = data.get('username', '')
     password = data.get('password', '')
+    captcha_response = data.get('g-recaptcha-response', '')
+    remote_ip = get_client_ip(request)
 
     try:
-        token, user_type = services.login_user(username=username, password=password)
+        token, user_type = services.login_user(
+            username=username,
+            password=password,
+            google_captcha_response=captcha_response,
+            remote_ip=remote_ip,
+        )
         return HttpResponse(json.dumps(
             {
                 'token': token,
