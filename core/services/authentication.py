@@ -78,6 +78,7 @@ def validated_by_google_captcha(remote_ip, response):
     )
     return json.loads(r.text)['success']
 
+
 # __________________________________________________________________________________________
 # __________________________________________________________________________________________
 
@@ -148,6 +149,7 @@ def login_user(username, password, remote_ip, google_captcha_response):
         if is_password_correct(user.person, password):
             return Token.objects.get(user=user).key, user.person.type
 
+        raise HamkelaasyError(Error_code.Authentication.Login_failed)
     except User.DoesNotExist:
         raise HamkelaasyError(Error_code.Authentication.Login_failed)
 
