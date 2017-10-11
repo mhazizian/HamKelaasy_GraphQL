@@ -19,10 +19,8 @@ logger = logging.getLogger('core')
 class HamkelaasyError(Exception):
     def __init__(self, error_code):
         self.error_code = error_code.value
-        logger.error('hi bro :D')
         self.message = errors[error_code.value].get('message', '')
         self.status = errors[error_code.value].get('status', 400)
-        logger.error('hi agin bro :D')
 
     def set_message(self, message):
         self.message = message
