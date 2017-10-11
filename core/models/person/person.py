@@ -35,7 +35,7 @@ class Person(models.Model):
     profile_pic = models.FileField('profile pic', upload_to=get_upload_path, blank=True)
 
     signup_completed = models.BooleanField('signup progress completed(bool)', default=False)
-    last_sys_notification_seen = models.DateTimeField('class creation date', default=None, null=True)
+    last_sys_notification_seen = models.DateTimeField('last_sys_notification_seen', default=None, null=True)
 
     fard_access_token = models.CharField('access_token for getting data from fard.ir', max_length=100, default='')
 
