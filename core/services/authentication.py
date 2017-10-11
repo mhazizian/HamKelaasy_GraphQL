@@ -44,8 +44,8 @@ def represent_phone_number(s):
     return s
 
 
-def hash_password(person, password):
-    salt = settings.PUB_SALT + str(time.mktime(person.create_date.timetuple()))[:-2]
+def hash_password(created_date, password):
+    salt = settings.PUB_SALT + str(time.mktime(created_date.timetuple()))[:-2]
     res = hashlib.pbkdf2_hmac('sha256', password, salt, 100000)
     return binascii.hexlify(res)
 
@@ -121,7 +121,7 @@ def validate_phone_number(phone_number, code):
 
 def is_password_correct(person, password):
     if person.has_new_password:
-        if person.password == hash_password(person, password):
+        if person.password == hash_password(person.create_date, password):
             return True
         return False
     else:

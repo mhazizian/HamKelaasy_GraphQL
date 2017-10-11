@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
-import uuid
-
+import core.services as services
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -31,7 +30,7 @@ class Person(models.Model):
     phone_number = models.CharField('phone number', max_length=12, default='')
     phone_number_verified = models.BooleanField('determine whether phone is verified or not', default=False)
 
-    create_date = models.DateTimeField('creation date', default=timezone.now)
+    create_date = models.DateTimeField('creation date')
     profile_pic = models.FileField('profile pic', upload_to=get_upload_path, blank=True)
 
     signup_completed = models.BooleanField('signup progress completed(bool)', default=False)
@@ -45,6 +44,12 @@ class Person(models.Model):
 
     def __unicode__(self):
         return unicode(self.first_name) + " " + unicode(self.last_name) + " username: "
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.create_date = timezone.now()
+            self.password = services.hash_password(self.create_date, self.password)
+        super(Person, self).save(args, kwargs)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
