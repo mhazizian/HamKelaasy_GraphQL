@@ -33,7 +33,7 @@ def new_login(request):
         ))
 
     except HamkelaasyError as e:
-        return e.get_http_response()
+        return e.to_http_response()
 
 
 @csrf_exempt
@@ -46,7 +46,7 @@ def get_phone_number(request):
         services.init_phone_number(phone_number, is_for_registration=is_for_registration)
         return HttpResponse('')
     except HamkelaasyError as e:
-        return e.get_http_response()
+        return e.to_http_response()
 
 
 @csrf_exempt
@@ -60,13 +60,13 @@ def validate_phone_number(request):
 
         return HttpResponse(json.dumps(
             {
-                'response': True,
+                'response': 'accepted',
                 'validator': res
             }),
             content_type='application/json',
         )
     except HamkelaasyError as e:
-        return e.get_http_response()
+        return e.to_http_response()
 
 
 @csrf_exempt
@@ -82,7 +82,7 @@ def reset_password(request):
         return HttpResponse('')
 
     except HamkelaasyError as e:
-        return e.get_http_response()
+        return e.to_http_response()
 
 
 @csrf_exempt
@@ -110,7 +110,7 @@ def new_signup_parent(request):
             })
         )
     except HamkelaasyError as e:
-        return e.get_http_response()
+        return e.to_http_response()
 
 
 @csrf_exempt
@@ -140,25 +140,19 @@ def new_signup_teacher(request):
             })
         )
     except HamkelaasyError as e:
-        return e.get_http_response()
+        return e.to_http_response()
 
 
 @csrf_exempt
 def get_student_basic_info(request):
-    # TODO fix signature of this func
     data = json.loads(request.body)
 
     code = data.get('code', '')
     try:
-        student = Student.objects.get(code=code)
-        return HttpResponse(json.dumps(
-            {
-                'firstName': student.first_name,
-                'lastName': student.last_name,
-                'age': student.age,
-                'gender': student.gender
-            }),
+        res = services.get_student_basic_info(code)
+        return HttpResponse(
+            json.dumps(res),
             content_type='application/json'
         )
-    except Student.DoesNotExist:
-        pass
+    except HamkelaasyError as e:
+        return e.to_http_response()

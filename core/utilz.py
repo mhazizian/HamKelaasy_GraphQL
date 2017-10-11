@@ -30,7 +30,7 @@ class HamkelaasyError(Exception):
             'code': self.error_code
         }
 
-    def get_http_response(self):
+    def to_http_response(self):
         res = {'errors': [self.to_dictionary()]}
         return HttpResponse(
             unicode(json.dumps(res)),
