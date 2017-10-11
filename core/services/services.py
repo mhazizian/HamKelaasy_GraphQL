@@ -855,3 +855,39 @@ def perform_task(user, task_id):
 
     except Task.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found.Task)
+
+
+def remove_conversation_dialog(kelaas_id, user1_id, user2_id):
+    try:
+        kelaas = Kelaas.objects.get(id=kelaas_id)
+        u1 = Person.objects.get(id=user1_id)
+        u2 = Person.objects.get(id=user2_id)
+
+        for conv in kelaas.conversations.filter(type=DIALOG_KEY_WORD):
+            if conv.conversation_dialog.has_same_users(user1=u1, user2=u2):
+                conv.delete()
+                return
+
+    except Kelaas.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Kelaas)
+
+
+def remove_student_from_kelaas(user, student_id, kelaas_id):
+    if not user.type == TEACHER_KEY_WORD:
+        raise HamkelaasyError(Error_code.Authentication.Only_teacher)
+
+    try:
+        kelaas = user.teacher.kelaases.get(id=kelaas_id)
+        # kelaas = Kelaas.objects.get(id=kelaas_id)
+        if not kelaas.students.filter(id=student_id).exists():
+            raise HamkelaasyError(Error_code.Object_not_found.Student)
+
+        student = kelaas.students.get(id=student_id)
+        kelaas.students.remove(student)
+        if student.parents:
+            remove_conversation_dialog(kelaas_id, user.id, student.parents.id)
+
+    except Kelaas.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Kelaas)
+    except Student.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Student)

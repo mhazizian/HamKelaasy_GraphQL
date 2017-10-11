@@ -1,2 +1,2 @@
-from .mean import *
+from .services import *
 from .authentication import *

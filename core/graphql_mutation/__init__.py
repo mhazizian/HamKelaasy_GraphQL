@@ -15,6 +15,7 @@ from .create_student_for_kelaas import Create_student_for_kelaas
 from .send_message import Send_message
 from .create_conversation import Create_convesation
 
+from .remove_student_from_kelaas import Remove_student_from_kelaas
 
 from .certificate_mutation import Assign_certificate
 from .certificate_mutation import Create_certificate

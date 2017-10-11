@@ -1,5 +1,5 @@
 import graphene
-from core import HamkelaasyError
+from core import HamkelaasyError, Error_code
 import core.services as services
 
 from core.graphql_query import StudentType
@@ -25,7 +25,7 @@ class Create_student_for_kelaas(graphene.Mutation):
     @staticmethod
     def add(info, data):
         if not info.context.user.is_authenticated:
-            raise HamkelaasyError(4011)
+            raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
         user = info.context.user.person
 
         return services.create_student_for_kelaas(

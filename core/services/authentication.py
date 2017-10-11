@@ -95,7 +95,7 @@ def init_phone_number(phone_number, is_for_registration=True):
             raise HamkelaasyError(Error_code.Phone_number.Number_is_not_registered)
 
         # TODO change 10 sec to 60 sec in production.
-        if timezone.now() - phone.last_send_sms_time < timedelta(seconds=10):
+        if timezone.now() - phone.last_send_sms_time < timedelta(seconds=30):
             raise HamkelaasyError(Error_code.Phone_number.Delay_required)
 
         phone.re_init()
@@ -241,8 +241,7 @@ def reset_password_by_phone_number(phone_number, validator, new_password):
             raise HamkelaasyError(Error_code.Phone_number.Invalid_number_validator)
 
         user = User.objects.get(username=temp_phone.phone)
-        user.person.password = new_password
-        # TODO apply hashing
+        user.person.password = hash_password(user.person.create_date, new_password)
         user.person.save()
 
     except Temp_phone_number.DoesNotExist:
