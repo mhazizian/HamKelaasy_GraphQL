@@ -49,6 +49,8 @@ class Error_code(object):
         Has_parent = 6002
         Bad_gender = 6003
         Bad_age = 6004
+        Invalid_username = 4017
+        Duplicate_username = 40013
 
     class Teacher(Enum):
         Bad_gender = 6003
@@ -214,6 +216,15 @@ errors = {
         'message': 'student already has parent, cant assign any more',
         'status': 400
     },
+    Error_code.Student.Invalid_username.value: {
+        'message': 'given username has invalid values',
+        'status': 400,
+    },
+    Error_code.Student.Duplicate_username.value: {
+        'message': 'duplicate username',
+        'status': 400,
+    },
+
 
     Error_code.Teacher.Bad_gender.value: {
         'message': 'invalid gender value',
