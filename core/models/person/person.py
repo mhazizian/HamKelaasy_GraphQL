@@ -49,8 +49,9 @@ class Person(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.create_date = timezone.now()
-            self.password = hash_password(self.create_date, self.password)
-            self.has_new_password = True
+            if self.password:
+                self.password = hash_password(self.create_date, self.password)
+                self.has_new_password = True
         super(Person, self).save(args, kwargs)
 
 
