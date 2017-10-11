@@ -67,7 +67,7 @@ def validate_phone_number(request):
 
         return HttpResponse(json.dumps(
             {
-                'response': 'accepted',
+                'accepted': True,
                 'validator': res
             }),
             content_type='application/json',
@@ -86,7 +86,7 @@ def reset_password(request):
         new_password = data.get('password', '')
 
         services.reset_password_by_phone_number(phone_number, phone_validator, new_password)
-        return HttpResponse('')
+        return HttpResponse('done')
 
     except HamkelaasyError as e:
         return e.to_http_response()
@@ -163,3 +163,6 @@ def get_student_basic_info(request):
         )
     except HamkelaasyError as e:
         return e.to_http_response()
+
+# @csrf_exempt
+# def new_signup_student(request):

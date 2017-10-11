@@ -42,6 +42,9 @@ urlpatterns = [
     url(r'^apply/$', views.my_view),
 
 
+
+
+
     url(r'^register/phone/sendvalidation$', views.get_phone_number, name='get-phone-number'),
     url(r'^register/phone/sendvalidation/$', views.get_phone_number),
 
