@@ -164,5 +164,31 @@ def get_student_basic_info(request):
     except HamkelaasyError as e:
         return e.to_http_response()
 
-# @csrf_exempt
-# def new_signup_student(request):
+@csrf_exempt
+def new_signup_student(request):
+    data = json.loads(request.body)
+
+    first_name = data.get('firstName', '')
+    last_name = data.get('lastName', '')
+    password = data.get('password', '')
+    username = data.get('password', '')
+    gender = data.get('gender', '')
+    age = data.get('age', '')
+
+    try:
+        student = services.create_student(
+            username=username,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            gender=gender,
+            age=age,
+        )
+        return HttpResponse(json.dumps(
+            {
+                'status': 1,
+                'token': Token.objects.get(user=student.user).key
+            })
+        )
+    except HamkelaasyError as e:
+        return e.to_http_response()

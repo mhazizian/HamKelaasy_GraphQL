@@ -1,9 +1,8 @@
 import json
 import logging
-import binascii
 import requests
 import hashlib
-import time
+import re
 
 from datetime import timedelta
 from django.db import IntegrityError
@@ -11,7 +10,6 @@ from django.utils import timezone
 
 from django.contrib.auth.models import User
 
-from Hamkelaasy_graphQL import settings
 from core import HamkelaasyError
 from core.errors_code import Error_code
 from rest_framework.authtoken.models import Token
@@ -77,6 +75,17 @@ def validated_by_google_captcha(remote_ip, response):
         }
     )
     return json.loads(r.text)['success']
+
+
+def check_valid_username(username):
+    if not re.match("^[A-Za-z0-9_-]*$", username):
+        raise HamkelaasyError(Error_code.Student.Invalid_username)
+
+    if len(username) < 5:
+        raise HamkelaasyError(Error_code.Student.Invalid_username)
+
+    if not username[0].isalpha():
+        raise HamkelaasyError(Error_code.Student.Invalid_username)
 
 
 # __________________________________________________________________________________________
@@ -185,7 +194,7 @@ def create_teacher(phone, first_name, last_name, password, gender):
         password=password,
         phone_number=phone,
         phone_number_verified=True,
-        gender=gender,
+        gender=int(gender),
     )
     teacher.save()
     return teacher
@@ -196,11 +205,33 @@ def create_incomplete_student(first_name, last_name, gender, age):
         user=None,
         first_name=first_name,
         last_name=last_name,
-        gender=gender,
-        age=age,
+        gender=int(gender),
+        age=int(age),
     )
     student.save()
     return student
+
+
+def create_student(username, password, first_name, last_name, gender, age):
+    username = username.upper()
+    try:
+        check_valid_username(username)
+        user = User(username=username)
+        user.save()
+
+        student = Student(
+            user=user,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            gender=int(gender),
+            age=int(age),
+        )
+        student.save()
+        return student
+
+    except IntegrityError:
+        raise HamkelaasyError(Error_code.Student.Duplicate_username)
 
 
 def create_parent_child(user, first_name, last_name, gender, age):

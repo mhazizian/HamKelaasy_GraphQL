@@ -57,12 +57,15 @@ urlpatterns = [
     url(r'^register/teacher$', views.new_signup_teacher, name='signup-teacher'),
     url(r'^register/teacher/$', views.new_signup_teacher),
 
-    url(r'^register/student/basicInfo$', views.get_student_basic_info, name='signup-student-basic-info'),
-    url(r'^register/student/basicInfo/$', views.get_student_basic_info),
+    url(r'^register/student$', views.new_signup_student, name='signup-student'),
+    url(r'^register/student/$', views.new_signup_student),
+
+    url(r'^register/student/getBasicInfo$', views.get_student_basic_info, name='signup-student-basic-info'),
+    url(r'^register/student/getBasicInfo/$', views.get_student_basic_info),
 
     url(r'^login$', views.new_login, name='login'),
     url(r'^login/$', views.new_login),
 
-    url(r'^reset/password$', views.reset_password, name='reset-password'),
-    url(r'^reset/password/$', views.reset_password),
+    url(r'^reset/password/by_phone$', views.reset_password, name='reset-password'),
+    url(r'^reset/password/by_phone/$', views.reset_password),
 ]
