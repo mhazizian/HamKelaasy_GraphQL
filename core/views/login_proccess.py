@@ -69,7 +69,7 @@ def signup(request):
                 age=age,
                 # nickname=nickname
             )
-            student.save()
+            student.my_save()
         if type == TEACHER_KEY_WORD:
             gender = int(data.get('gender', temp.gender))
 
@@ -83,7 +83,7 @@ def signup(request):
                 email=email,
                 fard_access_token=fard_access_token,
             )
-            teacher.save()
+            teacher.my_save()
         if type == PARENT_KEY_WORD:
             user.save()
             parent = Parent(
@@ -93,7 +93,7 @@ def signup(request):
                 email=email,
                 fard_access_token=fard_access_token,
             )
-            parent.save()
+            parent.my_save()
 
         res['type'] = "success"
         res['token'] = Token.objects.get(user=user).key
