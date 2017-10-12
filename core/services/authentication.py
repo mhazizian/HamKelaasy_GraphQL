@@ -179,7 +179,7 @@ def create_parent(phone, first_name, last_name, password):
         phone_number=phone,
         phone_number_verified=True,
     )
-    parent.save()
+    parent.my_save()
     return parent
 
 
@@ -196,7 +196,7 @@ def create_teacher(phone, first_name, last_name, password, gender):
         phone_number_verified=True,
         gender=int(gender),
     )
-    teacher.save()
+    teacher.my_save()
     return teacher
 
 
@@ -208,7 +208,7 @@ def create_incomplete_student(first_name, last_name, gender, age):
         gender=int(gender),
         age=int(age),
     )
-    student.save()
+    student.my_save()
     return student
 
 
@@ -227,7 +227,7 @@ def create_student(username, password, first_name, last_name, gender, age):
             gender=int(gender),
             age=int(age),
         )
-        student.save()
+        student.my_save()
         return student
 
     except IntegrityError:
@@ -244,7 +244,7 @@ def create_student_by_code(username, password, code):
         student = Student.objects.get(code=code)
         student.user = user
         student.password = hash_password(student.create_date, password)
-        student.save()
+        student.my_save()
         return student
 
     except IntegrityError:
@@ -260,7 +260,7 @@ def create_parent_child(user, first_name, last_name, gender, age):
     student = create_incomplete_student(first_name, last_name, gender, age)
 
     student.parents = user.parent
-    student.save()
+    student.my_save()
     return student
 
 

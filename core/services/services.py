@@ -507,7 +507,7 @@ def add_child(user, child_code):
             raise HamkelaasyError(Error_code.Student.Has_parent)
 
         student.parents = user.parent
-        student.save()
+        student.my_save()
     except Student.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found.Student)
 
@@ -531,7 +531,7 @@ def add_child_by_token(user, child_token):
             raise HamkelaasyError(Error_code.Student.Has_parent)
 
         student.parents = user.parent
-        student.save()
+        student.my_save()
     except AttributeError:
         raise HamkelaasyError(Error_code.Object_not_found.Student)
 

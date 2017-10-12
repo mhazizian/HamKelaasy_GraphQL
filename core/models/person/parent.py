@@ -10,11 +10,11 @@ PARENT_KEY_WORD = "parent"
 
 
 class Parent(Person):
-    def save(self, *args, **kwargs):
+    def my_save(self):
         self.type = PARENT_KEY_WORD
         if not self.profile_pic:
             self.profile_pic.name = 'parent.svg'
-        super(Parent, self).save(args, kwargs)
+        self.save()
 
     def __unicode__(self):
-        return "parents: " + unicode(self.last_name)
+        return unicode(self.id) + unicode(self.last_name)

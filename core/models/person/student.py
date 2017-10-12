@@ -21,18 +21,19 @@ class Student(Person):
     class Meta:
         ordering = ['-id']
 
-    def save(self, *args, **kwargs):
+    def my_save(self):
         if not self.pk:
             self.code = Student.generate_code()
-            if not self.profile_pic:
-                self.profile_pic.name = 'student/people' + str(random.randint(1, 11)) + '.png'
+        if not self.profile_pic:
+            self.profile_pic.name = 'student/people' + str(random.randint(1, 11)) + '.png'
+
         if self.gender != 0 and self.gender != 1:
             raise HamkelaasyError(Error_code.Student.Bad_gender)
         if self.age > 18 or self.age < 6:
             raise HamkelaasyError(Error_code.Student.Bad_age)
 
         self.type = STUDENT_KEY_WORD
-        super(Student, self).save(args, kwargs)
+        self.save()
 
     def __unicode__(self):
         return "student: " + unicode(self.last_name)
