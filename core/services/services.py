@@ -640,7 +640,7 @@ def create_kelaas_post(user, kelaas_id, title, description, files):
         kelaas=kelaas,
         owner=user.teacher,
     )
-    post.save()
+    post.my_save()
 
     for file_id in files.split(','):
         try:
@@ -650,7 +650,7 @@ def create_kelaas_post(user, kelaas_id, title, description, files):
                 post.files.add(input_file)
         except ValueError:
             pass
-    post.save()
+    post.my_save()
 
     return post
 
@@ -684,12 +684,12 @@ def create_story(user, kelaas_id, title, description, pic_id=None):
         kelaas=kelaas,
         owner=user.teacher,
     )
-    story.save()
+    story.my_save()
 
     if pic_id:
         if File.objects.filter(pk=pic_id).exists():
             story.story_pic_id = pic_id
-    story.save()
+    story.my_save()
     return story
 
 

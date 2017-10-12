@@ -9,9 +9,9 @@ class Story(Post):
     story_pic = models.ForeignKey('File', blank=True, default=None, null=True)
     likes = models.ManyToManyField('Person')
 
-    def save(self, *args, **kwargs):
+    def my_save(self):
         self.type = STORY_KEY_WORD
-        super(Story, self).save(args, kwargs)
+        self.save()
 
     def on_delete_story(self):
         if self.story_pic:
