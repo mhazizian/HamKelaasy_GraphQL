@@ -141,7 +141,7 @@ def is_password_correct(person, password):
             return True
         return False
     else:
-        if person.password == hashlib.md5(password).digest():
+        if person.password == hashlib.md5(password).hexdigest():
             return True
         return False
 
