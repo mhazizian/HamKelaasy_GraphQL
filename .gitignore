@@ -220,3 +220,4 @@ pip-selfcheck.json
 #*/migrations/0*.py
 */migrations
 *.DS_store
+/log/
