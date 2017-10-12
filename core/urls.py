@@ -41,7 +41,8 @@ urlpatterns = [
     url(r'^apply$', views.my_view, name='test'),
     url(r'^apply/$', views.my_view),
 
-
+    url(r'^docs/errors$', views.error_doc, name='error-doc'),
+    url(r'^docs/errors/$', views.error_doc),
 
 
 
