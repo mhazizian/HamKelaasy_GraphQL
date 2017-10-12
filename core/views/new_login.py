@@ -171,7 +171,7 @@ def new_signup_student(request):
     first_name = data.get('firstName', '')
     last_name = data.get('lastName', '')
     password = data.get('password', '')
-    username = data.get('password', '')
+    username = data.get('username', '')
     gender = data.get('gender', '')
     age = data.get('age', '')
 
@@ -183,6 +183,30 @@ def new_signup_student(request):
             last_name=last_name,
             gender=gender,
             age=age,
+        )
+        return HttpResponse(json.dumps(
+            {
+                'status': 1,
+                'token': Token.objects.get(user=student.user).key
+            })
+        )
+    except HamkelaasyError as e:
+        return e.to_http_response()
+
+
+@csrf_exempt
+def new_signup_student_by_code(request):
+    data = json.loads(request.body)
+
+    password = data.get('password', '')
+    username = data.get('username', '')
+    code = data.get('code', '')
+
+    try:
+        student = services.create_student_by_code(
+            username=username,
+            password=password,
+            code=code,
         )
         return HttpResponse(json.dumps(
             {
