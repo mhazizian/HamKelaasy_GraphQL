@@ -300,6 +300,7 @@ def get_student_kelaas(student, user, kelaas_id):
         if user.id == student.id:
             if student.parents:
                 return student.kelaases.get(pk=kelaas_id)
+            return
 
         if user.type == PARENT_KEY_WORD and user.id == student.parents.id:
             return student.kelaases.get(pk=kelaas_id)
@@ -319,6 +320,7 @@ def get_student_badges(student, user, **kwargs):
             if 'kelaas_id' in kwargs:
                 return student.badges.filter(kelaas_id=kwargs['kelaas_id'])
             return student.badges.all()
+        return []
 
     if user.type == TEACHER_KEY_WORD:
         if 'kelaas_id' in kwargs:
