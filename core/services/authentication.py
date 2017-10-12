@@ -234,6 +234,25 @@ def create_student(username, password, first_name, last_name, gender, age):
         raise HamkelaasyError(Error_code.Student.Duplicate_username)
 
 
+def create_student_by_code(username, password, code):
+    username = username.upper()
+    try:
+        check_valid_username(username)
+        user = User(username=username)
+        user.save()
+
+        student = Student.objects.get(code=code)
+        student.user = user
+        student.password = hash_password(student.create_date, password)
+        student.save()
+        return student
+
+    except IntegrityError:
+        raise HamkelaasyError(Error_code.Student.Duplicate_username)
+    except Student.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Student)
+
+
 def create_parent_child(user, first_name, last_name, gender, age):
     if user.type != PARENT_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_parent)
