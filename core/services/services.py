@@ -283,6 +283,7 @@ def get_student_kelaases(student, user):
     if user.id == student.id:
         if student.parents:
             return student.kelaases.all().order_by('-id')
+        return []
 
     if user.type == TEACHER_KEY_WORD:
         return [kelaas for kelaas in student.kelaases.all() if
