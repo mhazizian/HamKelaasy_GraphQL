@@ -30,4 +30,4 @@ class Remove_student_from_kelaas(graphene.Mutation):
             kelaas_id=data.kelaas_id,
             student_id=data.student_id,
         )
-        return MessageType(type='success', message='comment deleted.')
+        return MessageType(type='success', message='student removed from kelaas.')
