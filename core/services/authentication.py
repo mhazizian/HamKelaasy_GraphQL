@@ -294,6 +294,7 @@ def reset_password_by_phone_number(phone_number, validator, new_password):
 
         user = User.objects.get(username=temp_phone.phone)
         user.person.password = hash_password(user.person.create_date, new_password)
+        user.person.has_new_password = True
         user.person.save()
 
     except Temp_phone_number.DoesNotExist:
