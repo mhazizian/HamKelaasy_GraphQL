@@ -881,7 +881,6 @@ def remove_student_from_kelaas(user, student_id, kelaas_id):
 
     try:
         kelaas = user.teacher.kelaases.get(id=kelaas_id)
-        # kelaas = Kelaas.objects.get(id=kelaas_id)
         if not kelaas.students.filter(id=student_id).exists():
             raise HamkelaasyError(Error_code.Object_not_found.Student)
 
