@@ -23,6 +23,7 @@ def new_login(request):
     username = data.get('username', '')
     password = data.get('password', '')
     captcha_response = data.get('g-recaptcha-response', '')
+    is_for_android = data.get('is_for_android', False)
     remote_ip = get_client_ip(request)
 
     try:
@@ -31,6 +32,7 @@ def new_login(request):
             password=password,
             google_captcha_response=captcha_response,
             remote_ip=remote_ip,
+            for_android_client=is_for_android,
         )
         return HttpResponse(json.dumps(
             {
@@ -163,6 +165,7 @@ def get_student_basic_info(request):
         )
     except HamkelaasyError as e:
         return e.to_http_response()
+
 
 @csrf_exempt
 def new_signup_student(request):

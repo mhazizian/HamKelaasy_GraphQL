@@ -77,6 +77,18 @@ def validated_by_google_captcha(remote_ip, response):
     return json.loads(r.text)['success']
 
 
+def validated_by_google_captcha_for_android(remote_ip, response):
+    r = requests.post(
+        "https://www.google.com/recaptcha/api/siteverify",
+        {
+            'secret': '6LfphDQUAAAAAEoZThw9InNLHGD4YB_KpTQRtRg7',
+            'response': response,
+            'remoteip': remote_ip,
+        }
+    )
+    return json.loads(r.text)['success']
+
+
 def check_valid_username(username):
     if not re.match("^[A-Za-z0-9_-]*$", username):
         raise HamkelaasyError(Error_code.Student.Invalid_username)
@@ -146,10 +158,14 @@ def is_password_correct(person, password):
         return False
 
 
-def login_user(username, password, remote_ip, google_captcha_response):
+def login_user(username, password, remote_ip, google_captcha_response, for_android_client=False):
     try:
-        if not validated_by_google_captcha(remote_ip, google_captcha_response):
-            raise HamkelaasyError(Error_code.Authentication.Invalid_captcha)
+        if for_android_client:
+            if not validated_by_google_captcha_for_android(remote_ip, google_captcha_response):
+                raise HamkelaasyError(Error_code.Authentication.Invalid_captcha)
+        else:
+            if not validated_by_google_captcha(remote_ip, google_captcha_response):
+                raise HamkelaasyError(Error_code.Authentication.Invalid_captcha)
 
         if not User.objects.filter(username=username).exists():
             username = represent_phone_number(username)
