@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 
+from Hamkelaasy_graphQL import settings
 from khayyam import *
 
 
@@ -29,6 +30,9 @@ class Kelaas(models.Model):
     def shamsi_date(self):
         return JalaliDatetime(self.create_date).strftime(
             '%A %D %B %N  %h:%v')
+
+    def pic(self):
+        return settings.SERVER_ADDR[:-1] + self.kelaas_pic.url
 
     def save(self, *args, **kwargs):
         if not self.pk:
