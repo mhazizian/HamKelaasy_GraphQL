@@ -31,6 +31,7 @@ class Kelaas(models.Model):
         return JalaliDatetime(self.create_date).strftime(
             '%A %D %B %N  %h:%v')
 
+    @property
     def pic(self):
         return settings.SERVER_ADDR[:-1] + self.kelaas_pic.url
 
