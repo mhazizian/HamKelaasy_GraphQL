@@ -7,11 +7,16 @@ from django.utils.crypto import get_random_string
 from khayyam import *
 
 
+def get_upload_path(instance, filename):
+    return '/'.join(['profile_pic', get_random_string(length=32), filename])
+
+
 class Kelaas(models.Model):
     title = models.CharField('class name', max_length=200)
     create_date = models.DateTimeField('class creation date', default=timezone.now)
     description = models.CharField('class description', max_length=500)
     gender = models.IntegerField('gender type(1 for men, 0 for women, 2 for both)')
+    kelaas_pic = models.FileField('kelaas pic', upload_to=get_upload_path, default=None, null=True)
 
     tags = models.ManyToManyField('Tag', related_name="kelaases", blank=True)
     students = models.ManyToManyField('Student', related_name="kelaases", blank=True)
@@ -28,6 +33,8 @@ class Kelaas(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.invite_code = Kelaas.generate_invite_code()
+        if not self.kelaas_pic:
+            self.kelaas_pic.name = 'kelaas/default.png'
         super(Kelaas, self).save(args, kwargs)
 
     def __unicode__(self):
