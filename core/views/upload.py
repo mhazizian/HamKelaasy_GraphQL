@@ -17,11 +17,6 @@ def upload_file(request):
     if not request.user.is_authenticated:
         return HttpResponse('user not authenticated', status=401)
 
-    # logger.info('upload log:')
-    #
-    # logger.info(request.FILES)
-    # logger.info(' '.join([key for key in request.FILES]))
-
     if 'data' in request.FILES:
         try:
             input_file = request.FILES['data']
@@ -53,8 +48,6 @@ def upload_file(request):
                 + '\nrequest body:\n'
                 + request.body
             )
-
-
 
     logger.info(
         '\nbegin >=============================================\n'
