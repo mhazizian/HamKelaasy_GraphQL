@@ -4,6 +4,7 @@ from .login_proccess import login, resolve_fard, signup, temp_user_handler, get_
 from .upload import upload_file
 
 from .myviews import my_view
+from .info import info
 
 
 from .new_login import *
