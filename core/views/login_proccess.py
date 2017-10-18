@@ -198,5 +198,5 @@ def get_kelaas_basic_info_handler(request):
                 status=200
             )
         except HamkelaasyError as e:
-            return HttpResponse(e.message, status=e.status)
+            return e.to_http_response()
     return HttpResponse('Bad request', status=405)
