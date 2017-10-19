@@ -3,6 +3,7 @@ from .chat_model import Conversation, Conversation_message, Conversation_group, 
 
 from .phone_number import Temp_phone_number
 from .sys_notification import System_notification
+from .notification import Notification
 
 from .person import Person
 from .person import Parent, PARENT_KEY_WORD
