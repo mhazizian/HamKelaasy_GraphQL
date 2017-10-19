@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 
 from Hamkelaasy_graphQL import settings
-from khayyam import *
+from core.models.utilz import to_shamsi_date
 
 
 def get_upload_path(instance, filename):
@@ -28,8 +28,7 @@ class Kelaas(models.Model):
 
     @property
     def shamsi_date(self):
-        return JalaliDatetime(self.create_date).strftime(
-            '%A %D %B %N  %h:%v')
+        return to_shamsi_date(self.create_date)
 
     @property
     def pic(self):

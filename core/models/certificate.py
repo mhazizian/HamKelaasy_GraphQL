@@ -5,8 +5,7 @@ from django.db import models
 
 from Hamkelaasy_graphQL import settings
 from core.models import Sys_file
-from core.models.utilz import pretty_past_time
-from khayyam import JalaliDatetime
+from core.models.utilz import pretty_past_time, to_shamsi_date
 
 
 class Certificate(models.Model):
@@ -31,8 +30,7 @@ class Certificate(models.Model):
 
     @property
     def shamsi_date(self):
-        return JalaliDatetime(self.create_date).strftime(
-            '%A %D %B %N  %h:%v')
+        return to_shamsi_date(self.create_date)
 
     def __unicode__(self):
         return self.title
@@ -60,8 +58,7 @@ class Certificate_level(models.Model):
 
     @property
     def shamsi_date(self):
-        return JalaliDatetime(self.create_date).strftime(
-            '%A %D %B %N  %h:%v')
+        return to_shamsi_date(self.create_date)
 
     def __unicode__(self):
         return self.type.title + " level: " + str(self.level)
@@ -81,5 +78,4 @@ class Certificate_link(models.Model):
 
     @property
     def shamsi_date(self):
-        return JalaliDatetime(self.create_date).strftime(
-            '%A %D %B %N  %h:%v')
+        return to_shamsi_date(self.create_date)

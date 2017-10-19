@@ -4,8 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 
-from core.models.utilz import pretty_past_time
-from khayyam import *
+from core.models.utilz import pretty_past_time, to_shamsi_date
 
 KELAAS_POST_KEY_WORD = 'Kelaas_post'
 STORY_KEY_WORD = 'Story'
@@ -22,8 +21,7 @@ class Post(models.Model):
 
     @property
     def shamsi_date(self):
-        return JalaliDatetime(self.create_date).strftime(
-            '%A %D %B %N  %h:%v')
+        return to_shamsi_date(self.create_date)
 
     @property
     def time_passed(self):

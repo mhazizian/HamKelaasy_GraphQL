@@ -3,8 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils import timezone
-from core.models.utilz import pretty_past_time
-from khayyam import JalaliDatetime
+from core.models.utilz import pretty_past_time, to_shamsi_date
 
 SYSTEM_NOTIFICATION_KEY_WORD = 'System_notification'
 
@@ -24,8 +23,7 @@ class System_notification(models.Model):
 
     @property
     def shamsi_date(self):
-        return JalaliDatetime(self.create_date).strftime(
-            '%A %D %B %N  %h:%v')
+        return to_shamsi_date(self.create_date)
 
     @property
     def time_passed(self):

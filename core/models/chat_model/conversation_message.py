@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 from core.models.utilz import pretty_past_time
-from khayyam import JalaliDatetime
+from core.models.utilz import to_shamsi_date
 
 
 class Conversation_message(models.Model):
@@ -29,7 +29,6 @@ class Conversation_message(models.Model):
 
     @property
     def shamsi_date(self):
-        return JalaliDatetime(self.create_date).strftime(
-            '%A %D %B %N  %h:%v')
+        return to_shamsi_date(self.create_date)
 
 

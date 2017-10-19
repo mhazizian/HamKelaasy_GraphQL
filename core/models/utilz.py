@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import jdatetime as jdatetime
+
+# locale.setlocale(locale.LC_ALL, "fa_IR")
+
+def to_shamsi_date(time):
+    year, month, day = jdatetime.GregorianToJalali(time.year, time.month, time.day).getJalaliList()
+    return jdatetime.datetime(year, month, day, time.hour, time.minute, time.second).strftime("%a, %d %b %Y %H:%M")
 
 
 def pretty_past_time(diff):

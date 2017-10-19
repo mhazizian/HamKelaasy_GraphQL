@@ -3,8 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 
-from core.models.utilz import pretty_past_time, pretty_remaining_time
-from khayyam import JalaliDatetime
+from core.models.utilz import pretty_past_time, pretty_remaining_time, to_shamsi_date
 
 
 class Task(models.Model):
@@ -24,8 +23,7 @@ class Task(models.Model):
 
     @property
     def shamsi_date(self):
-        return JalaliDatetime(self.create_date).strftime(
-            '%A %D %B %N  %h:%v')
+        return to_shamsi_date(self.create_date)
 
     @property
     def remaining_time(self):
