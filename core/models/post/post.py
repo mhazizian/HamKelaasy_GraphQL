@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 
-from core.models.utilz import pretty_past_time, to_shamsi_date
+from core.utilz import pretty_past_time, to_shamsi_date
 
 KELAAS_POST_KEY_WORD = 'Kelaas_post'
 STORY_KEY_WORD = 'Story'

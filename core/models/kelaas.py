@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 
 from Hamkelaasy_graphQL import settings
-from core.models.utilz import to_shamsi_date
+from core.utilz import to_shamsi_date
 
 
 def get_upload_path(instance, filename):

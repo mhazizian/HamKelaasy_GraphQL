@@ -2,8 +2,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 
-from core.models.utilz import pretty_past_time
-from core.models.utilz import to_shamsi_date
+from core.utilz import pretty_past_time
+from core.utilz import to_shamsi_date
 
 
 class Conversation_message(models.Model):

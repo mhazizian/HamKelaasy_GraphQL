@@ -5,7 +5,7 @@ from django.db import models
 
 from Hamkelaasy_graphQL import settings
 from core.models import Sys_file
-from core.models.utilz import pretty_past_time, to_shamsi_date
+from core.utilz import pretty_past_time, to_shamsi_date
 
 
 class Certificate(models.Model):

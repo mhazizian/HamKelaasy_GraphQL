@@ -3,34 +3,47 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils import timezone
-from core.models.utilz import pretty_past_time
-from khayyam import JalaliDatetime
+from enum import Enum
 
-NOTIFICATION_KEY_WORD = 'Notification'
+from core.utilz import pretty_past_time, to_shamsi_date
 
 
-class System_notification(models.Model):
-    reciver = models.ForeignKey('Person', related_name='notifications')
+class Notification_type(object):
+    class Teacher(Enum):
+        new_student = 1001
+        new_message = 1002  # also will have conversation id
+        new_comment = 1003  # also will have post id
+        student_added_parent = 1004  # also will have student id
+
+    class Parent(Enum):
+        new_message = 2001  # also will have conversation id
+        new_story = 2002  # also will have kelaas id
+        new_comment = 2003  # also will have post id
+        child_joined_kelaas = 2004  # also will have child id
+
+    class Student(Enum):
+        new_post = 3001  # also will have post id
+        new_kelaas_joined = 3002  # also will have kelaas id
+        new_badge = 3003  # will also have badge id
+
+
+class Notification(models.Model):
+    receiver = models.ForeignKey('Person', related_name='notifications')
     has_seen = models.BooleanField(default=False)
 
-    title = models.CharField('notification title', max_length=200)
-    message = models.CharField('notification body', max_length=1000)
     create_date = models.DateTimeField('notification creation date', default=timezone.now)
 
-    type = models.CharField('notification type', max_length=30)
+    type_code = models.IntegerField('notification type code')
+    related_id = models.IntegerField('id of releated object')
+
     # type_id = models.IntegerField
 
     class Meta:
-        ordering = ('-id', )
-
-    def save(self, *args, **kwargs):
-        self.type = NOTIFICATION_KEY_WORD
-        super(System_notification, self).save(args, kwargs)
+        ordering = ('-id',)
 
     @property
     def shamsi_date(self):
-        return JalaliDatetime(self.create_date).strftime(
-            '%A %D %B %N  %h:%v')
+        return to_shamsi_date(self.create_date)
 
     @property
     def time_passed(self):
