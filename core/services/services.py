@@ -52,6 +52,13 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
 # ______________________________________________________________________________________________________
 # ______________________________________________________________________________________________________
 
+def get_not_seen_notification_count(user, person):
+    if user.id == person.id:
+        return user.notifications.filter(has_seen=False).count()
+
+    raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+
+
 def get_student_basic_info(code):
     try:
         code = code.upper()
