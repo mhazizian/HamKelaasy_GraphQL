@@ -9,7 +9,6 @@ import sys
 import platform
 from .jalali import GregorianToJalali, JalaliToGregorian, j_days_in_month
 import re as _re
-import locale as _locale
 
 __VERSION__ = "1.8.2"
 MINYEAR = 1
@@ -23,10 +22,11 @@ if sys.version_info[0] >= 3:  # py3
 else:
     _int_types = (int, long)
 
-if platform.system() == 'Windows':
-    FA_LOCALE = 'Persian_Iran'
-else:
-    FA_LOCALE = 'fa_IR'
+# if platform.system() == 'Windows':
+#     FA_LOCALE = 'Persian_Iran'
+# else:
+#     FA_LOCALE = 'fa_IR'
+FA_LOCALE = 'fa_IR'
 
 
 class time(py_datetime.time):
@@ -161,13 +161,14 @@ class date(object):
         #     self.j_ampm = self.j_ampm_en
 
     def _is_fa_locale(self):
-        if FA_LOCALE in _locale.getlocale():
-            return True
-        if None not in _locale.getlocale():
-            return False
-        if FA_LOCALE in _locale.getdefaultlocale():
-            return True
-        return False
+        return True
+        # if FA_LOCALE in _locale.getlocale():
+        #     return True
+        # if None not in _locale.getlocale():
+        #     return False
+        # if FA_LOCALE in _locale.getdefaultlocale():
+        #     return True
+        # return False
 
     """The smallest possible difference between
     non-equal date objects, timedelta(days=1)."""
