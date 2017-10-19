@@ -15,6 +15,8 @@ from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAA
     Conversation_dialog, Teacher, Temp_phone_number
 
 logger = logging.getLogger('core')
+usage_logger = logging.getLogger('usage_core')
+
 DEFAULT_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 100
 
@@ -102,6 +104,7 @@ def get_students(user, **kwargs):
                 return Kelaas.objects.get(pk=kwargs['kelaas_id']).students.all()
             except Kelaas.DoesNotExist:
                 raise HamkelaasyError(Error_code.Object_not_found.Kelaas)
+        raise HamkelaasyError(Error_code.Kelaas.Id_required)
 
     raise HamkelaasyError(Error_code.Authentication.Permission_denied)
 

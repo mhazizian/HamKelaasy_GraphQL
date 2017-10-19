@@ -40,7 +40,7 @@ def upload_file(request):
                 status=202
             )
         except Exception as e:
-            logger.error(
+            logger.exception(
                 '\nbegin >=============================================\n'
                 + 'user:\n' + unicode(request.user.username)
                 + '\nerror happend on UPLOAD file\n'
@@ -49,7 +49,7 @@ def upload_file(request):
                 + request.body
             )
 
-    logger.info(
+    logger.warning(
         '\nbegin >=============================================\n'
         + 'user:\n'
         + unicode(request.user.username)

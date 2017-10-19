@@ -31,7 +31,7 @@ def index(request):
     status_code = get_status_code(res)
 
     if status_code != 200:
-        logger.info(
+        logger.exception(
             '\nbegin >=============================================\n'
             + 'user:\n'
             + unicode(request.user.username)

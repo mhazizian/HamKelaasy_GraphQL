@@ -42,6 +42,7 @@ class Error_code(object):
 
     class Kelaas(Enum):
         Gender_doesnt_match = 3001
+        Id_required = 3001
 
     class Student(Enum):
         Id_required = 6001
@@ -225,6 +226,10 @@ errors = {
         'status': 400,
     },
 
+    Error_code.Kelaas.Id_required.value: {
+        'message': 'Kelaas id is required',
+        'status': 400
+    },
 
     Error_code.Teacher.Bad_gender.value: {
         'message': 'invalid gender value',

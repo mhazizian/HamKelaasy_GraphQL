@@ -35,7 +35,10 @@ class HamkelaasyError(Exception):
         }
 
     def to_http_response(self):
-        logger.exception('\n>>> HamKelaasyError:\n' + self.message)
+        logger.exception(
+            '\n\nbegin >=============================================\n'
+            + '>>> HamKelaasyError:\n' + self.message
+        )
 
         res = {'errors': [self.to_dictionary()]}
         return HttpResponse(

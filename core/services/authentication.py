@@ -20,6 +20,7 @@ from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAA
 from core.utilz import hash_password
 
 logger = logging.getLogger('core')
+usage_logger = logging.getLogger('usage_core')
 
 
 def represents_int(s):

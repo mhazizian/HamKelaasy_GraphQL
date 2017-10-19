@@ -138,12 +138,18 @@ LOGGING = {
     },
     'handlers': {
         'error_file': {
-            'level': 'INFO',
+            'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filename': './log' + "/logfile",
             'formatter': 'standard',
         },
-        'internal_error_file': {
+        'usage_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': './log' + "/server_usage",
+            'formatter': 'standard',
+        },
+        'server_error_file': {
             'level': 'WARNING',
             'class': 'logging.FileHandler',
             'filename': './log' + "/server_error_logfile",
@@ -152,17 +158,21 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['internal_error_file'],
+            'handlers': ['server_error_file'],
             'propagate': True,
-            'level': 'WARN',
+            'level': 'WARNING',
         },
         'django.db.backends': {
-            'handlers': ['internal_error_file'],
-            'level': 'DEBUG',
+            'handlers': ['server_error_file'],
+            'level': 'WARNING',
             'propagate': False,
         },
         'core': {
-            'handlers': ['internal_error_file', 'error_file'],
+            'handlers': ['error_file'],
+            'level': 'ERROR',
+        },
+        'usage_core': {
+            'handlers': ['usage_file'],
             'level': 'INFO',
         },
     }
