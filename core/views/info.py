@@ -1,30 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
-import requests
-from django.shortcuts import render
-
-import core.services as services
-from django.db import connection
-
-from core.utilz import hash_password
 import json
 import logging
-import random
 
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
+from django.shortcuts import render
+import core.services as services
 
 from core.models import *
 from datetime import datetime
 from datetime import timedelta
-from django.http import HttpResponse
 
 logger = logging.getLogger('core')
 
 
 def info(request):
-    time = datetime.now() - timedelta(days=1)
+    time = datetime.now() - timedelta(hours=24)
 
     return render(request, 'core/info.html', {
         'user_count': Person.objects.count(),
