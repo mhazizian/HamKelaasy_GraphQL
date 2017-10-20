@@ -134,26 +134,6 @@ def init_phone_number(phone_number, is_for_registration=True):
     send_sms(phone_number=phone.phone_number, code=phone.code)
 
 
-def login_by_phone_number(phone_number, code):
-    phone_number = represent_phone_number(phone_number)
-
-    try:
-        phone = Temp_phone_number.objects.get(pk=phone_number)
-
-        if not code == phone.code:
-            raise HamkelaasyError(Error_code.Phone_number.Invalid_number_validator)
-        if not phone.is_registered:
-            raise HamkelaasyError(Error_code.Phone_number.Number_is_not_registered)
-
-        user = User.objects.get(username=phone_number)
-        return Token.objects.get(user=user).key, user.person.type
-
-    except User.DoesNotExist:
-        raise HamkelaasyError(Error_code.Authentication.Login_failed)
-    except Temp_phone_number.DoesNotExist:
-        raise HamkelaasyError(Error_code.Object_not_found.Phone_number)
-
-
 def validate_phone_number(phone_number, code):
     phone_number = represent_phone_number(phone_number)
 
@@ -200,6 +180,26 @@ def login_user(username, password, remote_ip, google_captcha_response, for_andro
         raise HamkelaasyError(Error_code.Authentication.Login_failed)
     except User.DoesNotExist:
         raise HamkelaasyError(Error_code.Authentication.Login_failed)
+
+
+def login_by_phone_number(phone_number, code):
+    phone_number = represent_phone_number(phone_number)
+
+    try:
+        phone = Temp_phone_number.objects.get(pk=phone_number)
+
+        if not code == phone.code:
+            raise HamkelaasyError(Error_code.Phone_number.Invalid_number_validator)
+        if not phone.is_registered:
+            raise HamkelaasyError(Error_code.Phone_number.Number_is_not_registered)
+
+        user = User.objects.get(username=phone_number)
+        return Token.objects.get(user=user).key, user.person.type
+
+    except User.DoesNotExist:
+        raise HamkelaasyError(Error_code.Authentication.Login_failed)
+    except Temp_phone_number.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Phone_number)
 
 
 # _____________________________________________________________________________________
@@ -331,7 +331,7 @@ def reset_password_by_phone_number(phone_number, validator, new_password):
         if (not temp_phone.is_validated) or (not temp_phone.validator == validator):
             raise HamkelaasyError(Error_code.Phone_number.Invalid_number_validator)
 
-        user = User.objects.get(username=temp_phone.phone)
+        user = User.objects.get(username=temp_phone.phone_number)
         user.person.password = hash_password(user.person.create_date, new_password)
         user.person.has_new_password = True
         user.person.save()
