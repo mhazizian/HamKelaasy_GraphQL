@@ -12,5 +12,5 @@ class NotificationType(graphene.ObjectType):
     shamsi_date = graphene.String()
 
     type_code = graphene.Int()
-    related_id = graphene.Int()
+    related_ids = graphene.String()
     related_text = graphene.String()
