@@ -21,4 +21,6 @@ from .certificate_mutation import Assign_certificate
 from .certificate_mutation import Create_certificate
 from .certificate_mutation import Create_certificate_level
 
+from .make_notification_seen import Make_notification_seen
+
 from .perform_task import Perform_task

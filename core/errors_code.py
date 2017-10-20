@@ -21,6 +21,7 @@ class Error_code(object):
         Certificate = 40412
         Badge = 40413
         Phone_number = 40414
+        Notification = 40415
 
     class Phone_number(Enum):
         Invalid_number = 1001
@@ -136,6 +137,12 @@ errors = {
         'message': 'Certificate not found',
         'status': 404
     },
+    Error_code.Object_not_found.Notification.value: {
+        'message': 'Notification not found',
+        'status': 404
+    },
+
+
     Error_code.Phone_number.Invalid_number.value: {
         'message': 'Invalid phone number',
         'status': 400

@@ -12,7 +12,7 @@ from rest_framework.authtoken.models import Token
 from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAAS_POST_KEY_WORD, STORY_KEY_WORD, \
     STUDENT_KEY_WORD, Post, Person, Student, Tag, Comment, Badge_link, Badge, File, Kelaas_post, Story, Conversation, \
     Conversation_message, Certificate, Certificate_link, Certificate_level, Task, System_notification, DIALOG_KEY_WORD, \
-    Conversation_dialog, Teacher, Temp_phone_number
+    Conversation_dialog, Teacher, Temp_phone_number, Notification
 
 logger = logging.getLogger('core')
 usage_logger = logging.getLogger('usage_core')
@@ -898,3 +898,16 @@ def remove_student_from_kelaas(user, student_id, kelaas_id):
         raise HamkelaasyError(Error_code.Object_not_found.Kelaas)
     except Student.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found.Student)
+
+
+def make_notification_seen(user, notification_id):
+    try:
+        notification = Notification.objects.get(pk=notification_id)
+        if not user.id == notification.receiver_id:
+            raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+
+        notification.has_seen = True
+        notification.save()
+        return notification
+    except Notification.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Notification)
