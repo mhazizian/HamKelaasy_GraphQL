@@ -33,6 +33,7 @@ def represents_int(s):
 
 def represent_phone_number(s):
     if not represents_int(s):
+        logger.error('given phone number: ' + s)
         raise HamkelaasyError(Error_code.Phone_number.Invalid_number)
 
     if len(s) == 11 and s[0] == '0':
@@ -40,6 +41,7 @@ def represent_phone_number(s):
     if len(s) == 10 and s[0] == '9':
         s = '98' + s[:]
     if len(s) != 12 or (not s[:2] == '98'):
+        logger.error('given phone number: ' + s)
         raise HamkelaasyError(Error_code.Phone_number.Invalid_number)
     return s
 

@@ -26,6 +26,8 @@ def new_login(request):
     is_for_android = data.get('is_for_android', False)
     remote_ip = get_client_ip(request)
 
+    logger.error('is_for_android:' + is_for_android)
+
     try:
         token, user_type = services.login_user(
             username=username,
@@ -50,6 +52,9 @@ def get_phone_number(request):
     data = json.loads(request.body)
     try:
         phone_number = data.get('phone', '')
+        if phone_number == '':
+            phone_number = data.get('phone_number', '')
+
         is_for_registration = data.get('is_for_registration', True)
 
         services.init_phone_number(phone_number, is_for_registration=is_for_registration)
