@@ -38,9 +38,8 @@ def new_login(request):
             {
                 'token': token,
                 'type': user_type
-            },
-            content_type='application/json',
-        ))
+            })
+        )
 
     except HamkelaasyError as e:
         return e.to_http_response()
@@ -59,9 +58,8 @@ def login_by_phone(request):
             {
                 'token': token,
                 'type': user_type
-            },
-            content_type='application/json',
-        ))
+            })
+        )
     except HamkelaasyError as e:
         return e.to_http_response()
 
