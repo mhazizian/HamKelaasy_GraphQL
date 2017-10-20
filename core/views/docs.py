@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from core.errors_code import errors
 from core.models.notifications import notification_doc as notifs
 
+
 def error_doc(request):
     return HttpResponse(
         '<html><body><pre><code>'
@@ -18,7 +19,7 @@ def notification_doc(request):
         '<html><body>'
         + '''
         <h2>Intro</h2>
-        you can user <b>newNotificationCount</b> in quering personType to achieve number of not seen notifications
+        you can use <b>newNotificationCount</b> in quering personType to achieve number of not seen notifications
         
         <pre><code>
         {
@@ -34,7 +35,7 @@ def notification_doc(request):
         also "notifications" in available in root Query,<br>
         for each notification type, relatedIds , related_text is different and is described below,<br>
         relatedIds is a comma separated string of ids of related objects to this notification<br>
-        you may use it kile this:
+        you may use it like this:
         
         <pre><code>
         {
@@ -49,7 +50,7 @@ def notification_doc(request):
         </code></pre>
         
         
-        to make a notification seen you need to user it's related mutation:
+        to make a notification seen you need to use it's related mutation:
         
         <pre><code>
         mutation{
