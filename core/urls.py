@@ -72,6 +72,9 @@ urlpatterns = [
     url(r'^login$', views.new_login, name='login'),
     url(r'^login/$', views.new_login),
 
+    url(r'^login/phone$', views.login_by_phone, name='login-by-phone'),
+    url(r'^login/phone/$', views.login_by_phone),
+
     url(r'^reset/password/by_phone$', views.reset_password, name='reset-password'),
     url(r'^reset/password/by_phone/$', views.reset_password),
 

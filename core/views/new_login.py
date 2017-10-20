@@ -26,8 +26,6 @@ def new_login(request):
     is_for_android = data.get('is_for_android', False)
     remote_ip = get_client_ip(request)
 
-    logger.error('is_for_android:' + is_for_android)
-
     try:
         token, user_type = services.login_user(
             username=username,
@@ -40,9 +38,30 @@ def new_login(request):
             {
                 'token': token,
                 'type': user_type
-            }
+            },
+            content_type='application/json',
         ))
 
+    except HamkelaasyError as e:
+        return e.to_http_response()
+
+
+@csrf_exempt
+def login_by_phone(request):
+    data = json.loads(request.body)
+
+    phone_number = data.get('phone', '')
+    code = data.get('code', '')
+    try:
+        token, user_type = services.login_by_phone_number(phone_number, code)
+
+        return HttpResponse(json.dumps(
+            {
+                'token': token,
+                'type': user_type
+            },
+            content_type='application/json',
+        ))
     except HamkelaasyError as e:
         return e.to_http_response()
 

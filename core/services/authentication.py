@@ -134,6 +134,26 @@ def init_phone_number(phone_number, is_for_registration=True):
     send_sms(phone_number=phone.phone_number, code=phone.code)
 
 
+def login_by_phone_number(phone_number, code):
+    phone_number = represent_phone_number(phone_number)
+
+    try:
+        phone = Temp_phone_number.objects.get(pk=phone_number)
+
+        if not code == phone.code:
+            raise HamkelaasyError(Error_code.Phone_number.Invalid_number_validator)
+        if not phone.is_registered:
+            raise HamkelaasyError(Error_code.Phone_number.Number_is_not_registered)
+
+        user = User.objects.get(username=phone_number)
+        return Token.objects.get(user=user).key, user.person.type
+
+    except User.DoesNotExist:
+        raise HamkelaasyError(Error_code.Authentication.Login_failed)
+    except Temp_phone_number.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Phone_number)
+
+
 def validate_phone_number(phone_number, code):
     phone_number = represent_phone_number(phone_number)
 
