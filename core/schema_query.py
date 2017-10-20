@@ -91,6 +91,15 @@ def resolve_system_notifications(root, info, page, page_size, new):
     return services.apply_pagination(query_set, page=page, page_size=page_size)
 
 
+def resolve_notifications(root, info, page, page_size, seen_notification, get_all):
+    if not info.context.user.is_authenticated:
+        raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
+    user = info.context.user.person
+
+    query_set = services.get_notifications(user=user, seen_notification=seen_notification, get_all=get_all)
+    return services.apply_pagination(query_set, page=page, page_size=page_size)
+
+
 # Query class:
 class Query(graphene.ObjectType):
     me = graphene.Field(
@@ -189,4 +198,19 @@ class Query(graphene.ObjectType):
         ),
         description="Returns System notification",
         resolver=resolve_system_notifications,
+    )
+    notifications = graphene.List(
+        NotificationType,
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
+        seen_notification=graphene.Boolean(
+            default_value=False,
+            description="if True, only returns seen notification(default = False)",
+        ),
+        get_all=graphene.Boolean(
+            default_value=False,
+            description="if True, returns all of user's notifications(default = False)",
+        ),
+        description="Returns related notification to person",
+        resolver=resolve_notifications,
     )

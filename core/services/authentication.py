@@ -355,3 +355,17 @@ def create_user_PT(phone, validator, first_name, last_name, password, type, gend
         raise HamkelaasyError(Error_code.Object_not_found.Phone_number)
     except IntegrityError:
         raise HamkelaasyError(Error_code.Phone_number.Number_is_registered)
+
+
+def get_student_basic_info(code):
+    try:
+        code = code.upper()
+        student = Student.objects.get(code=code)
+        return {
+            'firstName': student.first_name,
+            'lastName': student.last_name,
+            'age': student.age,
+            'gender': student.gender
+        }
+    except Student.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Student)

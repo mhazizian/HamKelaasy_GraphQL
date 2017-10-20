@@ -59,18 +59,13 @@ def get_not_seen_notification_count(user, person):
     raise HamkelaasyError(Error_code.Authentication.Permission_denied)
 
 
-def get_student_basic_info(code):
-    try:
-        code = code.upper()
-        student = Student.objects.get(code=code)
-        return {
-            'firstName': student.first_name,
-            'lastName': student.last_name,
-            'age': student.age,
-            'gender': student.gender
-        }
-    except Student.DoesNotExist:
-        raise HamkelaasyError(Error_code.Object_not_found.Student)
+def get_notifications(user, seen_notification=False, get_all=False):
+    if not seen_notification:
+        return user.notifications.filter(has_seen=False)
+    if get_all:
+        return user.notifications.all()
+
+    return user.notifications.filter(has_seen=True)
 
 
 def get_kelaas_by_invite_code(invite_code):
