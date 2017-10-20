@@ -189,6 +189,7 @@ def get_kelaas_basic_info_handler(request):
                 'title': kelaas.title,
                 'description': kelaas.description,
                 'shamsi_date': kelaas.shamsi_date,
+                'gender': kelaas.gender,
                 'teacher_first_name': kelaas.teacher.first_name,
                 'teacher_last_name': kelaas.teacher.last_name,
                 'teacher_gender': kelaas.teacher.gender,
