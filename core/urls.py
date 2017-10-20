@@ -44,7 +44,8 @@ urlpatterns = [
     url(r'^docs/errors$', views.error_doc, name='error-doc'),
     url(r'^docs/errors/$', views.error_doc),
 
-
+    url(r'^docs/notifications$', views.notification_doc, name='notification-doc'),
+    url(r'^docs/notifications/$', views.notification_doc),
 
     url(r'^register/phone/sendvalidation$', views.get_phone_number, name='get-phone-number'),
     url(r'^register/phone/sendvalidation/$', views.get_phone_number),
