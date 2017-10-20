@@ -13,7 +13,7 @@ class Notification(models.Model):
     create_date = models.DateTimeField('notification creation date', default=timezone.now)
 
     type_code = models.IntegerField('notification type code')
-    related_ids = models.CharField('ids of related object, seperated by ","')
+    related_ids = models.CharField('ids of related object, seperated by ","', max_length=100)
     related_text = models.CharField('related text for notification', max_length=500)
 
     class Meta:
