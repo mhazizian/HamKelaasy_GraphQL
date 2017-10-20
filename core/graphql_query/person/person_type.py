@@ -14,7 +14,7 @@ class PersonType(graphene.ObjectType):
     signup_completed = graphene.Boolean()
     type = graphene.String()
 
-    notification_count = graphene.Int()
+    new_notification_count = graphene.Int()
 
     # TODO : remove these two after some weak
     has_new_password = graphene.Boolean()
@@ -34,9 +34,9 @@ class PersonType(graphene.ObjectType):
     def resolve_has_mew_password(self, info):
         if self.has_new_password:
             return True
-        return
+        return False
 
-    def resolve_notification_count(self, info):
+    def resolve_new_notification_count(self, info):
         user = info.context.user.person
 
         return services.get_not_seen_notification_count(user, person=self)
