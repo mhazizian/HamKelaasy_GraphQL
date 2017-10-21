@@ -890,9 +890,13 @@ def remove_student_from_kelaas(user, student_id, kelaas_id):
             raise HamkelaasyError(Error_code.Object_not_found.Student)
 
         student = kelaas.students.get(id=student_id)
-        kelaas.students.remove(student)
+
         if student.parents:
-            remove_conversation_dialog(kelaas_id, user.id, student.parents.id)
+            # TODO : check it for buggs
+            if kelaas.students.filter(parents_id=student.parents.id).count() == 1:
+                remove_conversation_dialog(kelaas_id, user.id, student.parents.id)
+                
+        kelaas.students.remove(student)
 
     except Kelaas.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found.Kelaas)
