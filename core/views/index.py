@@ -12,6 +12,7 @@ from rest_framework.decorators import api_view
 from django.http import HttpResponse
 
 logger = logging.getLogger('core')
+usage_logger = logging.getLogger('usage_core')
 
 
 @api_view(['POST'])
@@ -32,6 +33,21 @@ def index(request):
 
     if status_code != 200:
         logger.exception(
+            '\nbegin >=============================================\n'
+            + 'user:\n'
+            + unicode(request.user.username)
+            + ' | type: '
+            + unicode(request.user.person.type)
+            + '\n>>> request:\n'
+            + unicode(data.get('query', ''))
+            + '\n_____var_____\n'
+            + unicode(data.get('variables', None))
+            + '\n>>> response:\n'
+            + unicode(json.dumps(response, indent=4, sort_keys=True))
+            + '\nend >=============================================\n'
+        )
+    else:
+        usage_logger.warning(
             '\nbegin >=============================================\n'
             + 'user:\n'
             + unicode(request.user.username)
