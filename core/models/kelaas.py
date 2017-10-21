@@ -38,7 +38,7 @@ class Kelaas(models.Model):
         if not self.pk:
             self.invite_code = Kelaas.generate_invite_code()
         if not self.kelaas_pic:
-            self.kelaas_pic.name = 'kelaas/default.svg'
+            self.kelaas_pic.name = 'kelaas/default.png'
         super(Kelaas, self).save(args, kwargs)
 
     def __unicode__(self):
