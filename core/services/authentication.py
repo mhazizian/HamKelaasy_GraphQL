@@ -391,3 +391,34 @@ def get_student_basic_info(code):
         }
     except Student.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found.Student)
+
+
+def migrate_user(user, password, phone_number, validator):
+    phone = represent_phone_number(phone_number)
+
+    try:
+        temp_phone = Temp_phone_number.objects.get(pk=phone)
+        if temp_phone.is_registered:
+            raise HamkelaasyError(Error_code.Phone_number.Number_is_registered)
+
+        if (not temp_phone.is_validated) or (not temp_phone.validator == validator):
+            raise HamkelaasyError(Error_code.Phone_number.Invalid_number_validator)
+
+        temp_phone.is_registered = True
+        user.username = temp_phone.phone_number
+        user.save()
+
+        user.person.phone_number = temp_phone.phone_number
+        user.person.phone_number_verified = True
+
+        user.person.save()
+        temp_phone.save()
+
+        user.person.password = hash_password(user.person.create_date, password)
+        user.person.has_new_password = True
+        user.person.save()
+
+        return Token.objects.get(user=user).key, user.person.type
+
+    except IntegrityError:
+        raise HamkelaasyError(Error_code.Phone_number.Number_is_registered)

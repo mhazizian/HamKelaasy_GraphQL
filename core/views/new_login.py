@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 import json
 import logging
 
+from rest_framework.decorators import api_view
+
 import core.services as services
 from core.utilz import HamkelaasyError, get_client_ip
 
@@ -237,6 +239,34 @@ def new_signup_student_by_code(request):
             {
                 'status': 1,
                 'token': Token.objects.get(user=student.user).key
+            })
+        )
+    except HamkelaasyError as e:
+        return e.to_http_response()
+
+
+@api_view(['POST'])
+def migrate_user(request):
+    if not request.user.is_authenticated or not hasattr(request.user, 'person'):
+        return HttpResponse(4011)
+    data = json.loads(request.body)
+
+    phone = data.get('phone', '')
+    validator = data.get('validator', '')
+    password = data['password']
+
+    try:
+        token, user_type = services.migrate_user(
+            user=request.user,
+            password=password,
+            phone_number=phone,
+            validator=validator,
+        )
+
+        return HttpResponse(json.dumps(
+            {
+                'token': token,
+                'type': user_type
             })
         )
     except HamkelaasyError as e:

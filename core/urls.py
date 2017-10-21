@@ -80,4 +80,7 @@ urlpatterns = [
 
     url(r'^info$', views.info, name='info'),
     url(r'^info/$', views.info),
+
+    url(r'^register/migrate$', views.migrate_user, name='migrate'),
+    url(r'^register/migrate/$', views.migrate_user),
 ]
