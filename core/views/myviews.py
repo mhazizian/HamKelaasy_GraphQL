@@ -25,6 +25,21 @@ def my_view(request):
     if (not request.user.is_authenticated) or request.user.username != 'admin':
         return HttpResponse('')
 
+    # for teacher in Teacher.objects.all():
+    #     teacher.gender = 1
+    #     teacher.save()
+    #
+    # return HttpResponse('hi')
+
+    # user = User.objects.get(username='kazem')
+    # token = Token.objects.get(user=user).key
+    # return HttpResponse(str(token))
+
+    student = Student.objects.get(id=165)
+    services.join_kelaas(user=student, invite_code='K3MOO')
+
+
+
     # for person in Person.objects.all():
     #     if person.has_new_password:
     #         continue
@@ -43,11 +58,11 @@ def my_view(request):
     #     logger.info('done for : ' + person.user.username)
     #     person.save()
 
-    for kelaas in Kelaas.objects.all():
-        kelaas.kelaas_pic.name = 'kelaas/default.png'
-        kelaas.save()
-
-    return HttpResponse('salam')
+    # for kelaas in Kelaas.objects.all():
+    #     kelaas.kelaas_pic.name = 'kelaas/default.png'
+    #     kelaas.save()
+    #
+    # return HttpResponse('salamm')
 
     # logger.info('done')
 
@@ -105,7 +120,7 @@ def my_view(request):
     # student.gender = 1
     # student.update()
 
-    return HttpResponse('salammm:Ddm!')
+    # return HttpResponse('salammm:Ddm!')
     # return HttpResponse(
     #     str(student.gender) + " " + student.first_name + " " + student.last_name + " " + student.user.username + " " + str(
     #         student.create_date))

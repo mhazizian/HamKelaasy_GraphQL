@@ -895,7 +895,7 @@ def remove_student_from_kelaas(user, student_id, kelaas_id):
             # TODO : check it for buggs
             if kelaas.students.filter(parents_id=student.parents.id).count() == 1:
                 remove_conversation_dialog(kelaas_id, user.id, student.parents.id)
-                
+
         kelaas.students.remove(student)
 
     except Kelaas.DoesNotExist:
