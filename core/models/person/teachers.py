@@ -19,4 +19,4 @@ class Teacher(Person):
         self.save()
 
     def __unicode__(self):
-        return "teacher: " + unicode(self.last_name)
+        return unicode(self.id) + unicode(self.first_name) + " " + unicode(self.last_name) + "teacher"

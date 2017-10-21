@@ -17,4 +17,4 @@ class Parent(Person):
         self.save()
 
     def __unicode__(self):
-        return unicode(self.id) + unicode(self.last_name)
+        return unicode(self.id) + unicode(self.first_name) + " " + unicode(self.last_name) + "parent"

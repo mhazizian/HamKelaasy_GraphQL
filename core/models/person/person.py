@@ -44,7 +44,7 @@ class Person(models.Model):
         return settings.SERVER_ADDR[:-1] + self.profile_pic.url
 
     def __unicode__(self):
-        return unicode(self.id) + unicode(self.first_name) + " " + unicode(self.last_name) + " username: "
+        return unicode(self.id) + unicode(self.first_name) + " " + unicode(self.last_name)
 
     def save(self, *args, **kwargs):
         if not self.pk:

@@ -36,7 +36,7 @@ class Student(Person):
         self.save()
 
     def __unicode__(self):
-        return "student: " + unicode(self.last_name)
+        return unicode(self.id) + unicode(self.first_name) + " " + unicode(self.last_name) + "student"
 
     @staticmethod
     def generate_code():
