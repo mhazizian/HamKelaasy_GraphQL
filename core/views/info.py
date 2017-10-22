@@ -34,4 +34,7 @@ def info(request):
         'today_kelaas_count': Kelaas.objects.filter(create_date__gte=time).count(),
         'today_story_count': Story.objects.filter(create_date__gte=time).count(),
         'today_message_count': Conversation_message.objects.filter(create_date__gte=time).count(),
+
+        'user_with_new_password': Person.objects.filter(has_new_password=True).count(),
+        'user_with_phone': Person.objects.filter(phone_number_verified=True).count(),
     })
