@@ -171,7 +171,10 @@ def login_user(username, password, remote_ip, google_captcha_response, for_andro
                 raise HamkelaasyError(Error_code.Authentication.Invalid_captcha)
 
         if not User.objects.filter(username=username).exists():
-            username = represent_phone_number(username)
+            try:
+                username = represent_phone_number(username)
+            except HamkelaasyError:
+                raise HamkelaasyError(Error_code.Authentication.Login_failed)
 
         user = User.objects.get(username=username)
         if is_password_correct(user.person, password):
