@@ -29,11 +29,25 @@ class Notification(models.Model):
         delta = timezone.now() - self.create_date
         return pretty_past_time(delta)
 
+    # ****************************************************************************************
+    # ****************************************************************************************
+
+    @staticmethod
+    def create_new_message(reciver, message, kelaas):
+        notif = Notification(
+            receiver=reciver,
+            type_code=Notification_type.General.new_message.value,
+            related_ids=str(message.conversation.id) + ',' + str(kelaas.id) + ',' + str(message.id),
+            related_text=message.body
+        )
+        notif.save()
+        return notif
+
     @staticmethod
     def create_teacher__new_student(teacher, student, kelaas):
         notif = Notification(
             receiver=teacher,
-            type_code=Notification_type.Teacher.new_student,
+            type_code=Notification_type.Teacher.new_student.value,
             related_ids=str(kelaas.id) + ',' + str(student.id),
             related_text=student.first_name + ',' + student.last_name
         )
@@ -44,20 +58,9 @@ class Notification(models.Model):
     def create_teacher__new_parent(teacher, student, kelaas):
         notif = Notification(
             receiver=teacher,
-            type_code=Notification_type.Teacher.new_parent,
+            type_code=Notification_type.Teacher.new_parent.value,
             related_ids=str(kelaas.id) + ',' + str(student.id) + ',' + str(student.parents.id),
             related_text=student.first_name + ',' + student.last_name
-        )
-        notif.save()
-        return notif
-
-    @staticmethod
-    def create_teacher__new_message(teacher, message, kelaas):
-        notif = Notification(
-            receiver=teacher,
-            type_code=Notification_type.Teacher.new_message,
-            related_ids=str(message.conversation.id) + ',' + str(kelaas.id) + ',' + str(message.id),
-            related_text=message.body
         )
         notif.save()
         return notif
@@ -66,9 +69,10 @@ class Notification(models.Model):
     def create_teacher__new_comment(teacher, comment, kelaas):
         notif = Notification(
             receiver=teacher,
-            type_code=Notification_type.Teacher.new_comment,
+            type_code=Notification_type.Teacher.new_comment.value,
             related_ids=str(comment.post.id) + ',' + str(kelaas.id) + ',' + str(comment.owner.id),
             related_text=comment.owner.first_name + ',' + comment.owner.last_name + ',' + comment.body
         )
         notif.save()
         return notif
+
