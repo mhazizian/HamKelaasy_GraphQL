@@ -1,6 +1,8 @@
 import exceptions as exceptions
 import logging
 
+# import make_notification as notification
+
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils import timezone
 
@@ -737,6 +739,7 @@ def join_kelaas(user, invite_code):
             interlocutor_id=kelaas.teacher.id
         )
 
+    # notification.student_joins_kelaas(student=user.student, kelaas=kelaas)
     return kelaas
 
 
