@@ -1,3 +1,5 @@
+import json
+
 import graphene
 
 from core.schema_query import Query as core_query
@@ -27,3 +29,8 @@ class Mutation(core_mutation, graphene.ObjectType):
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
+
+# introspection_dict = schema.introspect()
+# f = open('schema.json', 'w')
+# f.write(json.dumps(introspection_dict))
+# f.close()
