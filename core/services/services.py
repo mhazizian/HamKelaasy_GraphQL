@@ -235,7 +235,7 @@ def get_parent_childes(parent, user, **kwargs):
         if 'kelaas_id' in kwargs:
             if user.teacher.kelaases.filter(kelaas_id=kwargs['kelaas_id']).exist():
                 return parent.childes.filter(kelaases__in=[kwargs['kelaas_id']])
-            return
+            return []
 
         result = []
         # user.kelaases.filter(students__in=[child.id for child in parent.childes.all()])
