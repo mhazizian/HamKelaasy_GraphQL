@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import json
+
 from .person import Person
 from django.db import models
 from core import HamkelaasyError, Error_code
@@ -19,4 +21,14 @@ class Teacher(Person):
         self.save()
 
     def __unicode__(self):
-        return unicode(self.id) + unicode(self.first_name) + " " + unicode(self.last_name) + "teacher"
+        return unicode(json.dumps(
+            {
+                'id': self.id,
+                'username': self.user.username,
+                'firstName': self.first_name,
+                'lastName': self.last_name,
+                'type': self.type,
+                'hasNewPass': self.has_new_password,
+                'phone': self.phone_number,
+            })
+        )

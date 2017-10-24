@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import json
 import random
 
 from django.utils.crypto import get_random_string
@@ -36,7 +37,22 @@ class Student(Person):
         self.save()
 
     def __unicode__(self):
-        return unicode(self.id) + unicode(self.first_name) + " " + unicode(self.last_name) + "student"
+        return unicode(json.dumps(
+            {
+                'id': self.id,
+                'username': self.user.username,
+                'firstName': self.first_name,
+                'lastName': self.last_name,
+                'type': self.type,
+                'code': self.code,
+                'hasNewPass': self.has_new_password,
+                'phone': self.phone_number,
+                'parent': {
+                    'id': self.parents.id,
+                    'username': self.parents.user.username,
+                }
+            })
+        )
 
     @staticmethod
     def generate_code():

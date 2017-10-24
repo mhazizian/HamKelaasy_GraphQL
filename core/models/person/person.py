@@ -1,4 +1,7 @@
 from __future__ import unicode_literals
+
+import json
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -43,9 +46,6 @@ class Person(models.Model):
     def pic(self):
         return settings.SERVER_ADDR[:-1] + self.profile_pic.url
 
-    def __unicode__(self):
-        return unicode(self.id) + unicode(self.first_name) + " " + unicode(self.last_name)
-
     def save(self, *args, **kwargs):
         if not self.pk:
             self.create_date = timezone.now()
@@ -53,6 +53,19 @@ class Person(models.Model):
                 self.password = hash_password(self.create_date, self.password)
                 self.has_new_password = True
         super(Person, self).save(args, kwargs)
+
+    def __unicode__(self):
+        return unicode(json.dumps(
+            {
+                'id': self.id,
+                'username': self.user.username,
+                'firstName': self.first_name,
+                'lastName': self.last_name,
+                'type': self.type,
+                'hasNewPass': self.has_new_password,
+                'phone': self.phone_number,
+            })
+        )
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

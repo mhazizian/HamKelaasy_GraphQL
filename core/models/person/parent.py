@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import json
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -17,4 +19,14 @@ class Parent(Person):
         self.save()
 
     def __unicode__(self):
-        return unicode(self.id) + unicode(self.first_name) + " " + unicode(self.last_name) + "parent"
+        return unicode(json.dumps(
+            {
+                'id': self.id,
+                'username': self.user.username,
+                'firstName': self.first_name,
+                'lastName': self.last_name,
+                'type': self.type,
+                'hasNewPass': self.has_new_password,
+                'phone': self.phone_number,
+            })
+        )
