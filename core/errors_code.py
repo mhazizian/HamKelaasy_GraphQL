@@ -42,7 +42,7 @@ class Error_code(object):
         Invalid_captcha = 40306
 
     class Kelaas(Enum):
-        Gender_doesnt_match = 3001
+        Gender_doesnt_match = 3002
         Id_required = 3001
 
     class Student(Enum):
