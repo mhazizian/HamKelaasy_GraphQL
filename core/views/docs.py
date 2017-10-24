@@ -35,6 +35,7 @@ def notification_doc(request):
         also "notifications" in available in root Query,<br>
         for each notification type, relatedIds , related_text is different and is described below,<br>
         relatedIds is a comma separated string of ids of related objects to this notification<br>
+        relatedText is a comma seperated string of useful string for showing notification<br>
         you may use it like this:
         
         <pre><code>
