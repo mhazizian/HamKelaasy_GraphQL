@@ -37,22 +37,9 @@ class Student(Person):
         self.save()
 
     def __unicode__(self):
-        return unicode(json.dumps(
-            {
-                'id': self.id,
-                'username': self.user.username,
-                'firstName': self.first_name,
-                'lastName': self.last_name,
-                'type': self.type,
-                'code': self.code,
-                'hasNewPass': self.has_new_password,
-                'phone': self.phone_number,
-                'parent': {
-                    'id': self.parents.id,
-                    'username': self.parents.user.username,
-                }
-            })
-        )
+        return ('id:' + str(self.id) + ' username:' + (self.user.username if self.user else "None")
+                + ' firstName:' + self.first_name + ' lastName:' + self.last_name + ' type:' + self.type
+                + ' hasNewPass:' + str(self.has_new_password) + ' phone:' + self.phone_number)
 
     @staticmethod
     def generate_code():

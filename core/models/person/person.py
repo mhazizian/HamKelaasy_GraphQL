@@ -55,17 +55,9 @@ class Person(models.Model):
         super(Person, self).save(args, kwargs)
 
     def __unicode__(self):
-        return unicode(json.dumps(
-            {
-                'id': self.id,
-                'username': self.user.username,
-                'firstName': self.first_name,
-                'lastName': self.last_name,
-                'type': self.type,
-                'hasNewPass': self.has_new_password,
-                'phone': self.phone_number,
-            })
-        )
+        return ('id:' + str(self.id) + ' username:' + (self.user.username if self.user else "None")
+                + ' firstName:' + self.first_name + ' lastName:' + self.last_name + ' type:' + self.type
+                + ' hasNewPass:' + str(self.has_new_password) + ' phone:' + self.phone_number)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
