@@ -1,4 +1,11 @@
-<h2>today</h2>
+<h2>Active Users</h2>
+in last hour : {{ used_service_within_last_hour }} <br>
+in last 24 hours : {{ used_service_within_24_hr }} <br>
+in last last week : {{ used_service_within_last_week}} <br>
+in last last month : {{ used_service_within_last_month }} <br>
+
+
+<h2>Last 24 hours</h2>
 user count: {{ today_user_count }} <br>
 student count: {{ today_student_count }} <br>
 teacher count: {{ today_teacher_count }} <br>
@@ -6,6 +13,8 @@ parent count: {{ today_parent_count }} <br>
 kelaas count: {{ today_kelaas_count }} <br>
 story count: {{ today_story_count }} <br>
 conversation messages count: {{ today_message_count }} <br>
+
+<br>
 
 
 <br><br><br>
@@ -23,4 +32,3 @@ conversation messages count: {{ message_count }} <br>
 <br>
 user with updated pass: {{ user_with_new_password }}<br>
 user with  phone_number: {{ user_with_phone }} <br>
-
