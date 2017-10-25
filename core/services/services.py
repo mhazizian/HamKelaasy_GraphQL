@@ -1,7 +1,7 @@
 import exceptions as exceptions
 import logging
 
-# import make_notification as notification
+import make_notification as notification
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils import timezone
@@ -233,7 +233,7 @@ def get_parent_childes(parent, user, **kwargs):
 
     if user.type == TEACHER_KEY_WORD:
         if 'kelaas_id' in kwargs:
-            if user.teacher.kelaases.filter(kelaas_id=kwargs['kelaas_id']).exist():
+            if user.teacher.kelaases.filter(pk=kwargs['kelaas_id']).exists():
                 return parent.childes.filter(kelaases__in=[kwargs['kelaas_id']])
             return []
 
