@@ -135,6 +135,10 @@ LOGGING = {
             'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
             'datefmt': "%d/%b/%Y %H:%M:%S"
         },
+        'plain_text': {
+            'format': "%(message)s",
+            'datefmt': ""
+        },
     },
     'handlers': {
         'error_file': {
@@ -155,6 +159,12 @@ LOGGING = {
             'filename': './log' + "/server_error_logfile",
             'formatter': 'standard',
         },
+        'func_frequent_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': './log' + "/frequent_logfile",
+            'formatter': 'plain_text',
+        },
     },
     'loggers': {
         'django': {
@@ -174,6 +184,10 @@ LOGGING = {
         'usage_core': {
             'handlers': ['usage_file'],
             'level': 'INFO',
+        },
+        'frequent_core': {
+            'handlers': ['func_frequent_file'],
+            'level': 'DEBUG',
         },
     }
 }

@@ -18,6 +18,7 @@ from core.models import Parent, TEACHER_KEY_WORD, PARENT_KEY_WORD, Kelaas, KELAA
 
 logger = logging.getLogger('core')
 usage_logger = logging.getLogger('usage_core')
+frequent_logger = logging.getLogger('frequent_core')
 
 DEFAULT_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 100
@@ -39,6 +40,8 @@ def apply_pagination(input_list, page=1, page_size=DEFAULT_PAGE_SIZE):
 
 
 def parent_has_access_to_kelaas(kelaas, parent):
+    frequent_logger.debug('parent_has_access_to_kelaas')
+
     for student in parent.childes.all():
         if kelaas.students.filter(pk=student.id).exists():
             return True
@@ -46,6 +49,7 @@ def parent_has_access_to_kelaas(kelaas, parent):
 
 
 def teacher_has_access_to_kelaas(kelaas, teacher):
+    frequent_logger.debug('teacher_has_access_to_kelaas')
     if kelaas.teacher.id == teacher.id:
         return True
     return False
@@ -55,6 +59,8 @@ def teacher_has_access_to_kelaas(kelaas, teacher):
 # ______________________________________________________________________________________________________
 
 def get_not_seen_notification_count(user, person):
+    frequent_logger.debug('get_not_seen_notification_count')
+
     if user.id == person.id:
         return user.notifications.filter(has_seen=False).count()
 
@@ -62,6 +68,8 @@ def get_not_seen_notification_count(user, person):
 
 
 def get_notifications(user, seen_notification=False, get_all=False):
+    frequent_logger.debug('get_notifications')
+
     if not seen_notification:
         return user.notifications.filter(has_seen=False)
     if get_all:
@@ -71,6 +79,8 @@ def get_notifications(user, seen_notification=False, get_all=False):
 
 
 def get_kelaas_by_invite_code(invite_code):
+    frequent_logger.debug('get_kelaas_by_invite_code')
+
     try:
         return Kelaas.objects.get(invite_code=invite_code)
     except Kelaas.DoesNotExist:
@@ -78,6 +88,8 @@ def get_kelaas_by_invite_code(invite_code):
 
 
 def get_student(user, **kwargs):
+    frequent_logger.debug('get_student')
+
     if user.type == STUDENT_KEY_WORD:
         return user.student
 
@@ -99,6 +111,8 @@ def get_student(user, **kwargs):
 
 
 def get_students(user, **kwargs):
+    frequent_logger.debug('get_students')
+
     if user.type == PARENT_KEY_WORD:
         return user.parent.childes.all()
 
@@ -114,6 +128,8 @@ def get_students(user, **kwargs):
 
 
 def get_kelaas(user, kelaas_id):
+    frequent_logger.debug('get_kelaas')
+
     if user.type == TEACHER_KEY_WORD:
         try:
             return user.teacher.kelaases.get(pk=kelaas_id)
@@ -136,6 +152,8 @@ def get_kelaas(user, kelaas_id):
 
 
 def get_kelaases(user, **kwargs):
+    frequent_logger.debug('get_kelaases')
+
     if user.type == TEACHER_KEY_WORD:
         return user.teacher.kelaases.all()
 
@@ -154,6 +172,8 @@ def get_kelaases(user, **kwargs):
 
 
 def get_teacher(user):
+    frequent_logger.debug('get_teacher')
+
     if user.type == TEACHER_KEY_WORD:
         return user.teacher
 
@@ -161,6 +181,8 @@ def get_teacher(user):
 
 
 def get_parent(user, **kwargs):
+    frequent_logger.debug('get_parent')
+
     if user.type == PARENT_KEY_WORD:
         return user.parent
 
@@ -181,6 +203,8 @@ def get_parent(user, **kwargs):
 
 
 def get_badge_types(**kwargs):
+    frequent_logger.debug('get_badge_types')
+
     if 'id' in kwargs:
         id = kwargs['id']
         return Badge.objects.get(pk=id)
@@ -189,6 +213,8 @@ def get_badge_types(**kwargs):
 
 
 def get_certificate(id):
+    frequent_logger.debug('get_certificate')
+
     try:
         return Certificate.objects.get(pk=id)
     except Certificate.DoesNotExist:
@@ -196,10 +222,14 @@ def get_certificate(id):
 
 
 def get_tags():
+    frequent_logger.debug('get_tags')
+
     return Tag.objects.all()
 
 
 def get_conversation(user, conversation_id):
+    frequent_logger.debug('get_conversation')
+
     try:
         conversation = Conversation.objects.get(pk=conversation_id)
         if conversation.members.filter(id=user.id).exists():
@@ -211,6 +241,8 @@ def get_conversation(user, conversation_id):
 
 
 def get_system_notifications(user, new=False):
+    frequent_logger.debug('get_system_notifications')
+
     # TODO show system notification for each user type
     if new and not user.last_sys_notification_seen:
         response = System_notification.objects.filter(create_date__gte=user.last_sys_notofication_seen)
@@ -228,6 +260,8 @@ def get_system_notifications(user, new=False):
 
 
 def get_parent_childes(parent, user, **kwargs):
+    frequent_logger.debug('get_parent_childes')
+
     if parent.id == user.id:
         return parent.childes.all()
 
@@ -248,6 +282,8 @@ def get_parent_childes(parent, user, **kwargs):
 
 
 def get_parent_child(parent, user, childe_id):
+    frequent_logger.debug('get_parent_child')
+
     try:
         if parent.id == user.id:
             return parent.childes.get(pk=childe_id)
@@ -264,6 +300,8 @@ def get_parent_child(parent, user, childe_id):
 
 
 def get_teacher_kelaases(teacher, user):
+    frequent_logger.debug('get_teacher_kelaases')
+
     if not user.id == teacher.id:
         raise HamkelaasyError(Error_code.Authentication.Permission_denied)
 
@@ -271,6 +309,8 @@ def get_teacher_kelaases(teacher, user):
 
 
 def get_teacher_kelaas(teacher, user, kelaas_id):
+    frequent_logger.debug('get_teacher_kelaas')
+
     if not user.id == teacher.id:
         raise HamkelaasyError(Error_code.Authentication.Permission_denied)
 
@@ -281,12 +321,19 @@ def get_teacher_kelaas(teacher, user, kelaas_id):
 
 
 def get_student_code(student, user):
+    frequent_logger.debug('get_student_code')
+
     if student.id == user.id:
         return student.code
+    if user.type == TEACHER_KEY_WORD:
+        if user.teacher.kelaases.filter(students__in=[student.id]).exists():
+            return student.code
     raise HamkelaasyError(Error_code.Authentication.Permission_denied)
 
 
 def get_student_kelaases(student, user):
+    frequent_logger.debug('get_student_kelaases')
+
     if user.id == student.id:
         if student.parents:
             return student.kelaases.all().order_by('-id')
@@ -303,6 +350,8 @@ def get_student_kelaases(student, user):
 
 
 def get_student_kelaas(student, user, kelaas_id):
+    frequent_logger.debug('get_student_kelaas')
+
     try:
         if user.id == student.id:
             if student.parents:
@@ -322,6 +371,8 @@ def get_student_kelaas(student, user, kelaas_id):
 
 
 def get_student_badges(student, user, **kwargs):
+    frequent_logger.debug('get_student_badges')
+
     if user.id == student.id:
         if student.parents:
             if 'kelaas_id' in kwargs:
@@ -349,6 +400,8 @@ def get_student_badges(student, user, **kwargs):
 
 
 def get_student_parent(student, user):
+    frequent_logger.debug('get_student_parent')
+
     if user.id == student.id:
         return student.parents
 
@@ -364,10 +417,14 @@ def get_student_parent(student, user):
 
 
 def get_kelaas_tags(kelaas):
+    frequent_logger.debug('get_kelaas_tags')
+
     return kelaas.tags.all()
 
 
 def get_kelaas_students(kelaas, user):
+    frequent_logger.debug('get_kelaas_students')
+
     if user.type == TEACHER_KEY_WORD:
         if teacher_has_access_to_kelaas(kelaas=kelaas, teacher=user.teacher):
             return kelaas.students.all()
@@ -379,6 +436,8 @@ def get_kelaas_students(kelaas, user):
 
 
 def kelaas__get_kelaas_post(kelaas, user):
+    frequent_logger.debug('kelaas__get_kelaas_post')
+
     if user.type == PARENT_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Permission_denied)
 
@@ -389,6 +448,8 @@ def kelaas__get_kelaas_post(kelaas, user):
 
 
 def kelaas_get_stories(kelaas, user):
+    frequent_logger.debug('kelaas_get_stories')
+
     if user.type == TEACHER_KEY_WORD:
         if teacher_has_access_to_kelaas(kelaas, user.teacher):
             return kelaas.posts.filter(type=STORY_KEY_WORD).all().order_by('-id')
@@ -401,10 +462,14 @@ def kelaas_get_stories(kelaas, user):
 
 
 def kelaas__get_conversations(kelaas, user):
+    frequent_logger.debug('kelaas__get_conversations')
+
     return kelaas.conversations.filter(members__id=user.id).order_by('-last_message_time')
 
 
 def kelaas__get_conversation(kelaas, user, conversation_id):
+    frequent_logger.debug('kelaas__get_conversation')
+
     if kelaas.conversations.filter(members__id=user.id, id=conversation_id).exists():
         return kelaas.conversations.filter(members__id=user.id, id=conversation_id).first()
 
@@ -412,6 +477,8 @@ def kelaas__get_conversation(kelaas, user, conversation_id):
 
 
 def kelaas__get_invite_code(kelaas, user):
+    frequent_logger.debug('kelaas__get_invite_code')
+
     if user.type == TEACHER_KEY_WORD:
         if teacher_has_access_to_kelaas(kelaas, user.teacher):
             return kelaas.invite_code
@@ -429,46 +496,64 @@ def kelaas__get_invite_code(kelaas, user):
 
 
 def post__get_comments(post, user):
+    frequent_logger.debug('post__get_comments')
+
     # TODO permission checking
     return post.comments.all().order_by('-id')
 
 
 def post__get_comments_count(post, user):
+    frequent_logger.debug('post__get_comments_count')
+
     # TODO permission checking
     return post.comments.count()
 
 
 def story__get_likes_count(story, user):
+    frequent_logger.debug('story__get_likes_count')
+
     # TODO permission checking
     return story.like_count
 
 
 def kelaas_post__get_files(kelaas_post, user):
+    frequent_logger.debug('kelaas_post__get_files')
+
     # TODO permission checking
     return kelaas_post.files.all()
 
 
 def conversation__get_messages(conversation, user):
+    frequent_logger.debug('conversation__get_messages')
+
     # TODO permission checking
     return conversation.messages.all().order_by('-id')
 
 
 def conversation__get_last_message(conversation, user):
+    frequent_logger.debug('conversation__get_last_message')
+
     # TODO permissopn checking
     return conversation.messages.all().last()
 
 
 def messages__is_my_message(message, user):
+    frequent_logger.debug('messages__is_my_message')
+
     if user.id == message.writer.id:
         return True
     return False
 
 
 def certificate__get_levels(certificate, user=None):
+    frequent_logger.debug('certificate__get_levels')
+
     return certificate.levels.all()
 
 
 def is_my_comment(user, comment):
+    frequent_logger.debug('is_my_comment')
+
     if comment.owner.id == user.id:
         return True
     return False
@@ -478,6 +563,8 @@ def is_my_comment(user, comment):
 # ______________________________________________________________________________________________________
 
 def create_kelaas(user, title, description, gender, tags):
+    frequent_logger.debug('create_kelaas')
+
     if not user.type == TEACHER_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_teacher)
 
@@ -503,6 +590,8 @@ def create_kelaas(user, title, description, gender, tags):
 
 
 def add_child(user, child_code):
+    frequent_logger.debug('add_child')
+
     if not user.type == PARENT_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_parent)
 
@@ -528,6 +617,8 @@ def add_child(user, child_code):
 
 
 def add_child_by_token(user, child_token):
+    frequent_logger.debug('add_child_by_token')
+
     if not user.type == PARENT_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_parent)
 
@@ -552,6 +643,8 @@ def add_child_by_token(user, child_token):
 
 
 def add_comment(user, post_id, body):
+    frequent_logger.debug('add_comment')
+
     try:
         post = Post.objects.get(pk=post_id)
     except Post.DoesNotExist:
@@ -584,6 +677,8 @@ def add_comment(user, post_id, body):
 
 
 def delete_comment(user, comment_id):
+    frequent_logger.debug('delete_comment')
+
     try:
         comment = Comment.objects.get(id=comment_id)
         if comment.owner_id == user.id:
@@ -601,6 +696,8 @@ def delete_comment(user, comment_id):
 
 
 def assign_badge(user, kelaas_id, student_id, badges):
+    frequent_logger.debug('assign_badge')
+
     if not user.type == TEACHER_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_teacher)
     teacher = user.teacher
@@ -633,6 +730,8 @@ def assign_badge(user, kelaas_id, student_id, badges):
 
 
 def create_kelaas_post(user, kelaas_id, title, description, files):
+    frequent_logger.debug('create_kelaas_post')
+
     if not user.type == TEACHER_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_teacher)
 
@@ -663,6 +762,8 @@ def create_kelaas_post(user, kelaas_id, title, description, files):
 
 
 def delete_post(user, post_id):
+    frequent_logger.debug('delete_post')
+
     if not user.type == TEACHER_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_teacher)
 
@@ -677,6 +778,8 @@ def delete_post(user, post_id):
 
 
 def create_story(user, kelaas_id, title, description, pic_id=None):
+    frequent_logger.debug('create_story')
+
     if not user.type == TEACHER_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_teacher)
 
@@ -701,6 +804,8 @@ def create_story(user, kelaas_id, title, description, pic_id=None):
 
 
 def join_kelaas_for_parent(user, invite_code, student_id):
+    frequent_logger.debug('join_kelaas_for_parent')
+
     if not user.type == PARENT_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_parent)
 
@@ -716,6 +821,8 @@ def join_kelaas_for_parent(user, invite_code, student_id):
 
 
 def join_kelaas(user, invite_code):
+    frequent_logger.debug('join_kelaas')
+
     if not user.type == STUDENT_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_student)
 
@@ -744,6 +851,8 @@ def join_kelaas(user, invite_code):
 
 
 def send_message(user, conversation_id, message):
+    frequent_logger.debug('send_message')
+
     try:
         conversation = Conversation.objects.get(pk=conversation_id)
     except Conversation.DoesNotExist:
@@ -761,7 +870,9 @@ def send_message(user, conversation_id, message):
     return msg
 
 
-def assign_certificate(user, type_id, level, owner_id, ):
+def assign_certificate(user, type_id, level, owner_id):
+    frequent_logger.debug('assign_certificate')
+
     if not user.type == TEACHER_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_teacher)
 
@@ -793,6 +904,8 @@ def assign_certificate(user, type_id, level, owner_id, ):
 
 
 def create_certificate(user, title, description):
+    frequent_logger.debug('create_certificate')
+
     # TODO permission check!!
     # TODO duplicate certificate?
 
@@ -809,6 +922,8 @@ def create_certificate(user, title, description):
 
 
 def create_certificate_level(user, certificate_id, level, level_description):
+    frequent_logger.debug('create_certificate_level')
+
     # TODO permission checking
     try:
         certificate = Certificate.objects.get(pk=certificate_id)
@@ -831,6 +946,8 @@ def create_certificate_level(user, certificate_id, level, level_description):
 
 
 def create_dialog(user, kelaas_id, interlocutor_id):
+    frequent_logger.debug('create_dialog')
+
     # TODO permission denied!!
     try:
         kelaas = Kelaas.objects.get(pk=kelaas_id)
@@ -855,6 +972,8 @@ def create_dialog(user, kelaas_id, interlocutor_id):
 
 
 def perform_task(user, task_id):
+    frequent_logger.debug('perform_task')
+
     try:
         task = Task.objects.get(pk=task_id)
         if not task.student_id == user.id:
@@ -869,6 +988,8 @@ def perform_task(user, task_id):
 
 
 def remove_conversation_dialog(kelaas_id, user1_id, user2_id):
+    frequent_logger.debug('remove_conversation_dialog')
+
     try:
         kelaas = Kelaas.objects.get(id=kelaas_id)
         u1 = Person.objects.get(id=user1_id)
@@ -884,6 +1005,8 @@ def remove_conversation_dialog(kelaas_id, user1_id, user2_id):
 
 
 def remove_student_from_kelaas(user, student_id, kelaas_id):
+    frequent_logger.debug('remove_student_from_kelaas')
+
     if not user.type == TEACHER_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_teacher)
 
@@ -908,6 +1031,8 @@ def remove_student_from_kelaas(user, student_id, kelaas_id):
 
 
 def make_notification_seen(user, notification_id):
+    frequent_logger.debug('make_notification_seen')
+
     try:
         notification = Notification.objects.get(pk=notification_id)
         if not user.id == notification.receiver_id:
