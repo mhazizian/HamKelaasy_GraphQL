@@ -19,39 +19,15 @@ urlpatterns = [
     url(r'^file/upload$', views.upload_file, name='upload'),
     url(r'^file/upload/$', views.upload_file),
 
-    # endpoint for redirecting to fard.ir with provided redirect_url
-    url(r'^fard/login$', views.login),
-    url(r'^fard/login/$', views.login),
-
-    # endpoint for sending user_data for registration and getting login token
-    url(r'^fard/register$', views.signup, name='signup'),
-    url(r'^fard/register/$', views.signup),
-
-    # endpoint for receiving data from user_temp table
-    url(r'^fard/temp/data$', views.temp_user_handler, name='signup'),
-    url(r'^fard/temp/data/$', views.temp_user_handler),
-
-    # Listening url for getting data from fard.ir:
-    url(r'^' + views.Fard_API().listening_local_url + '$', views.resolve_fard, name='fard-listening'),
-
     # for getting besic kelaas information using kelaas invite code
     url(r'^kelaas/basic_info$', views.get_kelaas_basic_info_handler, name='kelaas-basic-information'),
     url(r'^kelaas/basic_info/$', views.get_kelaas_basic_info_handler),
-
-    url(r'^apply$', views.my_view, name='test'),
-    url(r'^apply/$', views.my_view),
-
-    url(r'^docs/errors$', views.error_doc, name='error-doc'),
-    url(r'^docs/errors/$', views.error_doc),
-
-    url(r'^docs/notifications$', views.notification_doc, name='notification-doc'),
-    url(r'^docs/notifications/$', views.notification_doc),
 
     url(r'^register/phone/sendvalidation$', views.get_phone_number, name='get-phone-number'),
     url(r'^register/phone/sendvalidation/$', views.get_phone_number),
 
     url(r'^register/phone/validate$', views.validate_phone_number, name='validate-phone-number'),
-    url(r'^register/phone/validate/$', views.validate_phone_number,),
+    url(r'^register/phone/validate/$', views.validate_phone_number, ),
 
     url(r'^register/parent$', views.new_signup_parent, name='signup-parent'),
     url(r'^register/parent/$', views.new_signup_parent, name='signup-parent'),
@@ -68,7 +44,6 @@ urlpatterns = [
     url(r'^register/student/code$', views.new_signup_student_by_code, name='signup-student'),
     url(r'^register/student/code/$', views.new_signup_student_by_code),
 
-
     url(r'^login$', views.new_login, name='login'),
     url(r'^login/$', views.new_login),
 
@@ -78,9 +53,18 @@ urlpatterns = [
     url(r'^reset/password/by_phone$', views.reset_password, name='reset-password'),
     url(r'^reset/password/by_phone/$', views.reset_password),
 
+    url(r'^register/migrate$', views.migrate_user, name='migrate'),
+    url(r'^register/migrate/$', views.migrate_user),
+
     url(r'^info$', views.info, name='info'),
     url(r'^info/$', views.info),
 
-    url(r'^register/migrate$', views.migrate_user, name='migrate'),
-    url(r'^register/migrate/$', views.migrate_user),
+    url(r'^docs/errors$', views.error_doc, name='error-doc'),
+    url(r'^docs/errors/$', views.error_doc),
+
+    url(r'^docs/notifications$', views.notification_doc, name='notification-doc'),
+    url(r'^docs/notifications/$', views.notification_doc),
+
+    url(r'^apply$', views.my_view, name='test'),
+    url(r'^apply/$', views.my_view),
 ]

@@ -271,3 +271,32 @@ def migrate_user(request):
         )
     except HamkelaasyError as e:
         return e.to_http_response()
+
+
+@csrf_exempt
+def get_kelaas_basic_info_handler(request):
+    # TODO security problem: on brute force ...
+    if request.method == 'POST':
+
+        try:
+            data = json.loads(request.body)
+            kelaas_code = data.get('kelaas_code', '')
+            kelaas_code = kelaas_code.upper()
+            kelaas = services.get_kelaas_by_invite_code(invite_code=kelaas_code)
+
+            res = {
+                'title': kelaas.title,
+                'description': kelaas.description,
+                'shamsi_date': kelaas.shamsi_date,
+                'gender': kelaas.gender,
+                'teacher_first_name': kelaas.teacher.first_name,
+                'teacher_last_name': kelaas.teacher.last_name,
+                'teacher_gender': kelaas.teacher.gender,
+            }
+            return HttpResponse(
+                unicode(json.dumps(res)),
+                status=200
+            )
+        except HamkelaasyError as e:
+            return e.to_http_response()
+    return HttpResponse('Bad request', status=405)
