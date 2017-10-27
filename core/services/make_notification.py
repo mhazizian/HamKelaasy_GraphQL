@@ -35,3 +35,21 @@ def join_kelaas_by_teacher(student, kelaas):
     pass
     # TODO create notification for student
     # TODO create notification for student's parent
+
+
+def parent_joined_kelaas(kelaas, student):
+    if not student.parents:
+        return
+
+    Notification.create_teacher__new_parent(teacher=kelaas.teacher, student=student)
+
+
+def parent_setted(student):
+    if not student.parents:
+        return
+
+    # TODO : send notification for student
+
+    for kelaas in student.kelaases.all():
+        parent_joined_kelaas(kelaas=kelaas, student=student)
+    pass

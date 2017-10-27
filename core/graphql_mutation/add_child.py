@@ -24,7 +24,7 @@ class Add_child(graphene.Mutation):
             raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
         user = info.context.user.person
 
-        return services.add_child(user=user, child_code=data.child_code)
+        return services.add_child_by_code(user=user, child_code=data.child_code)
 
 
 # ______________________________________________________________________

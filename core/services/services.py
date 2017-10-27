@@ -589,23 +589,14 @@ def create_kelaas(user, title, description, gender, tags):
     return kelaas
 
 
-def add_child(user, child_code):
-    frequent_logger.debug('add_child')
+def add_child(user, student):
+    if student.parents and student.parents.id == user.id:
+        return student
+    if student.parents:
+        raise HamkelaasyError(Error_code.Student.Has_parent)
 
-    if not user.type == PARENT_KEY_WORD:
-        raise HamkelaasyError(Error_code.Authentication.Only_parent)
-
-    try:
-        student = Student.objects.get(code=child_code)
-        if student.parents and student.parents.id == user.id:
-            return student
-        if student.parents:
-            raise HamkelaasyError(Error_code.Student.Has_parent)
-
-        student.parents = user.parent
-        student.my_save()
-    except Student.DoesNotExist:
-        raise HamkelaasyError(Error_code.Object_not_found.Student)
+    student.parents = user.parent
+    student.my_save()
 
     for kelaas in student.kelaases.all():
         create_dialog(
@@ -613,7 +604,21 @@ def add_child(user, child_code):
             kelaas_id=kelaas.id,
             interlocutor_id=kelaas.teacher.id
         )
+    notification.parent_setted(student=student)
     return student
+
+
+def add_child_by_code(user, child_code):
+    frequent_logger.debug('add_child_by_code')
+
+    if not user.type == PARENT_KEY_WORD:
+        raise HamkelaasyError(Error_code.Authentication.Only_parent)
+
+    try:
+        student = Student.objects.get(code=child_code)
+        return add_child(user=user, student=student)
+    except Student.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Student)
 
 
 def add_child_by_token(user, child_token):
@@ -625,21 +630,9 @@ def add_child_by_token(user, child_token):
     try:
         temp = Token.objects.get(key=child_token)
         student = temp.user.person.student
-        if student.parents:
-            raise HamkelaasyError(Error_code.Student.Has_parent)
-
-        student.parents = user.parent
-        student.my_save()
+        return add_child(user=user, student=student)
     except AttributeError:
         raise HamkelaasyError(Error_code.Object_not_found.Student)
-
-    for kelaas in student.kelaases.all():
-        create_dialog(
-            user=user.parent,
-            kelaas_id=kelaas.id,
-            interlocutor_id=kelaas.teacher.id
-        )
-    return student
 
 
 def add_comment(user, post_id, body):
@@ -859,6 +852,7 @@ def join_kelaas(user, kelaas):
             kelaas_id=kelaas.id,
             interlocutor_id=kelaas.teacher.id
         )
+        notification.parent_joined_kelaas(kelaas=kelaas, student=user.student)
 
     return kelaas
 
