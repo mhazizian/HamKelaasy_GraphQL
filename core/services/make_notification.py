@@ -53,3 +53,10 @@ def parent_setted(student):
     for kelaas in student.kelaases.all():
         parent_joined_kelaas(kelaas=kelaas, student=student)
     pass
+
+
+def new_comment(comment):
+    kelaas = comment.post.kelaas
+    Notification.create_teacher__new_comment(teacher=kelaas.teacher, comment=comment, kelaas=kelaas)
+
+    # TODO : create notification for other members?!

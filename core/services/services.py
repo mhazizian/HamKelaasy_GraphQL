@@ -666,6 +666,7 @@ def add_comment(user, post_id, body):
         owner_id=user.id,
     )
     comment.save()
+    notification.new_comment(comment=comment)
     return comment
 
 
