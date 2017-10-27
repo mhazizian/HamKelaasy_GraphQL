@@ -63,7 +63,8 @@ def new_comment(comment):
 
 
 def new_message(writer, message):
-    for member in message.conversation.members.all():
+    conv = message.conversation
+    for member in conv.members.all():
         if member.id == writer.id:
             continue
-        Notification.create_new_message(reciver=member, message=message)
+        Notification.create_new_message(reciver=member, message=message, kelaas=conv.kelaas)
