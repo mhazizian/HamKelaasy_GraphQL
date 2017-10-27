@@ -875,6 +875,7 @@ def send_message(user, conversation_id, message):
         conversation_id=conversation_id
     )
     msg.save()
+    notification.new_message(message=message, writer=user)
     return msg
 
 

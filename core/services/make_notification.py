@@ -60,3 +60,10 @@ def new_comment(comment):
     Notification.create_teacher__new_comment(teacher=kelaas.teacher, comment=comment, kelaas=kelaas)
 
     # TODO : create notification for other members?!
+
+
+def new_message(writer, message):
+    for member in message.conversation.members.all():
+        if member.id == writer.id:
+            continue
+        Notification.create_new_message(reciver=member, message=message)
