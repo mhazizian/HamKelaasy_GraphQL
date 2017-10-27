@@ -41,7 +41,7 @@ def parent_joined_kelaas(kelaas, student):
     if not student.parents:
         return
 
-    Notification.create_teacher__new_parent(teacher=kelaas.teacher, student=student)
+    Notification.create_teacher__new_parent(teacher=kelaas.teacher, student=student, kelaas=kelaas)
 
 
 def parent_setted(student):
