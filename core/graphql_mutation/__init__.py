@@ -24,3 +24,5 @@ from .certificate_mutation import Create_certificate_level
 from .make_notification_seen import Make_notification_seen
 
 from .perform_task import Perform_task
+
+from .edit_profile import Edit_profile

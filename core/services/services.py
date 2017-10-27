@@ -1052,3 +1052,16 @@ def make_notification_seen(user, notification_id):
         return notification
     except Notification.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found.Notification)
+
+
+def edit_profile(user, new_first_name='', new_last_name=''):
+    if user.type == TEACHER_KEY_WORD:
+        if not new_first_name == '':
+            user.first_name = new_first_name
+        if not new_last_name == '':
+            user.last_name = new_last_name
+        user.person.save()
+        return user
+
+    raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+
