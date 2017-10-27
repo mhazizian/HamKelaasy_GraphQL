@@ -1060,7 +1060,7 @@ def edit_profile(user, new_first_name='', new_last_name=''):
             user.first_name = new_first_name
         if not new_last_name == '':
             user.last_name = new_last_name
-        user.person.save()
+        user.save()
         return user
 
     raise HamkelaasyError(Error_code.Authentication.Permission_denied)
