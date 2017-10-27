@@ -26,7 +26,7 @@ class Join_kelaas_for_parent(graphene.Mutation):
             raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
         user = info.context.user.person
 
-        return services.join_kelaas_for_parent(
+        return services.join_kelaas_by_parent(
             user=user,
             invite_code=data.invite_code,
             student_id=data.student_id,

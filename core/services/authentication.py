@@ -316,6 +316,7 @@ def create_student_for_kelaas(user, first_name, last_name, gender, age, kelaas_i
         if kelaas.gender != 2 and kelaas.gender != student.gender:
             raise HamkelaasyError(Error_code.Kelaas.Gender_doesnt_match)
 
+        # TODO : move t to another func or not?!
         kelaas.students.add(student)
         kelaas.save()
         return student

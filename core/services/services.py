@@ -803,8 +803,8 @@ def create_story(user, kelaas_id, title, description, pic_id=None):
     return story
 
 
-def join_kelaas_for_parent(user, invite_code, student_id):
-    frequent_logger.debug('join_kelaas_for_parent')
+def join_kelaas_by_parent(user, invite_code, student_id):
+    frequent_logger.debug('join_kelaas_by_parent')
 
     if not user.type == PARENT_KEY_WORD:
         raise HamkelaasyError(Error_code.Authentication.Only_parent)
@@ -814,23 +814,37 @@ def join_kelaas_for_parent(user, invite_code, student_id):
         if not student.parents.id == user.id:
             raise HamkelaasyError(Error_code.Authentication.Permission_denied)
 
-        return join_kelaas(user=student, invite_code=invite_code)
+        kelaas = join_kelaas_using_invite_code(user=student, invite_code=invite_code)
+        notification.join_kelaas_by_parent(student=student, kelaas=kelaas)
+        return kelaas
 
     except Student.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found.Student)
 
 
-def join_kelaas(user, invite_code):
-    frequent_logger.debug('join_kelaas')
+def join_kelaas_by_student(user, invite_code):
+    frequent_logger.debug('join_kelaas_by_student')
+    kelaas = join_kelaas_using_invite_code(user=user, invite_code=invite_code)
+    notification.join_kelaas_by_student(student=user, kelaas=kelaas)
+    return kelaas
 
-    if not user.type == STUDENT_KEY_WORD:
-        raise HamkelaasyError(Error_code.Authentication.Only_student)
+
+def join_kelaas_using_invite_code(user, invite_code):
+    frequent_logger.debug('join_kelaas_using_invite_code')
 
     invite_code = invite_code.upper()
     try:
         kelaas = Kelaas.objects.get(invite_code=invite_code)
+        return join_kelaas(user=user, kelaas=kelaas)
     except Kelaas.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found.Kelaas)
+
+
+def join_kelaas(user, kelaas):
+    frequent_logger.debug('join_kelaas')
+
+    if not user.type == STUDENT_KEY_WORD:
+        raise HamkelaasyError(Error_code.Authentication.Only_student)
 
     if kelaas.gender != 2 and kelaas.gender != user.student.gender:
         raise HamkelaasyError(Error_code.Kelaas.Gender_doesnt_match)
@@ -846,7 +860,6 @@ def join_kelaas(user, invite_code):
             interlocutor_id=kelaas.teacher.id
         )
 
-    # notification.student_joins_kelaas(student=user.student, kelaas=kelaas)
     return kelaas
 
 

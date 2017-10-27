@@ -25,4 +25,4 @@ class Join_kelaas(graphene.Mutation):
             raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
         user = info.context.user.person
 
-        return services.join_kelaas(user=user, invite_code=data.invite_code)
+        return services.join_kelaas_by_student(user=user, invite_code=data.invite_code)
