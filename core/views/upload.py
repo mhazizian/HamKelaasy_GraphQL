@@ -45,8 +45,6 @@ def upload_file(request):
                 + 'user:\n' + unicode(request.user.username)
                 + '\nerror happend on UPLOAD file\n'
                 + e.message
-                + '\nrequest body:\n'
-                + request.body
             )
 
     logger.warning(
