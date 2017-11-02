@@ -15,7 +15,7 @@ class Parent(Person):
     def my_save(self):
         self.type = PARENT_KEY_WORD
         if not self.profile_pic:
-            self.profile_pic.name = 'parent.svg'
+            self.profile_pic.name = 'parent.png'
         self.save()
 
     def __unicode__(self):

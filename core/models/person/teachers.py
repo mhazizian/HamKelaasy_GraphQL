@@ -15,7 +15,7 @@ class Teacher(Person):
     def my_save(self):
         self.type = TEACHER_KEY_WORD
         if not self.profile_pic:
-            self.profile_pic.name = 'teacher.svg'
+            self.profile_pic.name = 'teacher.png'
         if self.gender != 0 and self.gender != 1:
             raise HamkelaasyError(Error_code.Teacher.Bad_gender)
         self.save()
