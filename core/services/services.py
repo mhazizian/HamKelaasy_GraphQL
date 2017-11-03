@@ -771,7 +771,7 @@ def delete_post(user, post_id):
         raise HamkelaasyError(Error_code.Object_not_found.Post)
 
 
-def create_story(user, kelaas_id, title, description, pic_id=None):
+def create_story(user, kelaas_id, title, description, pics_id):
     frequent_logger.debug('create_story')
 
     if not user.type == TEACHER_KEY_WORD:
@@ -790,9 +790,18 @@ def create_story(user, kelaas_id, title, description, pic_id=None):
     )
     story.my_save()
 
-    if pic_id:
-        if File.objects.filter(pk=pic_id).exists():
-            story.story_pic_id = pic_id
+    try:
+        for pic_id in pics_id.split(','):
+            try:
+                pid = int(pic_id)
+                if File.objects.filter(pk=pid).exists():
+                    input_pic = File.objects.get(pk=pid)
+                    story.pics.add(input_pic)
+            except ValueError:
+                pass
+    except Exception:
+        logger.exception(pics_id)
+
     story.my_save()
     return story
 
@@ -1064,4 +1073,3 @@ def edit_profile(user, new_first_name='', new_last_name=''):
         return user
 
     raise HamkelaasyError(Error_code.Authentication.Permission_denied)
-

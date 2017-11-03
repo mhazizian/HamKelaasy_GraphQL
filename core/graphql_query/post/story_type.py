@@ -7,6 +7,7 @@ class StoryType(PostType):
     name = "story"
 
     pic = graphene.String()
+    pics = graphene.List('core.graphql_query.FileType')
     like_count = graphene.Int()
 
     def resolve_pic(self, info):
@@ -15,3 +16,6 @@ class StoryType(PostType):
     def resolve_like_count(self, info):
         user = info.context.user.person
         return services.story__get_likes_count(story=self.story, user=user)
+
+    def resolve_pics(self, info):
+        return self.story.pics.all()

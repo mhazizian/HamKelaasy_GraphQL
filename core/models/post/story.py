@@ -6,7 +6,8 @@ from django.db import models
 
 
 class Story(Post):
-    story_pic = models.ForeignKey('File', blank=True, default=None, null=True)
+    story_pic = models.ForeignKey('File', blank=True, default=None, null=True, related_name="story_picture")
+    pics = models.ManyToManyField('File')
     likes = models.ManyToManyField('Person')
 
     def my_save(self):
@@ -19,8 +20,11 @@ class Story(Post):
 
     @property
     def pic(self):
-        if self.story_pic:
-            return self.story_pic.url
+        if self.pics.count() != 0:
+            return self.pics.first().url
+
+        # if self.story_pic:
+        #     return self.story_pic.url
 
     @property
     def like_count(self):

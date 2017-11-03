@@ -11,6 +11,7 @@ class Story_input(graphene.InputObjectType):
     title = graphene.String(default_value="")
     description = graphene.String(default_value="")
     pic = graphene.Int(description="uploaded pic id")
+    pics = graphene.String(description="a string of files id.\n\nexample: '1,2,10,4'", default_value="")
 
 
 class Create_story(graphene.Mutation):
@@ -34,6 +35,8 @@ class Create_story(graphene.Mutation):
             'description': data.description
         }
         if data.pic:
-            input_data['pic_id'] = data.pic
+            input_data['pics_id'] = str(data.pic)
+        if data.pics != "":
+            input_data['pics_id'] = data.pics
 
         return services.create_story(**input_data)
