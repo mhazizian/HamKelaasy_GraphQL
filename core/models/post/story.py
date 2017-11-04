@@ -15,16 +15,13 @@ class Story(Post):
         self.save()
 
     def on_delete_story(self):
-        if self.story_pic:
-            self.story_pic.delete()
+        for pic in self.pics.all():
+            pic.delete()
 
     @property
     def pic(self):
         if self.pics.count() != 0:
             return self.pics.first().url
-
-        # if self.story_pic:
-        #     return self.story_pic.url
 
     @property
     def like_count(self):
