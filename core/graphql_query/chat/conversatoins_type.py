@@ -17,6 +17,8 @@ class ConversationType(graphene.ObjectType):
     member_count = graphene.Int()
     message_count = graphene.Int()
 
+    member_parent = graphene.Field('core.graphql_query.ParentType')
+
     def resolve_messages(self, info, page, page_size):
         user = info.context.user.person
 
@@ -35,3 +37,7 @@ class ConversationType(graphene.ObjectType):
         result = [user]
         result.extend(queryset)
         return result
+
+    def resolve_member_parent(self, info):
+        user = info.context.user.person
+        return services.conversation_get_parent(user=user, conversation=self)

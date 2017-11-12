@@ -559,6 +559,19 @@ def is_my_comment(user, comment):
     return False
 
 
+def conversation_get_parent(user, conversation):
+    if conversation.type != DIALOG_KEY_WORD or user.type != TEACHER_KEY_WORD:
+        raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+
+    if conversation.members.all()[0].id == user.id and conversation.members.all()[1].type == PARENT_KEY_WORD:
+        return conversation.members.all()[1].parent
+
+    if conversation.members.all()[1].id == user.id and conversation.members.all()[0].type == PARENT_KEY_WORD:
+        return conversation.members.all()[0].parent
+
+    raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+
+
 # ______________________________________________________________________________________________________
 # ______________________________________________________________________________________________________
 
