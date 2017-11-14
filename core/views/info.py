@@ -43,7 +43,18 @@ def info(request):
         'user_with_phone': Person.objects.filter(phone_number_verified=True).count(),
 
         'used_service_within_last_hour': User.objects.filter(last_login__gt=last_hour).count(),
+        'teacher_used_service_within_last_hour': User.objects.filter(last_login__gt=last_hour).filter(person__type=TEACHER_KEY_WORD).count(),
+        'parent_used_service_within_last_hour': User.objects.filter(last_login__gt=last_hour).filter(person__type=PARENT_KEY_WORD).count(),
+
         'used_service_within_24_hr': User.objects.filter(last_login__gt=yesterday).count(),
+        'teacher_used_service_within_24_hr': User.objects.filter(last_login__gt=yesterday).filter(person__type=TEACHER_KEY_WORD).count(),
+        'parent_used_service_within_24_hr': User.objects.filter(last_login__gt=yesterday).filter(person__type=PARENT_KEY_WORD).count(),
+
         'used_service_within_last_week': User.objects.filter(last_login__gt=last_week).count(),
+        'teacher_used_service_within_last_week': User.objects.filter(last_login__gt=last_week).filter(person__type=TEACHER_KEY_WORD).count(),
+        'parent_used_service_within_last_week': User.objects.filter(last_login__gt=last_week).filter(person__type=PARENT_KEY_WORD).count(),
+
         'used_service_within_last_month': User.objects.filter(last_login__gt=last_month).count(),
+        'teacher_used_service_within_last_month': User.objects.filter(last_login__gt=last_month).filter(person__type=TEACHER_KEY_WORD).count(),
+        'parent_used_service_within_last_month': User.objects.filter(last_login__gt=last_month).filter(person__type=PARENT_KEY_WORD).count(),
     })
