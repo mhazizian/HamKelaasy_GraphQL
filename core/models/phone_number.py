@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import random
+from datetime import timedelta
 
 from django.db import models
 from django.utils import timezone
@@ -25,6 +26,8 @@ class Temp_phone_number(models.Model):
         super(Temp_phone_number, self).save(args, kwargs)
 
     def re_init(self):
+        if timezone.now() - self.last_send_sms_time < timedelta(seconds=600):
+            return
         self.code = str(random.randint(10000, 99999))
         self.validator = get_random_string(length=29)
         self.is_validated = False
