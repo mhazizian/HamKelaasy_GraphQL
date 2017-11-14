@@ -26,3 +26,6 @@ from .make_notification_seen import Make_notification_seen
 from .perform_task import Perform_task
 
 from .edit_profile import Edit_profile
+
+from .like_story import Like_story
+from .dislike_story import Dislike_story

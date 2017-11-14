@@ -1086,3 +1086,37 @@ def edit_profile(user, new_first_name='', new_last_name=''):
         return user
 
     raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+
+
+def like_story(user, story_id):
+    if not user.type == PARENT_KEY_WORD:
+        raise HamkelaasyError(Error_code.Authentication.Only_parent)
+    try:
+        story = Story.objects.get(id=story_id)
+
+        if not parent_has_access_to_kelaas(story.kelaas, user.parent):
+            raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+
+        story.likes.add(user)
+        story.save()
+
+        return story
+    except Story.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Story)
+
+
+def dislike_story(user, story_id):
+    if not user.type == PARENT_KEY_WORD:
+        raise HamkelaasyError(Error_code.Authentication.Only_parent)
+    try:
+        story = Story.objects.get(id=story_id)
+
+        if not parent_has_access_to_kelaas(story.kelaas, user.parent):
+            raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+
+        story.likes.remove(user)
+        story.save()
+
+        return story
+    except Story.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Story)
