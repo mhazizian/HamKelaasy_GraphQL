@@ -44,6 +44,6 @@ def info(request):
 
         'used_service_within_last_hour': User.objects.filter(last_login__gt=last_hour).count(),
         'used_service_within_24_hr': User.objects.filter(last_login__gt=yesterday).count(),
-        'used_service_within_last_week': User.objects.filter(last_login__gt=last_month).count(),
+        'used_service_within_last_week': User.objects.filter(last_login__gt=last_week).count(),
         'used_service_within_last_month': User.objects.filter(last_login__gt=last_month).count(),
     })
