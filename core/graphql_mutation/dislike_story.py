@@ -12,7 +12,7 @@ class Dislike_story_input(graphene.InputObjectType):
 
 class Dislike_story(graphene.Mutation):
     class Arguments:
-        data = Dislike_story(required=True)
+        data = Dislike_story_input(required=True)
 
     Output = StoryType
 
