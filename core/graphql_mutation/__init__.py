@@ -1,9 +1,15 @@
+from .post_mutation import Create_kelaas_post
+from .post_mutation import Create_story
+from .post_mutation import Like_story
+from .post_mutation import Dislike_story
+from .post_mutation import Delete_post
+
 from .delete_comment import Delete_comment
-from .delete_post import Delete_post
+
 
 from .create_kelaas import Create_kelaas
-from .create_kelaas_post import Create_kelaas_post
-from .create_story import Create_story
+
+
 from .file_input import Upload_file
 from .assign_badge import Assign_badge
 from .add_commnet import Add_comment
@@ -27,5 +33,3 @@ from .perform_task import Perform_task
 
 from .edit_profile import Edit_profile
 
-from .like_story import Like_story
-from .dislike_story import Dislike_story
