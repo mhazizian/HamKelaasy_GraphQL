@@ -221,3 +221,13 @@ pip-selfcheck.json
 */migrations
 *.DS_store
 /log/
+/backup
+
+gdrive
+nginx.conf
+nohup.out
+run_chmod.sh
+run_server_dev.sh
+run_server_product.sh
+uwsgi.ini
+uwsgi_params
