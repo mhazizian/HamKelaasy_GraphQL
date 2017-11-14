@@ -8,7 +8,7 @@ do
     if [ $DATE. = $RUNAT. ]
     then
         time=$(date +%Y_%m_%d_%A_%H_%M_%S)
-		backup_file="./db_backup/"$time".json"
+		backup_file="./backup/db/"$time".json"
 		backup_file_enc=$backup_file".enc"
 
 		./manage.py dumpdata > $backup_file
