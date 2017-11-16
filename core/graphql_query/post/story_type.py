@@ -9,6 +9,7 @@ class StoryType(PostType):
     pic = graphene.String()
     pics = graphene.List('core.graphql_query.FileType')
     like_count = graphene.Int()
+    i_have_liked_it = graphene.Boolean()
 
     def resolve_pic(self, info):
         return self.story.pic
@@ -19,3 +20,8 @@ class StoryType(PostType):
 
     def resolve_pics(self, info):
         return self.story.pics.all()
+
+    def resolve_i_have_liked_it(self,info):
+        user = info.context.user.person
+
+        return self.story.likes.filter(id=user.id).exists()
