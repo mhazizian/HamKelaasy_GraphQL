@@ -3,6 +3,8 @@ from .post_mutation import Create_story
 from .post_mutation import Like_story
 from .post_mutation import Dislike_story
 from .post_mutation import Delete_post
+from .post_mutation import See_post
+
 
 from .kelaas_membership_mutation import Join_kelaas
 from .kelaas_membership_mutation import Join_kelaas_for_parent

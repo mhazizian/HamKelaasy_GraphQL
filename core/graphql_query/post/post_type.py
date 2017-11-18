@@ -12,6 +12,8 @@ class PostType(graphene.ObjectType):
     time_passed = graphene.String()
     type = graphene.String()
     owner = graphene.Field('core.graphql_query.PersonType')
+    seen_count = graphene.Int()
+    i_have_seen = graphene.Boolean()
 
     comments = graphene.List(
         'core.graphql_query.CommentType',
@@ -32,3 +34,11 @@ class PostType(graphene.ObjectType):
 
     def resolve_owner(self, info):
         return self.owner
+
+    def resolve_seen_count(self, info):
+        user = info.context.user.person
+        return services.get_post_seen_count(user=user, post=self)
+
+    def resolve_i_have_seen(self, info):
+        user = info.context.user.person
+        return services.user_has_seen_post(user=user, post=self)

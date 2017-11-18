@@ -19,6 +19,8 @@ class Post(models.Model):
     kelaas = models.ForeignKey('Kelaas', related_name="posts", on_delete=models.CASCADE)
     owner = models.ForeignKey('Teacher', related_name="posts", on_delete=models.CASCADE)
 
+    seen = models.ManyToManyField('Person')
+
     @property
     def shamsi_date(self):
         return to_shamsi_date(self.create_date)
@@ -31,6 +33,10 @@ class Post(models.Model):
     @property
     def comment_count(self):
         return self.comments.count()
+
+    @property
+    def seen_count(self):
+        return self.seen.count()
 
     def __unicode__(self):
         return unicode(self.title) + unicode(self.description)
