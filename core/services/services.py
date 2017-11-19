@@ -1134,22 +1134,23 @@ def dislike_story(user, story_id):
         raise HamkelaasyError(Error_code.Object_not_found.Story)
 
 
-def see_post(user, post_id):
+def see_post(user, post_ids):
     try:
-        post = Post.objects.get(pk=post_id)
-        if user.type == TEACHER_KEY_WORD:
-            if not teacher_has_access_to_kelaas(post.kelaas, user.teacher):
-                raise HamkelaasyError(Error_code.Authentication.Permission_denied)
-        if user.type == PARENT_KEY_WORD:
-            if not parent_has_access_to_kelaas(post.kelaas, user.parent):
-                raise HamkelaasyError(Error_code.Authentication.Permission_denied)
-        if user.type == STUDENT_KEY_WORD:
-            pass
-            # TODO: complete here in case setting seen status for studnt
+        for post_id in post_ids.split(','):
+            post = Post.objects.get(pk=int(post_id))
+            if user.type == TEACHER_KEY_WORD:
+                if not teacher_has_access_to_kelaas(post.kelaas, user.teacher):
+                    raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+            if user.type == PARENT_KEY_WORD:
+                if not parent_has_access_to_kelaas(post.kelaas, user.parent):
+                    raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+            if user.type == STUDENT_KEY_WORD:
+                pass
+                # TODO: complete here in case setting seen status for studnt
 
-        post.seen.add(user)
-        post.save()
-        return post
+            post.seen.add(user)
+            post.save()
+
 
     except Post.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found)

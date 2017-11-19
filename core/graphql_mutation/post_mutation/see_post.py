@@ -3,18 +3,18 @@ import core.services as services
 from core import HamkelaasyError
 from core import Error_code
 
-from core.graphql_query import PostType
+from core.graphql_query import MessageType
 
 
 class See_post_input(graphene.InputObjectType):
-    post_id = graphene.Int(required=True)
+    post_ids = graphene.String(required=True, description="posts ids seperated by , example:'123,131,431'")
 
 
 class See_post(graphene.Mutation):
     class Arguments:
         data = See_post_input(required=True)
 
-    Output = PostType
+    Output = MessageType
 
     def mutate(self, info, data):
         return See_post.make_seen(info, data)
@@ -25,4 +25,6 @@ class See_post(graphene.Mutation):
             raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
         user = info.context.user.person
 
-        return services.see_post(user=user, post_id=data.post_id)
+        services.see_post(user=user, post_ids=data.post_ids )
+
+        return MessageType(type='success', message='all posts were seen.')
