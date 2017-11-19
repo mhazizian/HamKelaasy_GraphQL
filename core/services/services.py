@@ -1136,6 +1136,7 @@ def dislike_story(user, story_id):
 
 def see_post(user, post_ids):
     try:
+        res = []
         for post_id in post_ids.split(','):
             post = Post.objects.get(pk=int(post_id))
             if user.type == TEACHER_KEY_WORD:
@@ -1150,7 +1151,8 @@ def see_post(user, post_ids):
 
             post.seen.add(user)
             post.save()
+            res.append(post)
 
-
+        return res
     except Post.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found)
