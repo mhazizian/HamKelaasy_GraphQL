@@ -8,6 +8,8 @@ from core.graphql_query import StoryType
 
 class Edit_story_input(graphene.InputObjectType):
     story_id = graphene.Int(required=True)
+    description = graphene.String(required=True)
+
 
 
 class Edit_story(graphene.Mutation):
@@ -25,4 +27,4 @@ class Edit_story(graphene.Mutation):
             raise HamkelaasyError(Error_code.Authentication.User_not_authenticated)
         user = info.context.user.person
 
-        # return services.edit_story(user=user, story_id=data.story_id)
+        return services.edit_story(user=user, story_id=data.story_id, description=data.description)

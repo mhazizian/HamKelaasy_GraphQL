@@ -4,7 +4,7 @@ from graphql_mutation import Create_kelaas, Create_kelaas_post, Create_story, As
     Join_kelaas, Add_child, Send_message, Assign_certificate, Create_certificate, \
     Create_certificate_level, Perform_task, Add_child_by_token, Delete_comment, Delete_post, Join_kelaas_for_parent, \
     Create_parent_child, Create_student_for_kelaas, Remove_student_from_kelaas, Make_notification_seen, Edit_profile, \
-    Like_story, Dislike_story, See_post
+    Like_story, Dislike_story, See_post, Edit_story
 
 
 class Mutation(graphene.ObjectType):
@@ -42,3 +42,4 @@ class Mutation(graphene.ObjectType):
     like_story = Like_story.Field()
     dislike_story = Dislike_story.Field()
     see_post = See_post.Field()
+    edit_story = Edit_story.Field()

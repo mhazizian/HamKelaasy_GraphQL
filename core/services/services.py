@@ -1156,3 +1156,17 @@ def see_post(user, post_ids):
         return res
     except Post.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found)
+
+
+def edit_story(user, story_id, description):
+    if not user.type == TEACHER_KEY_WORD:
+        raise HamkelaasyError(Error_code.Authentication.Only_teacher)
+
+    try:
+        story = Story.objects.get(id=story_id)
+        story.description = description
+        story.save()
+
+        return story
+    except Story.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Story)
