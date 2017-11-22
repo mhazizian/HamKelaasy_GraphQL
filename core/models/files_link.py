@@ -31,6 +31,17 @@ class File(models.Model):
     def __unicode__(self):
         return unicode(self.title)
 
+    @staticmethod
+    def create(input_file, owner, title="", description=""):
+        f = File(
+            title=title if title is not "" else input_file.name,
+            description=description,
+            data=input_file,
+            owner=owner,
+        )
+        f.save()
+        return f
+
 
 class Sys_file(models.Model):
     title = models.CharField('file title', max_length=200)
@@ -41,6 +52,7 @@ class Sys_file(models.Model):
     >certificate : pic for each certificate model pic
     >certificate <level num> : pic for all certificates_level with same level_num 
     '''
+
     def delete(self, *args, **kwargs):
         os.remove(os.path.join(settings.MEDIA_ROOT, self.data.name))
         super(Sys_file, self).delete(*args, **kwargs)

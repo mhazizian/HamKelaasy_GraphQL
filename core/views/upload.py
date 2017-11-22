@@ -20,14 +20,12 @@ def upload_file(request):
     if 'data' in request.FILES:
         try:
             input_file = request.FILES['data']
-            f = File(
-                title=request.POST.get('title', input_file.name),
-                description=request.POST.get('description', 'بدون توضیح'),
-                data=input_file
+            f = File.create(
+                input_file=input_file,
+                owner=request.user.person,
+                title=request.POST.get('title', ""),
+                description=request.POST.get('description', ''),
             )
-            f.owner = request.user.person
-            f.save()
-
             return HttpResponse(
                 unicode(json.dumps({
                     'data': {
