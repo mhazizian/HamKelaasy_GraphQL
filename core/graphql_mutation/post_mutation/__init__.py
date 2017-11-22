@@ -5,3 +5,4 @@ from .dislike_story import Dislike_story
 from .delete_post import Delete_post
 from .see_post import See_post
 from .edit_story import Edit_story
+from .edit_kelaas_post import Edit_kelaas_post

@@ -1164,9 +1164,31 @@ def edit_story(user, story_id, description):
 
     try:
         story = Story.objects.get(id=story_id)
+
+        if not teacher_has_access_to_kelaas(story.kelaas, user.teacher):
+            raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+
         story.description = description
         story.save()
 
         return story
     except Story.DoesNotExist:
         raise HamkelaasyError(Error_code.Object_not_found.Story)
+
+
+def edit_kelaas_post(user, kelaas_post_id, title, description):
+    if not user.type == TEACHER_KEY_WORD:
+        raise HamkelaasyError(Error_code.Authentication.Only_teacher)
+
+    try:
+        post = Kelaas_post.objects.get(id=kelaas_post_id)
+        if not teacher_has_access_to_kelaas(post.kelaas, user.teacher):
+            raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+
+        post.description = description
+        post.title = title
+        post.save()
+
+        return post
+    except Kelaas_post.DoesNotExist:
+        raise HamkelaasyError(Error_code.Object_not_found.Post)
