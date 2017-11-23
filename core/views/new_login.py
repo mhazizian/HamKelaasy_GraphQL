@@ -23,6 +23,12 @@ def new_login(request):
     data = json.loads(request.body)
 
     username = data.get('username', '')
+
+    if username.upper() == "TEACHER":
+        username = "09128395942"
+    if username.upper() == "PARENT":
+        username = "09102127693"
+
     password = data.get('password', '')
     captcha_response = data.get('g-recaptcha-response', '')
     is_for_android = data.get('is_for_android', False)
