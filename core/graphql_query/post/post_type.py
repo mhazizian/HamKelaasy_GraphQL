@@ -14,6 +14,11 @@ class PostType(graphene.ObjectType):
     owner = graphene.Field('core.graphql_query.PersonType')
     seen_count = graphene.Int()
     i_have_seen = graphene.Boolean()
+    seen_people = graphene.List(
+        'core.graphql_query.PersonType',
+        page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
+        page=graphene.Int(default_value=1),
+    )
 
     comments = graphene.List(
         'core.graphql_query.CommentType',
@@ -42,3 +47,8 @@ class PostType(graphene.ObjectType):
     def resolve_i_have_seen(self, info):
         user = info.context.user.person
         return services.user_has_seen_post(user=user, post=self)
+
+    def resolve_seen_people(self, info, page, page_size):
+        user = info.context.user.person
+        queryset = services.seen_people(user=user, post=self)
+        return services.apply_pagination(queryset, page=page, page_size=page_size)
