@@ -29,6 +29,10 @@ class KelaasType(graphene.ObjectType):
         page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
         page=graphene.Int(default_value=1),
     )
+    student = graphene.Field(
+        'core.graphql_query.StudentType',
+        id=graphene.Int(required=True)
+    )
     kelaas_posts = graphene.List(
         'core.graphql_query.KelaasPostType',
         page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
@@ -39,7 +43,11 @@ class KelaasType(graphene.ObjectType):
         page_size=graphene.Int(default_value=services.DEFAULT_PAGE_SIZE),
         page=graphene.Int(default_value=1),
     )
-    tags = graphene.List('core.graphql_query.TagType')
+    story = graphene.Field(
+        'core.graphql_query.StoryType',
+        id=graphene.Int(required=True)
+    )
+    tags = graphene.List('core.graphql_query.TagType', )
 
     def resolve_invite_code(self, info):
         user = info.context.user.person
@@ -66,6 +74,11 @@ class KelaasType(graphene.ObjectType):
         query_set = services.kelaas_get_stories(kelaas=self, user=user)
         return services.apply_pagination(query_set, page=page, page_size=page_size)
 
+    def resolve_story(self, info, id):
+        user = info.context.user.person
+
+        return services.get_kelaas_story(self, user, id)
+
     def resolve_conversations(self, info, page, page_size):
         user = info.context.user.person
 
@@ -75,3 +88,8 @@ class KelaasType(graphene.ObjectType):
     def resolve_conversation(self, info, id):
         user = info.context.user.person
         return services.kelaas__get_conversation(kelaas=self, user=user, conversation_id=id)
+
+    def resolve_student(self, info, id):
+        user = info.context.user.person
+
+        return services.get_kelaas_student(self, user, id)

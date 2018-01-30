@@ -435,6 +435,28 @@ def get_kelaas_students(kelaas, user):
     raise HamkelaasyError(Error_code.Authentication.Permission_denied)
 
 
+def get_kelaas_student(kelaas, user, student_id):
+    frequent_logger.debug('get_kelaas_student')
+
+    if user.type == TEACHER_KEY_WORD:
+        if teacher_has_access_to_kelaas(kelaas=kelaas, teacher=user.teacher):
+            try:
+                return kelaas.students.get(id=student_id)
+            except Student.DoesNotExist:
+                raise HamkelaasyError(Error_code.Object_not_found.Student)
+
+    if user.type == PARENT_KEY_WORD:
+        try:
+            student = kelaas.students.get(id=student_id)
+            if student.parents_id == user.id:
+                return student
+            raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+        except Student.DoesNotExist:
+            raise HamkelaasyError(Error_code.Object_not_found.Student)
+
+    raise HamkelaasyError(Error_code.Authentication.Permission_denied)
+
+
 def kelaas__get_kelaas_post(kelaas, user):
     frequent_logger.debug('kelaas__get_kelaas_post')
 
@@ -586,6 +608,18 @@ def user_has_seen_post(user, post):
 
 def seen_people(user, post):
     return post.seen.all()
+
+
+def get_kelaas_story(kelaas, user, id):
+    if user.type == TEACHER_KEY_WORD:
+        if teacher_has_access_to_kelaas(kelaas, user.teacher):
+            return kelaas.posts.filter(type=STORY_KEY_WORD, id=id).first()
+
+    if user.type == PARENT_KEY_WORD:
+        if parent_has_access_to_kelaas(kelaas=kelaas, parent=user.parent):
+            return kelaas.posts.filter(type=STORY_KEY_WORD, id=id).first()
+
+    raise HamkelaasyError(Error_code.Authentication.Permission_denied)
 
 
 # ______________________________________________________________________________________________________
