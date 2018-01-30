@@ -4,8 +4,14 @@ import os
 from django.db import models
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from uuid import uuid4
 
 from Hamkelaasy_graphQL import settings
+
+
+def get_uuid():
+    file_uuid = str(uuid4())
+    return file_uuid
 
 
 def get_upload_path(instance, filename):
@@ -17,6 +23,8 @@ class File(models.Model):
     description = models.CharField('file body', max_length=1000, blank=True, default='')
     create_date = models.DateTimeField('file creation date', default=timezone.now)
     owner = models.ForeignKey('Person', related_name="uploaded_files", on_delete=models.CASCADE)
+
+    uuid = models.CharField('uuid', unique=True, max_length=36, default=get_uuid)
 
     data = models.FileField('file', upload_to=get_upload_path)
 
