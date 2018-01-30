@@ -9,11 +9,6 @@ from uuid import uuid4
 from Hamkelaasy_graphQL import settings
 
 
-def get_uuid():
-    file_uuid = str(uuid4())
-    return file_uuid
-
-
 def get_upload_path(instance, filename):
     return '/'.join(['data', get_random_string(length=32), filename])
 
@@ -24,7 +19,7 @@ class File(models.Model):
     create_date = models.DateTimeField('file creation date', default=timezone.now)
     owner = models.ForeignKey('Person', related_name="uploaded_files", on_delete=models.CASCADE)
 
-    uuid = models.CharField('uuid', unique=True, max_length=36, default=get_uuid)
+    uuid = models.CharField('uuid', unique=True, max_length=36, default=uuid4)
 
     data = models.FileField('file', upload_to=get_upload_path)
 
