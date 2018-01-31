@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 
 import os
+
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -28,6 +30,12 @@ class File(models.Model):
     link = models.CharField(max_length=1000, null=True)
 
     data = models.FileField('file', upload_to=get_upload_path)
+
+    md5sum = models.CharField(max_length=32, null=True)
+    filesize = models.PositiveIntegerField(null=True)
+    meta = JSONField(default={})
+    klass = models.IntegerField(null=True)
+    is_optimized = models.BooleanField(default=False)
 
     def delete(self, *args, **kwargs):
         os.remove(os.path.join(settings.MEDIA_ROOT, self.data.name))
