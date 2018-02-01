@@ -69,7 +69,8 @@ urlpatterns = [
     url(r'^apply/$', views.my_view),
 
 
-    # url(r'^migrate/user$', views.migrate_user),
-    # url(r'^migrate/class$', views.migrate_class),
-    # url(r'^migrate/conversation', views.migrate_conversations),
+    url(r'^migrate/user$', views.migrate_user),
+    url(r'^migrate/class$', views.migrate_class),
+    url(r'^migrate/conversation$', views.migrate_conversations),
+    url(r'^migrate/post$', views.migrate_post),
 ]
