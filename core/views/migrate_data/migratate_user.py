@@ -28,6 +28,11 @@ def migrate_user(request):
         if person.user:
             if person.user.username == "admin":
                 continue
+            # if person.user.username == "989102127693":
+            #     continue
+            # if person.user.username == "989128395942":
+            #     continue
+
             if person.user.username == "phone989015281382":
                 person.phone_number = None
 
@@ -43,6 +48,8 @@ def migrate_user(request):
         parent = None
         if person.type == STUDENT_KEY_WORD:
             parent = person.student.parents_id
+            # if parent == 4 or parent == 6:
+            #     continue
 
         gender = '0'
         if person.type == TEACHER_KEY_WORD:

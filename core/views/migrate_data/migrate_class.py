@@ -36,25 +36,12 @@ def migrate_class(request):
         obj = {
             "id": klass.id,
             "title": klass.title,
-            "school_name": "S1",
+            "school_name": "سراج",
             "description": klass.description,
             "create_date": int(time.mktime(klass.create_date.timetuple())),
             "gender": gender,
-
-            "has_new_password": person.has_new_password,
-
-            "first_name": person.first_name,
-            "last_name": person.last_name,
-            "email": person.email,
-            "phone_number": person.phone_number if person.phone_number != "" else None,
-            "last_login": last_login,
-            'gender': gender,
-
-            "is_student": person.type == STUDENT_KEY_WORD,
-            "is_teacher": person.type == TEACHER_KEY_WORD,
-            "is_parent": person.type == PARENT_KEY_WORD,
-
-            "parent": parent
+            "teacher_id": klass.teacher_id,
+            "students_id": [student.id for student in klass.students.all()],
         }
         res.append(obj)
 
