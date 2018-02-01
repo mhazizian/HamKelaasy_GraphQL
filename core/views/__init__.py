@@ -7,3 +7,5 @@ from .myviews import my_view
 from .info import info
 
 from .new_login import *
+
+from migrate_data import *
