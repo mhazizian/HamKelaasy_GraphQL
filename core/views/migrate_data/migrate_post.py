@@ -30,9 +30,9 @@ def migrate_post(request):
             "description": post.description,
             "create_date": int(time.mktime(post.create_date.timetuple())),
             "type": "S",
-            "klass_is": post.kelaas_id,
+            "klass_id": post.kelaas_id,
             "writer_id": post.owner_id,
-            "files": [pic.id for pic in post.pics.all()],
+            "files": [pic.uuid for pic in post.pics.all()],
         }
         res.append(obj)
 
@@ -42,9 +42,9 @@ def migrate_post(request):
             "description": post.description,
             "create_date": int(time.mktime(post.create_date.timetuple())),
             "type": "A",
-            "klass_is": post.kelaas_id,
+            "klass_id": post.kelaas_id,
             "writer_id": post.owner_id,
-            "files": [file.id for file in post.files.all()],
+            "files": [file.uuid for file in post.files.all()],
         }
         res.append(obj)
 
