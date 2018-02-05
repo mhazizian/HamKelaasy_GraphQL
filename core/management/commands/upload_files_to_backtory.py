@@ -51,14 +51,17 @@ def storage_request(http_method, url, **kwargs):
         print(status_code)
 
 
-def image_optimizer(source_filepath, size='50x', out_type='resize', quality=90):
+def image_optimizer(source_filepath, file_uuid, size='500x', out_type='resize', quality=90):
     """
     Image Optimizer
     :return: is_success, filepath
     """
     orig_filename, file_ext = splitext(basename(source_filepath))
-    converted_filename = str(uuid4()) + file_ext
+    converted_filename = file_uuid + file_ext
     convert_filepath = join(dirname(source_filepath), converted_filename)
+
+    if file_ext not in ['.jpg', '.jpeg', '.png', '.bmp', '.gif']:
+        return False, source_filepath
 
     convert_options = ''
     if out_type == 'crop':
@@ -82,6 +85,7 @@ def image_optimizer(source_filepath, size='50x', out_type='resize', quality=90):
     convert_process_result = convert_process.communicate()
     if convert_process_result[0]:
         print('- Failed optimize')
+        print(convert_process_result[0])
         return False, source_filepath
 
     print('- Success optimize')
@@ -124,10 +128,11 @@ def get_meta_info(filename):
         if key in meta.keys():
             meta.pop(key)
 
-    return meta
+    return json.dumps(meta)
 
 
 def upload_file_to_backtory(file):
+    print(file.id)
     file_found = False
     klass = None
     for story in Story.objects.all():
@@ -151,7 +156,7 @@ def upload_file_to_backtory(file):
 
     is_optimized = False
     if file_found:
-        is_optimized, source_filepath = image_optimizer(source_filepath)
+        is_optimized, source_filepath = image_optimizer(source_filepath, str(file.uuid))
     else:
         source_filepath = source_filepath
 
@@ -190,15 +195,15 @@ def upload_file_to_backtory(file):
     # print(backtory_response_split)
 
     if is_optimized:
-        real_filename = backtory_response_split[3]
+        real_filename = backtory_response_split[4]
         link = "{}/class/{}/{}".format(
             BACKTORY_STORAGE_SERVE_PREFIX,
             klass,
             real_filename
         )
     else:
-        file_uuid = backtory_response_split[3]
-        real_filename = backtory_response_split[4]
+        file_uuid = backtory_response_split[4]
+        real_filename = backtory_response_split[5]
         link = "{}/class/{}/{}/{}".format(
             BACKTORY_STORAGE_SERVE_PREFIX,
             klass,
@@ -219,10 +224,14 @@ class Command(BaseCommand):
     help = "Upload Files To Backtory"
 
     def upload_files(self):
-        for file in File.objects.filter(link__isnull=False).all():
-            upload_file_to_backtory(file)
+        for file in File.objects.filter(link__isnull=True).all().order_by('id'):
+            try:
+                upload_file_to_backtory(file)
+            except Exception as ex:
+                print(str(ex))
+                print('File Failed', file.id)
 
-        # file = File.objects.get(id=25)
+        # file = File.objects.get(id=508)
         # upload_file_to_backtory(file)
         print('************* Complete ****************')
 
