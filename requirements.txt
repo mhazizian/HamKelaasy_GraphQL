@@ -11,7 +11,7 @@ idna==2.6
 iso8601==0.1.12
 promise==2.1.dev0
 pytz==2017.2
-requests==2.18.4
+requests==2.20.0
 singledispatch==3.4.0.3
 six==1.11.0
 typing==3.6.2
